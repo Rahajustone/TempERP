@@ -10,8 +10,8 @@ using Samr.ERP.Infrastructure.Data;
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    [Migration("20190618113657_Initial")]
-    partial class Initial
+    [Migration("20190619073405_ChangedDatatypeUserEmail")]
+    partial class ChangedDatatypeUserEmail
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

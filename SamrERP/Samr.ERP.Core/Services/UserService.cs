@@ -45,9 +45,15 @@ namespace Samr.ERP.Core.Services
             return userResult;
         }
 
+        public async Task<User> GetByPhoneNumber(string phoneNumber)
+        {
+            var userResult = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.PhoneNumber == phoneNumber);
+            return userResult;
+        }
+
         public async Task<User> GetCurrentUserAsync(ClaimsPrincipal userPrincipal)
         {
-            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p=> p.UserName == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
+            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p=> p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
             return user;
         }
     }

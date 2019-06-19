@@ -38,7 +38,8 @@ namespace Samr.ERP.WebApi.Controllers
             var user = new User()
             {
                 UserName = registerModel.Email,
-                Email = registerModel.Email
+                Email = registerModel.Email,
+                PhoneNumber = registerModel.Phone
             };
             var createdUser = await _userService.CreateAsync(user, registerModel.Password);
             var vm = _mapper.Map<UserViewModel>(createdUser.Model);

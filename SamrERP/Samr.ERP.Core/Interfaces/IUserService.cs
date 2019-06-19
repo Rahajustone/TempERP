@@ -9,6 +9,7 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task<BaseResponse<User>> CreateAsync(User user, string password);
         Task<User> GetByUserName(string userName);
+        Task<User> GetByPhoneNumber(string phoneNumber);
         Task<User> GetCurrentUserAsync(ClaimsPrincipal userPrincipal);
     }
 }

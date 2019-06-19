@@ -37,7 +37,7 @@ namespace Samr.ERP.WebApi.Infrastructure
         }
         public async Task<AuthenticateResult> IsAuthenticated(LoginViewModel loginModel)
         {
-            User user = await _userService.GetByUserName(loginModel.UserName);
+            User user = await _userService.GetByPhoneNumber(loginModel.PhoneNumber);
             if (user == null) return AuthenticateResult.Fail();
 
             var checkPasswordResult = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
@@ -56,7 +56,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             //TODO:Amir need to finish claims
             var claim = new[]
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.Name, user.PhoneNumber)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Value.Secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
