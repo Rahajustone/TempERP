@@ -1,7 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -12,6 +15,7 @@ using Samr.ERP.WebApi.ViewModels.Account;
 namespace Samr.ERP.WebApi.Controllers
 {
     //[Authorize]
+    //[EnableCors("AllowOrigin")]
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class AccountController : ControllerBase
@@ -48,6 +52,8 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
+        //[AllowAnonymous]
+        //[EnableCors("AllowOrigin")]
         public async Task<ActionResult<AuthorizationResult>> Login([FromBody]LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -69,7 +75,12 @@ namespace Samr.ERP.WebApi.Controllers
             return _mapper.Map<UserViewModel>(currentUser);
         }
 
-
-
+        [HttpGet]
+        [Authorize]
+        public IEnumerable<User> UserAll()
+        {
+            var users = _userService.GetAllUser();
+            return users;
+        }
     }
 }

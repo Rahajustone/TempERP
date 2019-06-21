@@ -22,6 +22,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         void Refresh(IEnumerable<T> list);
         //IUnitOfWork UnitOfWork { get; set; }
         IQueryable<T> All();
+        IEnumerable<T> GetAll();
         //void Save(T item);
         //IQueryable<T> Find(Func<T, bool> expression);
         //void Attach(T item);        

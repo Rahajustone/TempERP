@@ -56,5 +56,11 @@ namespace Samr.ERP.Core.Services
             var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p=> p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
             return user;
         }
+
+        public IEnumerable<User> GetAllUser()
+        {
+            var users = _unitOfWork.Users.GetAll().ToList();
+            return users;
+        }
     }
 }

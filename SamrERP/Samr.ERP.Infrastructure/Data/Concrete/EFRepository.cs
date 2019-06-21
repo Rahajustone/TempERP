@@ -161,8 +161,13 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             //{
             //    return DbSet.AsQueryable<T>().Where(_ => (( IDeletable)_).IsDeleted == false).Cast<T>();
             //}
-            return DbSet .AsQueryable<T>();
+            return DbSet.AsQueryable<T>();
             
+        }
+
+        public IEnumerable<T> GetAll()
+        {
+            return DbSet;
         }
     }
 }
