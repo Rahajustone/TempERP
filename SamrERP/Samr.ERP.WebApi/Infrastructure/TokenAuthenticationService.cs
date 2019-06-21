@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ namespace Samr.ERP.WebApi.Infrastructure
     public interface IAuthenticateService
     {
         Task<AuthenticateResult> IsAuthenticated(LoginViewModel loginModel);
+        Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel);
     }
     public class TokenAuthenticationService:IAuthenticateService
     {
@@ -49,6 +51,18 @@ namespace Samr.ERP.WebApi.Infrastructure
             var token = GetJwtTokenForUser(user);
 
             return AuthenticateResult.Success(token);
+        }
+
+        public async Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel)
+        {
+            User user = await _userService.GetByPhoneNumber(resetPasswordModel.PhoneNumber);
+            if (user == null) return AuthenticateResult.Fail();
+
+            var generateNewPassword =
+                await _signInManager.UserManager.AddPasswordAsync(user, "test");
+                //await _signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
+
+            return AuthenticateResult.SuccessWithPassword("test");
         }
 
         private string GetJwtTokenForUser(User user)

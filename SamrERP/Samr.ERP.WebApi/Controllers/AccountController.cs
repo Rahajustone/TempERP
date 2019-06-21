@@ -82,5 +82,20 @@ namespace Samr.ERP.WebApi.Controllers
             var users = _userService.GetAllUser();
             return users;
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthorizationResult>> ForgotPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
+        {
+            if (ModelState.IsValid)
+            {
+                //TODO:Need to complete
+                var isAuthenticatedResult = await _authenticateService.ResetPassword(resetPasswordModel);
+
+                return Ok(isAuthenticatedResult);
+
+            }
+            return BadRequest("validation error");
+        }
     }
 }
