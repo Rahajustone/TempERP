@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Samr.ERP.WebApi.Configurations.AutoMapper.AutoMapperProfiles;
+using Samr.ERP.Core.AutoMapper.AutoMapperProfiles;
 
-namespace Samr.ERP.WebApi.Configurations.AutoMapper
+namespace Samr.ERP.Core.AutoMapper
 {
 
     public class AutoMapperConfig

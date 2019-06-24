@@ -39,7 +39,7 @@ namespace Samr.ERP.WebApi.Controllers
         public async Task<ActionResult> Create([FromBody] AddEmployeeViewModel employee)
         {
             var createdEmployee = await _employeeService.CreateAsync(_mapper.Map<Employee>(employee));
-            var vm = _mapper.Map<AddEmployeeViewModel>(createdEmployee.Model);
+            var vm = _mapper.Map<AddEmployeeViewModel>(createdEmployee.Data);
             return Ok(vm);
         }
 

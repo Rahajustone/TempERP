@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
@@ -19,14 +20,20 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public UserService(IUnitOfWork unitOfWork,UserManager<User> userManager)
+        public UserService(
+            IUnitOfWork unitOfWork,
+            UserManager<User> userManager,
+            IMapper mapper
+            )
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
-        public async Task<BaseResponse<User>> CreateAsync(RegisterUserViewModel registerModel, string password)
+        public async Task<BaseResponse<UserViewModel>> CreateAsync(RegisterUserViewModel registerModel, string password)
         {
             var user = new User()
             {
@@ -36,7 +43,7 @@ namespace Samr.ERP.Core.Services
             };
             var identityResult = await _userManager.CreateAsync(user, password);
 
-            var response = new BaseResponse<User>(user, identityResult.Succeeded,
+            var response = new BaseResponse<UserViewModel>(_mapper.Map<UserViewModel>(user), identityResult.Succeeded,
                 identityResult.Errors.Select(p => new ErrorModel()
                 {
                     //Code = //TODO: надо доделать

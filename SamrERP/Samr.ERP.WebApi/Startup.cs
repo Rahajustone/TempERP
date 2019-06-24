@@ -85,8 +85,13 @@ namespace Samr.ERP.WebApi
             });
 
             #endregion
-            
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.Configure<ApiBehaviorOptions>(options =>
+                options.SuppressModelStateInvalidFilter = true
+            );
+
             services.AddAutoMapperSetup();
 
             services.AddSwaggerGen(c =>

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models.ErrorModels;
+using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Configurations.Models;
@@ -16,8 +18,8 @@ namespace Samr.ERP.WebApi.Infrastructure
 {
     public interface IAuthenticateService
     {
-        Task<AuthenticateResult> IsAuthenticated(LoginViewModel loginModel);
-        Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel);
+        Task<BaseResponse<AuthenticateResult>> AuthenticateAsync(LoginViewModel loginModel);
+        //Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel);
     }
     public class TokenAuthenticationService:IAuthenticateService
     {
@@ -35,33 +37,34 @@ namespace Samr.ERP.WebApi.Infrastructure
             _signInManager = signInManager;
             _tokenSettings = tokenSettings;
         }
-        public async Task<AuthenticateResult> IsAuthenticated(LoginViewModel loginModel)
+        public async Task<BaseResponse<AuthenticateResult>> AuthenticateAsync(LoginViewModel loginModel)
         {
+            var authenticateResult = new AuthenticateResult();
             User user = await _userService.GetByPhoneNumber(loginModel.PhoneNumber);
-            if (user == null) return AuthenticateResult.Fail();
+            if (user == null) return BaseResponse<AuthenticateResult>.Fail(null, new ErrorModel("login or pass not correct"));
 
             var checkPasswordResult = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
-            if (!checkPasswordResult.Succeeded) return AuthenticateResult.Fail();
+            if (!checkPasswordResult.Succeeded) return BaseResponse<AuthenticateResult>.Fail(null, new ErrorModel("login or pass not correct"));
 
             var canSighInResult = await _signInManager.CanSignInAsync(user);
-            if (!canSighInResult) return AuthenticateResult.Fail();
+            if (!canSighInResult) return BaseResponse<AuthenticateResult>.Fail(null,new ErrorModel("you cant login call to support"));
 
             var token = GetJwtTokenForUser(user);
 
-            return AuthenticateResult.Success(token);
+            return BaseResponse<AuthenticateResult>.Fail(new AuthenticateResult(token), null);
         }
+        //TODO: Need move to UserService
+        //public async Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel)
+        //{
+        //    User user = await _userService.GetByPhoneNumber(resetPasswordModel.PhoneNumber);
+        //    if (user == null) return AuthenticateResult.Fail();
 
-        public async Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel)
-        {
-            User user = await _userService.GetByPhoneNumber(resetPasswordModel.PhoneNumber);
-            if (user == null) return AuthenticateResult.Fail();
+        //    var generateNewPassword =
+        //        await _signInManager.UserManager.AddPasswordAsync(user, "test");
+        //    var token = GetJwtTokenForUser(user);
 
-            var generateNewPassword =
-                await _signInManager.UserManager.AddPasswordAsync(user, "test");
-            var token = GetJwtTokenForUser(user);
-
-            return AuthenticateResult.SuccessWithPassword("test");
-        }
+        //    return AuthenticateResult.SuccessWithPassword("test");
+        //}
 
         private string GetJwtTokenForUser(User user)
         {

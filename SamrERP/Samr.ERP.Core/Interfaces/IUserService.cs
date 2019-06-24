@@ -9,7 +9,7 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IUserService
     {
-        Task<BaseResponse<User>> CreateAsync(RegisterUserViewModel user, string password);
+        Task<BaseResponse<UserViewModel>> CreateAsync(RegisterUserViewModel user, string password);
         Task<User> GetByUserName(string userName);
         Task<User> GetByPhoneNumber(string phoneNumber);
         Task<User> GetCurrentUserAsync(ClaimsPrincipal userPrincipal);

@@ -5,46 +5,47 @@ using Samr.ERP.Core.Models.ErrorModels;
 
 namespace Samr.ERP.Core.Models.ResponseModels
 {
-    public class BaseResponse<TModel>:BaseResponse<TModel,ErrorModel>
+    public class BaseResponse<TData> : BaseResponse<TData, ErrorModel>
     {
         /// <summary>
         /// Creates a BaseResponse .
         /// </summary>
-        /// <param name="model">TModel value.</param>
+        /// <param name="data">TModel value.</param>
         /// <param name="success">IsSuccesed.</param>
         /// <param name="errors">String messsages.</param>
         /// <returns>BaseResponse</returns>
-        public BaseResponse(TModel model, bool success, params ErrorModel[] errors) : base(model,success, errors)
+        public BaseResponse(TData data, bool success, params ErrorModel[] errors) : base(data, success, errors)
         {
         }
-        public BaseResponse(TModel model, bool success, IEnumerable<ErrorModel> errors) : base(model, success, errors)
+        public BaseResponse(TData data, bool success, IEnumerable<ErrorModel> errors) : base(data, success, errors)
         {
         }
+        public static BaseResponse<TData> Success(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model,true,errors);
+        public static BaseResponse<TData> Fail(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model, false, errors);
+
     }
-    public class BaseResponse<TModel,TMessage>
+    public class BaseResponse<TData, TMessage>
     {
-        public TModel Model { get; set; }
-        public bool Success { get; protected set; }
-        public IEnumerable<TMessage> Errors { get; protected set; }
+        public ResponseMeta<TMessage> Meta;
+        public TData Data { get; set; }
 
         /// <summary>
         /// Creates a BaseResponse .
         /// </summary>
-        /// <param name="model">TModel value.</param>
+        /// <param name="data">TModel value.</param>
         /// <param name="success">IsSuccesed.</param>
         /// <param name="errors">TMessage messsages.</param>
         /// <returns>BaseResponse</returns>
-        public BaseResponse(TModel model, bool success, params TMessage[] errors)
+        public BaseResponse(TData data, bool success, params TMessage[] errors)
         {
-            Model = model;
-            Success = success;
-            Errors = errors;
+            Meta = new ResponseMeta<TMessage>(success, errors);
+            Data = data;
         }
-        public BaseResponse(TModel model, bool success,IEnumerable<TMessage> errors)
+        public BaseResponse(TData data, bool success, IEnumerable<TMessage> errors)
         {
-            Model = model;
-            Success = success;
-            Errors = errors;
+            Meta = new ResponseMeta<TMessage>(success, errors);
+            Data = data;
+
         }
 
     }

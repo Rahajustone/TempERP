@@ -4,9 +4,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Infrastructure;
+using AuthenticateResult = Samr.ERP.WebApi.Models.AuthenticateResult;
+
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -14,7 +17,7 @@ namespace Samr.ERP.WebApi.Controllers
     //[EnableCors("AllowOrigin")]
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class AccountController : ControllerBase
+    public class AccountController : ApiController
     {
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
@@ -32,36 +35,33 @@ namespace Samr.ERP.WebApi.Controllers
             _authenticateService = authenticateService;
         }
     
-        [HttpPost()]
-        public async Task<IActionResult> Register([FromBody] RegisterUserViewModel registerModel)
+        [HttpPost]
+        public async Task<BaseResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
         {
-
             if (ModelState.IsValid)
             {
-                var createdUser = await _userService.CreateAsync(registerModel, registerModel.Password);
-                var vm = _mapper.Map<UserViewModel>(createdUser.Model);
+                var createdUserResponse = await _userService.CreateAsync(registerModel, registerModel.Password);
 
-                return Ok(vm);
+                return Response(createdUserResponse);
 
             }
-            return BadRequest(registerModel);
+            return Response(BaseResponse<UserViewModel>.Fail(null,null));
 
         }
         
         [HttpPost]
         //[AllowAnonymous]
-        //[EnableCors("AllowOrigin")]
-        public async Task<ActionResult<AuthorizationResult>> Login([FromBody]LoginViewModel model)
+        public async Task<BaseResponse<AuthenticateResult>> Login([FromBody]LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
                 //TODO:Amir need to complete
-                var isAuthenticatedResult = await _authenticateService.IsAuthenticated(model);
+                var authenticateResponse = await _authenticateService.AuthenticateAsync(model);
 
-                return Ok(isAuthenticatedResult);
+                return Response(authenticateResponse);
                 
             }
-            return BadRequest("validation error");
+            return Response(BaseResponse<AuthenticateResult>.Fail(null, null));
         }
 
         [HttpGet]
@@ -80,19 +80,19 @@ namespace Samr.ERP.WebApi.Controllers
             return users;
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<ActionResult<AuthorizationResult>> ForgotPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
-        {
-            if (ModelState.IsValid)
-            {
-                //TODO:Need to complete
-                var isAuthenticatedResult = await _authenticateService.ResetPassword(resetPasswordModel);
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public async Task<ActionResult<AuthorizationResult>> ForgotPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        //TODO:Need to complete
+        //        var isAuthenticatedResult = await _authenticateService.ResetPassword(resetPasswordModel);
 
-                return Ok(isAuthenticatedResult);
+        //        return Ok(isAuthenticatedResult);
 
-            }
-            return BadRequest("validation error");
-        }
+        //    }
+        //    return BadRequest("validation error");
+        //}
     }
 }

@@ -5,7 +5,7 @@ namespace Samr.ERP.Core.ViewModels.Account
     public class RegisterUserViewModel
     {
         [Required]
-        //[DataType(DataType.EmailAddress)]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         [Required]
         [DataType(DataType.Password)]
