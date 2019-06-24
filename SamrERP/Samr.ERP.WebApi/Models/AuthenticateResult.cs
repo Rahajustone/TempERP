@@ -10,7 +10,7 @@ namespace Samr.ERP.WebApi.Models
         public Boolean IsSuccess { get; set; }
         public String Token { get; set; }
         public static AuthenticateResult Success(string token) => new AuthenticateResult(){IsSuccess = true, Token = token};
-        public static AuthenticateResult Fail() => new AuthenticateResult() { IsSuccess = true};
+        public static AuthenticateResult Fail() => new AuthenticateResult() { IsSuccess = false};
 
     }
 }
