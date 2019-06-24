@@ -14,6 +14,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
 
         IRepository<User> Users { get; }
         IRepository<Role> Roles { get; }
+        IRepository<Employee> Employees { get; }
 
     }
 }

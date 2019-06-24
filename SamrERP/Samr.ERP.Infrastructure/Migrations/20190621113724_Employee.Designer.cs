@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190621113724_Employee")]
+    partial class Employee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,20 +108,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Department", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departments");
-                });
-
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Employee", b =>
                 {
                     b.Property<Guid>("Id")
@@ -138,7 +126,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(32);
 
-                    b.Property<int>("Gender");
+                    b.Property<int>("GenderId");
 
                     b.Property<DateTime>("HireDate");
 
@@ -150,8 +138,6 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<int>("LockTypeId");
 
-                    b.Property<Guid>("LockUserId");
-
                     b.Property<string>("MiddleName")
                         .HasMaxLength(32);
 
@@ -161,23 +147,11 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<string>("PhotoPath")
                         .HasMaxLength(32);
 
+                    b.Property<Guid>("lockUserId");
+
                     b.HasKey("Id");
 
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Position", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("DepartmentId");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Positions");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Role", b =>

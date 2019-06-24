@@ -1,7 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -12,6 +15,7 @@ using Samr.ERP.WebApi.ViewModels.Account;
 namespace Samr.ERP.WebApi.Controllers
 {
     //[Authorize]
+    //[EnableCors("AllowOrigin")]
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class AccountController : ControllerBase
@@ -38,7 +42,8 @@ namespace Samr.ERP.WebApi.Controllers
             var user = new User()
             {
                 UserName = registerModel.Email,
-                Email = registerModel.Email
+                Email = registerModel.Email,
+                PhoneNumber = registerModel.Phone
             };
             var createdUser = await _userService.CreateAsync(user, registerModel.Password);
             var vm = _mapper.Map<UserViewModel>(createdUser.Model);
@@ -47,6 +52,8 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
+        //[AllowAnonymous]
+        //[EnableCors("AllowOrigin")]
         public async Task<ActionResult<AuthorizationResult>> Login([FromBody]LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -68,7 +75,27 @@ namespace Samr.ERP.WebApi.Controllers
             return _mapper.Map<UserViewModel>(currentUser);
         }
 
+        [HttpGet]
+        [Authorize]
+        public IEnumerable<User> UserAll()
+        {
+            var users = _userService.GetAllUser();
+            return users;
+        }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthorizationResult>> ForgotPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
+        {
+            if (ModelState.IsValid)
+            {
+                //TODO:Need to complete
+                var isAuthenticatedResult = await _authenticateService.ResetPassword(resetPasswordModel);
 
+                return Ok(isAuthenticatedResult);
+
+            }
+            return BadRequest("validation error");
+        }
     }
 }

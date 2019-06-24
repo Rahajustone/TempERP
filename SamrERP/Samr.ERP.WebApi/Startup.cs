@@ -43,6 +43,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
 
             #endregion
 
@@ -84,11 +85,9 @@ namespace Samr.ERP.WebApi
             });
 
             #endregion
-
-            services.AddCors();
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddAutoMapperSetup();
-    
 
             services.AddSwaggerGen(c =>
             {
@@ -108,6 +107,16 @@ namespace Samr.ERP.WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            //app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+            //app.UseCors(options => options.WithOrigins("https://localhost:4200"));
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed((host) => true)
+                .AllowCredentials()
+            );
+
 
             app.UseHttpsRedirection();
             app.UseAuthentication();

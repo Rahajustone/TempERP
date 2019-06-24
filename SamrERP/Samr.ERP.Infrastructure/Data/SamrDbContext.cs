@@ -16,9 +16,17 @@ namespace Samr.ERP.Infrastructure.Data
             
         }
 
+        public DbSet<Employee> Employees;
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Position> Positions { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Employee>().ToTable("Employees");
+            //builder.Entity<Employee>()
+            //    .HasIndex(e => e.PhotoPath)
+            //    .IsUnique();
         }
     }
 }

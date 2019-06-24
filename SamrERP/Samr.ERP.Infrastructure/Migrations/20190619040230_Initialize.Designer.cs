@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190619040230_Initialize")]
+    partial class Initialize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,80 +106,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Department", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Departments");
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Employee", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("DateOfBirth");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(128);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(32);
-
-                    b.Property<int>("Gender");
-
-                    b.Property<DateTime>("HireDate");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(32);
-
-                    b.Property<DateTime>("LockDate");
-
-                    b.Property<int>("LockTypeId");
-
-                    b.Property<Guid>("LockUserId");
-
-                    b.Property<string>("MiddleName")
-                        .HasMaxLength(32);
-
-                    b.Property<string>("Phone")
-                        .IsRequired();
-
-                    b.Property<string>("PhotoPath")
-                        .HasMaxLength(32);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Position", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid>("DepartmentId");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Positions");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Role", b =>

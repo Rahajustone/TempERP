@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ namespace Samr.ERP.WebApi.Infrastructure
     public interface IAuthenticateService
     {
         Task<AuthenticateResult> IsAuthenticated(LoginViewModel loginModel);
+        Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel);
     }
     public class TokenAuthenticationService:IAuthenticateService
     {
@@ -37,7 +39,7 @@ namespace Samr.ERP.WebApi.Infrastructure
         }
         public async Task<AuthenticateResult> IsAuthenticated(LoginViewModel loginModel)
         {
-            User user = await _userService.GetByUserName(loginModel.UserName);
+            User user = await _userService.GetByPhoneNumber(loginModel.PhoneNumber);
             if (user == null) return AuthenticateResult.Fail();
 
             var checkPasswordResult = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
@@ -51,12 +53,24 @@ namespace Samr.ERP.WebApi.Infrastructure
             return AuthenticateResult.Success(token);
         }
 
+        public async Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel)
+        {
+            User user = await _userService.GetByPhoneNumber(resetPasswordModel.PhoneNumber);
+            if (user == null) return AuthenticateResult.Fail();
+
+            var generateNewPassword =
+                await _signInManager.UserManager.AddPasswordAsync(user, "test");
+            var token = GetJwtTokenForUser(user);
+
+            return AuthenticateResult.SuccessWithPassword("test");
+        }
+
         private string GetJwtTokenForUser(User user)
         {
             //TODO:Amir need to finish claims
             var claim = new[]
             {
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.Name, user.PhoneNumber)
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Value.Secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

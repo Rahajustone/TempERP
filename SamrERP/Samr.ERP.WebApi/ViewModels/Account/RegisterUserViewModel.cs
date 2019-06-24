@@ -5,7 +5,7 @@ namespace Samr.ERP.WebApi.ViewModels.Account
     public class RegisterUserViewModel
     {
         [Required]
-        [DataType(DataType.EmailAddress)]
+        //[DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         [Required]
         [DataType(DataType.Password)]
@@ -17,6 +17,11 @@ namespace Samr.ERP.WebApi.ViewModels.Account
         [Required]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
+
+        [Required]
+        [DataType(DataType.PhoneNumber)]
+        [Compare(nameof(Phone))]
+        public string ConfirmPhone { get; set; }
 
     }
 }
