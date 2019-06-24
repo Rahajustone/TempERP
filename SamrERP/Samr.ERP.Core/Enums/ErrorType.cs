@@ -1,4 +1,4 @@
-﻿namespace Samr.ERP.Core.Models
+﻿namespace Samr.ERP.Core.Enums
 {
     public enum ErrorType
     {

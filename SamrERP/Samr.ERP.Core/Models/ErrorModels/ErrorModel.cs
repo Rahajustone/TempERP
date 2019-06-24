@@ -1,4 +1,5 @@
 ﻿using System;
+using Samr.ERP.Core.Enums;
 
 namespace Samr.ERP.Core.Models.ErrorModels
 {

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Configurations.Models;
-using Samr.ERP.WebApi.ViewModels.Account;
 using AuthenticateResult = Samr.ERP.WebApi.Models.AuthenticateResult;
 
 namespace Samr.ERP.WebApi.Infrastructure

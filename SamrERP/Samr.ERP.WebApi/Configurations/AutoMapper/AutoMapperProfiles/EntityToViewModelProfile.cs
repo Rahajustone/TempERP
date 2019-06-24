@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
-using Samr.ERP.WebApi.ViewModels.Account;
-using Samr.ERP.WebApi.ViewModels.Employee;
 
 namespace Samr.ERP.WebApi.Configurations.AutoMapper.AutoMapperProfiles
 {

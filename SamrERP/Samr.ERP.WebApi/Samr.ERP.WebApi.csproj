@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ViewModels\Account\**" />
+    <Content Remove="ViewModels\Account\**" />
+    <EmbeddedResource Remove="ViewModels\Account\**" />
+    <None Remove="ViewModels\Account\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -18,6 +25,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Samr.ERP.Core\Samr.ERP.Core.csproj" />
     <ProjectReference Include="..\Samr.ERP.Infrastructure\Samr.ERP.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

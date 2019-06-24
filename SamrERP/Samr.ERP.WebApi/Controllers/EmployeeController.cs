@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
-using Samr.ERP.WebApi.ViewModels.Account;
-using Samr.ERP.WebApi.ViewModels.Employee;
 
 namespace Samr.ERP.WebApi.Controllers
 {

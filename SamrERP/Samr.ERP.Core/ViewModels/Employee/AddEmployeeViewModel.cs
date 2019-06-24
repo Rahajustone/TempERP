@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Samr.ERP.Core.ViewModels.Common;
 
-namespace Samr.ERP.WebApi.ViewModels.Employee
+namespace Samr.ERP.Core.ViewModels.Employee
 {
     public class AddEmployeeViewModel
     {
@@ -48,6 +45,6 @@ namespace Samr.ERP.WebApi.ViewModels.Employee
 
         public Guid LockUserId { get; set; }
 
-        public GenreViewModel Genre;
+        public Gender Genre;
     }
 }

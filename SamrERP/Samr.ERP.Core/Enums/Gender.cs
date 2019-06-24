@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Samr.ERP.Core.ViewModels.Common
 {
-    public enum GenreViewModel
+    public enum Gender
     {
         Male,
         Female

@@ -1,16 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
-using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Infrastructure;
-using Samr.ERP.WebApi.ViewModels.Account;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -37,17 +33,18 @@ namespace Samr.ERP.WebApi.Controllers
         }
     
         [HttpPost()]
-        public async Task<UserViewModel> Register([FromBody] RegisterUserViewModel registerModel)
+        public async Task<IActionResult> Register([FromBody] RegisterUserViewModel registerModel)
         {
-            var user = new User()
+
+            if (ModelState.IsValid)
             {
-                UserName = registerModel.Email,
-                Email = registerModel.Email,
-                PhoneNumber = registerModel.Phone
-            };
-            var createdUser = await _userService.CreateAsync(user, registerModel.Password);
-            var vm = _mapper.Map<UserViewModel>(createdUser.Model);
-            return vm;
+                var createdUser = await _userService.CreateAsync(registerModel, registerModel.Password);
+                var vm = _mapper.Map<UserViewModel>(createdUser.Model);
+
+                return Ok(vm);
+
+            }
+            return BadRequest(registerModel);
 
         }
         

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 
@@ -25,8 +26,14 @@ namespace Samr.ERP.Core.Services
             _userManager = userManager;
         }
 
-        public async Task<BaseResponse<User>> CreateAsync(User user, string password)
+        public async Task<BaseResponse<User>> CreateAsync(RegisterUserViewModel registerModel, string password)
         {
+            var user = new User()
+            {
+                UserName = registerModel.Phone,
+                Email = registerModel.Email,
+                PhoneNumber = registerModel.Phone
+            };
             var identityResult = await _userManager.CreateAsync(user, password);
 
             var response = new BaseResponse<User>(user, identityResult.Succeeded,
