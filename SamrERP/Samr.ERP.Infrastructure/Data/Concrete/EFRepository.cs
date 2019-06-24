@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -55,7 +56,30 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 DbSet.Add(entity);
             }
         }
-		public virtual void AddList(List<T> entity)
+
+        public async Task<T> AddAsync(T entity)
+        {
+            if (entity is IChangeable)
+            {
+                ((IChangeable)entity).Created = DateTime.Now.AddHours(2);
+                ((IChangeable)entity).Updated = DateTime.Now.AddHours(2);
+            }
+
+            EntityEntry dbEntityEntry = DbContext.Entry(entity);
+            if (dbEntityEntry.State != EntityState.Detached)
+            {
+                dbEntityEntry.State = EntityState.Added;
+            }
+            else
+            {
+                await DbSet.AddAsync(entity);
+            }
+
+            return entity;
+        }
+
+
+        public virtual void AddList(List<T> entity)
 		{
 			EntityEntry dbEntityEntry;
 			if (entity != null && entity.Count > 0)

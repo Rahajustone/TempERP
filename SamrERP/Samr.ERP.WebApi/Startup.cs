@@ -43,6 +43,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
 
             #endregion
 

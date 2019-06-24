@@ -35,6 +35,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         // repositories
         public IRepository<User> Users { get { return GetStandardRepo<User>(); } }
         public IRepository<Role> Roles { get { return GetStandardRepo<Role>(); } }
+        public IRepository<Employee> Employees { get { return GetStandardRepo<Employee>(); } }
 
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 	       // }
 		    //catch (Exception ex) // DbEntityValidationException ex)
 			//{
-				Debug.WriteLine(" ");
+			//	Debug.WriteLine(" ");
 				//foreach (var error in ex.EntityValidationErrors)
 				//{
 				//	Debug.WriteLine("====================");

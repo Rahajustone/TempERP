@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190623074317_EmployeeWithGender")]
+    partial class EmployeeWithGender
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,6 +141,8 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .HasMaxLength(32);
 
                     b.Property<int>("Gender");
+
+                    b.Property<int>("GenderId");
 
                     b.Property<DateTime>("HireDate");
 

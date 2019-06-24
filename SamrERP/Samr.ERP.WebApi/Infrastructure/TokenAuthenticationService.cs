@@ -60,7 +60,7 @@ namespace Samr.ERP.WebApi.Infrastructure
 
             var generateNewPassword =
                 await _signInManager.UserManager.AddPasswordAsync(user, "test");
-                //await _signInManager.UserManager.GeneratePasswordResetTokenAsync(user);
+            var token = GetJwtTokenForUser(user);
 
             return AuthenticateResult.SuccessWithPassword("test");
         }

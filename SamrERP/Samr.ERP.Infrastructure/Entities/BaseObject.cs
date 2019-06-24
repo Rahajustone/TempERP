@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
