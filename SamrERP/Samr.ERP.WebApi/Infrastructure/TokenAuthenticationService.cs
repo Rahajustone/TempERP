@@ -71,7 +71,8 @@ namespace Samr.ERP.WebApi.Infrastructure
             //TODO:Amir need to finish claims
             var claim = new[]
             {
-                new Claim(ClaimTypes.Name, user.PhoneNumber)
+                new Claim(ClaimTypes.Name, user.PhoneNumber),
+                new Claim(ClaimTypes.Role, "Admin"), 
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Value.Secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
