@@ -9,8 +9,6 @@ namespace Samr.ERP.Infrastructure.Entities
         [Key]
         public Guid Id { get; set; }
 
-        public bool IsActive { get; set; }
-
         public BaseObject()
         {
             Id = Guid.NewGuid();
