@@ -9,7 +9,6 @@ namespace Samr.ERP.WebApi.Controllers
     //[Authorize]
     public class HideInfoController : ControllerBase
     {
-        [Route("secretinfo")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> SecretInfo()
         {

@@ -11,10 +11,7 @@ namespace Samr.ERP.Core.Models.ResponseModels
         {
             Errors = errors?.ToList() ?? new List<TMessage>();
             Success = success;
-            StatusCode = (int)(success ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
-
         }
-        public int StatusCode { get; protected set; }
         public bool Success { get; set; }
         public IList<TMessage> Errors { get; set; }
 
