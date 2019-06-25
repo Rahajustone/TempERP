@@ -6,6 +6,6 @@ namespace Samr.ERP.Infrastructure.Interfaces
 {
     public interface ICreatable
     {
-        public DateTime CreatedAt { get; set; }
+        DateTime CreatedAt { get; set; }
     }
 }
