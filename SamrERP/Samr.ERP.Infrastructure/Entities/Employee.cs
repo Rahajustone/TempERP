@@ -1,10 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Samr.ERP.Infrastructure.Entities.BaseObjects;
 using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Employee : BaseObject, ICreatable, IActivable, ICreatableByUser
+    public class Employee : CreatableByUserBaseObject, ICreatable, IActivable
     {
         [Required]
         [StringLength(32, ErrorMessage = "FistName length must be not more 32")]
@@ -26,6 +29,7 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         public Guid GenderId { get; set; }
+        [ForeignKey(nameof(GenderId))]
         public Gender Gender { get; set; }
 
         [Required]
@@ -53,10 +57,13 @@ namespace Samr.ERP.Infrastructure.Entities
 
         public DateTime LockDate { get; set; }
 
-        public int LockTypeId { get; set; }
-        public EmployeeLock EmployeeLock { get; set; }
+        public Guid EmployeeLockTypeId { get; set; }
+        [ForeignKey(nameof(EmployeeLockTypeId))]
+        public EmployeeLockType EmployeeLockType { get; set; }
 
         public Guid LockUserId { get; set; }
+        [ForeignKey(nameof(LockUserId))]
+        public User LockUser { get; set; }
 
         public string PassportNumber { get; set; }
 
@@ -64,15 +71,15 @@ namespace Samr.ERP.Infrastructure.Entities
 
         public DateTime PassportDate { get; set; }
 
-        public Guid PassportNationality { get; set; }
+        public Guid PassportNationalityId { get; set; }
+        [ForeignKey(nameof(PassportNationalityId))]
+        public Nationality PassporNationality { get; set; }
 
         public string PassportAddress { get; set; }
         
         public DateTime CreatedAt { get; set; }
 
         public bool IsActive { get; set; }
-
-        public Guid CreatedUserId { get; set; }
-        public User User { get; set; }
+  
     }
 }

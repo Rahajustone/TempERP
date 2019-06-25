@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Entities.BaseObjects;
 
 namespace Samr.ERP.Infrastructure.Data
 {
@@ -19,11 +22,29 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<Employee> Employees;
         public DbSet<Department> Departments { get; set; }
         public DbSet<Position> Positions { get; set; }
-        
+        public DbSet<EmployeeLockType> EmployeeLockTypes { get; set; }
+        public DbSet<Gender> Genders { get; set; }
+        public DbSet<Nationality> Nationalities { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             builder.Entity<Employee>().ToTable("Employees");
+
+            // cascade delete false
+            var cascadeFKs = builder.Model.GetEntityTypes()
+                .ToList()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
+
+            foreach (var fk in cascadeFKs)
+            {
+                fk.DeleteBehavior = fk.IsRequired ? DeleteBehavior.Restrict :  DeleteBehavior.SetNull;
+            }
+
+            
+
             //builder.Entity<Employee>()
             //    .HasIndex(e => e.PhotoPath)
             //    .IsUnique();

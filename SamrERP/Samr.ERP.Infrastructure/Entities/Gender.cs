@@ -1,4 +1,5 @@
 ﻿using System;
+using Samr.ERP.Infrastructure.Entities.BaseObjects;
 
 namespace Samr.ERP.Infrastructure.Entities
 {

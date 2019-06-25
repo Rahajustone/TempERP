@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Samr.ERP.Infrastructure.Entities.BaseObjects;
 using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Department : BaseObject, IActivable, ICreatable, ICreatableByUser
+    public class Department : CreatableByUserBaseObject, IActivable, ICreatable
     {
         [Required]
         public string Name { get; set; }
@@ -15,7 +16,5 @@ namespace Samr.ERP.Infrastructure.Entities
 
         public DateTime CreatedAt { get; set; }
 
-        public Guid CreatedUserId { get; set; }
-        public User User { get; set; }
     }
 }
