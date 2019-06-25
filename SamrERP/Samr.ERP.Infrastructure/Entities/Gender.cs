@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public enum Gender
+    public class Gender
     {
-        Male,
-        Female
+        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Text;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    // TODO raha need to finish
-    public class Employee
+    public class Employee : BaseObject, IChangeable, IDeletable
     {
-        public Guid Id { get; set; }
         [Required]
         [StringLength(32, ErrorMessage = "FistName length must be not more 32")]
         public string FirstName { get; set; }
@@ -21,15 +16,21 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [StringLength(32, ErrorMessage = "MiddleName length must be not more 32")]
         public string MiddleName { get; set; }
+
+        [Required]
+        public Guid PositionId { get; set; }
         
-        // TODO make this field unique
         [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
-        public string PhotoPath { get; set; }
-        
+        public string ImageName { get; set; }
+
+        [Required]
+        public Guid GenderId { get; set; }
+
         [Required]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
+        [StringLength(9, ErrorMessage = "Phone Number length must not be more than 9 character")]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
@@ -44,12 +45,27 @@ namespace Samr.ERP.Infrastructure.Entities
         [StringLength(128)]
         public string Email { get; set; }
 
+        public string AddressFact { get; set; }
+
         public DateTime LockDate { get; set; }
 
         public int LockTypeId { get; set; }
 
         public Guid LockUserId { get; set; }
 
-        public Gender Gender { get; set; }
+        public string PassportNumber { get; set; }
+
+        public string PassportMvdName { get; set; }
+
+        public DateTime PassportDate { get; set; }
+
+        public Guid PassportNationality { get; set; }
+
+        public string PassportAddress { get; set; }
+
+        public Guid CreatedUserId { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

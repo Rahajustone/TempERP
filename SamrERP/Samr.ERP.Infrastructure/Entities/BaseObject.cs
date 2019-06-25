@@ -9,15 +9,17 @@ namespace Samr.ERP.Infrastructure.Entities
         [Key]
         public Guid Id { get; set; }
 
+        public bool IsActive { get; set; }
+
         public BaseObject()
         {
             Id = Guid.NewGuid();
 
-            //if (this is IChangeable)
-            //{
-            //    (this as IChangeable).Created = DateTime.Now;
-            //    (this as IChangeable).Updated = DateTime.Now;
-            //}
+            if (this is IChangeable)
+            {
+                (this as IChangeable).Created = DateTime.Now;
+                (this as IChangeable).Updated = DateTime.Now;
+            }
         }
     }
 
