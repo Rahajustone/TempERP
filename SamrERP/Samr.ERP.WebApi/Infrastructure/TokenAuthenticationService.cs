@@ -51,7 +51,7 @@ namespace Samr.ERP.WebApi.Infrastructure
 
             var token = GetJwtTokenForUser(user);
 
-            return BaseResponse<AuthenticateResult>.Fail(new AuthenticateResult(token), null);
+            return BaseResponse<AuthenticateResult>.Success(new AuthenticateResult(token), null);
         }
         //TODO: Need move to UserService
         //public async Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel)
