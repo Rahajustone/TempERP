@@ -22,7 +22,7 @@ namespace Samr.ERP.Core.Models.ResponseModels
         }
         public static BaseResponse<TData> Success(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model,true,errors);
         public static BaseResponse<TData> Fail(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model, false, errors);
-
+      
     }
     public class BaseResponse<TData, TMessage>
     {

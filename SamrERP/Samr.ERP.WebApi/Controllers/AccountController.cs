@@ -80,19 +80,19 @@ namespace Samr.ERP.WebApi.Controllers
             return users;
         }
 
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public async Task<ActionResult<AuthorizationResult>> ForgotPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        //TODO:Need to complete
-        //        var isAuthenticatedResult = await _authenticateService.ResetPassword(resetPasswordModel);
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<BaseResponse<string>> ResetPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
+        {
+            if (ModelState.IsValid)
+            {
+                //TODO:Need to complete
+                var resetPasswordResponse = await _userService.ResetPassword(resetPasswordModel);
 
-        //        return Ok(isAuthenticatedResult);
+                return Response(resetPasswordResponse);
 
-        //    }
-        //    return BadRequest("validation error");
-        //}
+            }
+            return BaseResponse<string>.Fail(null,null);
+        }
     }
 }

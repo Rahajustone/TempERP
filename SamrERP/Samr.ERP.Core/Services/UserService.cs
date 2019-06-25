@@ -53,6 +53,7 @@ namespace Samr.ERP.Core.Services
             return response;
         }
 
+        
         public async Task<User> GetByUserName(string userName)
         {
             var userResult = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.UserName == userName);
@@ -75,6 +76,24 @@ namespace Samr.ERP.Core.Services
         {
             var users = _unitOfWork.Users.GetAll().ToList();
             return users;
+        }
+
+        public async Task<BaseResponse<string>> ResetPassword(ResetPasswordViewModel resetPasswordModel)
+        {
+            var user = await GetByPhoneNumber(resetPasswordModel.PhoneNumber);
+            if (user == null) return BaseResponse<string>.Fail("",new ErrorModel("user not found"));
+            
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, "test");
+
+            var response = new BaseResponse<string>(string.Empty, resetPasswordResult.Succeeded,
+                resetPasswordResult.Errors.Select(p => new ErrorModel()
+                {
+                    //Code = //TODO: надо доделать
+                    Description = p.Description
+                }));
+            
+            return response;
         }
     }
 }

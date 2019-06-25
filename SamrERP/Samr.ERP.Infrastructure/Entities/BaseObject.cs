@@ -15,11 +15,11 @@ namespace Samr.ERP.Infrastructure.Entities
         {
             Id = Guid.NewGuid();
 
-            if (this is IChangeable)
-            {
-                (this as IChangeable).Created = DateTime.Now;
-                (this as IChangeable).Updated = DateTime.Now;
-            }
+            //if (this is IChangeable)
+            //{
+            //    (this as IChangeable).Created = DateTime.Now;
+            //    (this as IChangeable).Updated = DateTime.Now;
+            //}
         }
     }
 
