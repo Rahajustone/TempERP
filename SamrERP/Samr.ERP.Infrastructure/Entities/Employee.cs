@@ -4,7 +4,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Employee : BaseObject, ICreatable, IActivable
+    public class Employee : BaseObject, ICreatable, IActivable, ICreatableByUser
     {
         [Required]
         [StringLength(32, ErrorMessage = "FistName length must be not more 32")]
@@ -19,12 +19,14 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         public Guid PositionId { get; set; }
+        public Position Position { get; set; }
         
         [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
         public string ImageName { get; set; }
 
         [Required]
         public Guid GenderId { get; set; }
+        public Gender Gender { get; set; }
 
         [Required]
         public DateTime DateOfBirth { get; set; }
@@ -52,6 +54,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public DateTime LockDate { get; set; }
 
         public int LockTypeId { get; set; }
+        public EmployeeLock EmployeeLock { get; set; }
 
         public Guid LockUserId { get; set; }
 
@@ -64,14 +67,12 @@ namespace Samr.ERP.Infrastructure.Entities
         public Guid PassportNationality { get; set; }
 
         public string PassportAddress { get; set; }
-
-        public Guid CreateUserId { get; set; }
         
         public DateTime CreatedAt { get; set; }
+
         public bool IsActive { get; set; }
 
-        public Gender Gender { get; set; }
-
-        public EmployeeLock EmployeeLock { get; set; }
+        public Guid CreatedUserId { get; set; }
+        public User User { get; set; }
     }
 }

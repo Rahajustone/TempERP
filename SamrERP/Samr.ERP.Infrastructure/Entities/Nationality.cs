@@ -13,6 +13,7 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         public Guid CreateUserId { get; set; }
+        public User User { get; set; }
 
         public bool IsActive { get; set; }
 

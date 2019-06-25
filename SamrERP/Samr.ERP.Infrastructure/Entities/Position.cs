@@ -6,9 +6,15 @@ namespace Samr.ERP.Infrastructure.Entities
     public class Position : BaseObject, IActivable, ICreatable
     {
         public string Name { get; set; }
+
         public Guid DepartmentId { get; set; }
+        public Department Department { get; set; }
+
         public bool IsActive { get; set; }
+
         public DateTime CreatedAt { get; set; }
+
         public Guid CreateUserId { get; set; }
+        public User User { get; set; }
     }
 }
