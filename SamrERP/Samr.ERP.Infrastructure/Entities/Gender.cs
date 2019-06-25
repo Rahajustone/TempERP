@@ -2,9 +2,8 @@
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Gender
+    public class Gender : BaseObject
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
     }
 }

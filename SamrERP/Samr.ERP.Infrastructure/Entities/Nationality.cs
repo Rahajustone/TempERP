@@ -6,15 +6,16 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class National : BaseObject, IChangeable
+    public class Nationality : BaseObject, IActivable, ICreatable
     {
         [Required]
         public string Name { get; set; }
 
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
-
         [Required]
         public Guid CreateUserId { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }

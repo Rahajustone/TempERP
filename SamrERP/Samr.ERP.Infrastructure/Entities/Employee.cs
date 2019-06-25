@@ -4,7 +4,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Employee : BaseObject, IChangeable, IDeletable
+    public class Employee : BaseObject, ICreatable, IActivable
     {
         [Required]
         [StringLength(32, ErrorMessage = "FistName length must be not more 32")]
@@ -35,6 +35,8 @@ namespace Samr.ERP.Infrastructure.Entities
         public string Phone { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime HireDate { get; set; }
 
         [StringLength(256, ErrorMessage = "Description length must be not more 256")]
@@ -63,9 +65,13 @@ namespace Samr.ERP.Infrastructure.Entities
 
         public string PassportAddress { get; set; }
 
-        public Guid CreatedUserId { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
-        public bool IsDeleted { get; set; }
+        public Guid CreateUserId { get; set; }
+        
+        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; }
+
+        public Gender Gender { get; set; }
+
+        public EmployeeLock EmployeeLock { get; set; }
     }
 }

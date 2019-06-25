@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190625095144_FixEmployeeEntity")]
+    partial class FixEmployeeEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,14 +113,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreateUserId");
-
-                    b.Property<DateTime>("CreatedAt");
-
                     b.Property<bool>("IsActive");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
@@ -203,13 +200,13 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreateUserId");
+                    b.Property<DateTime>("Created");
 
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<bool>("IsActive");
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Name");
+
+                    b.Property<DateTime>("Updated");
 
                     b.HasKey("Id");
 
@@ -233,13 +230,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<Guid>("CreateUserId");
-
-                    b.Property<DateTime>("CreatedAt");
-
                     b.Property<Guid>("DepartmentId");
-
-                    b.Property<bool>("IsActive");
 
                     b.Property<string>("Name");
 

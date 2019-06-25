@@ -5,11 +5,12 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class EmployeeLock: BaseObject, IDeletable, IChangeable
+    public class EmployeeLock: BaseObject, ICreatable, IActivable
     {
         public string Name { get; set; }
-        public bool IsDeleted { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime Updated { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; }
+        public Guid CreateUserId { get; set; }
+
     }
 }
