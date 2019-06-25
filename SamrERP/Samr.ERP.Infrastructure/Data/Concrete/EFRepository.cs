@@ -41,29 +41,35 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         public virtual void Add(T entity)
         {
-	        if (entity is IChangeable)
-	        {
-				((IChangeable)entity).Created = DateTime.Now.AddHours(2);
-				((IChangeable)entity).Updated = DateTime.Now.AddHours(2);
-	        }
-            EntityEntry dbEntityEntry = DbContext.Entry(entity);
-            if (dbEntityEntry.State != EntityState.Detached)
-            {
-                dbEntityEntry.State = EntityState.Added;
-            }
-            else
-            {
-                DbSet.Add(entity);
-            }
+            AddAsync(entity);
+    //        if (entity is IChangeable changeable)
+	   //     {
+				//changeable.Created = DateTime.Now;
+				//changeable.Updated = DateTime.Now;
+	   //     }
+    //        if (entity is ICreatable creatable)
+    //            creatable.CreatedAt = DateTime.Now;
+
+    //        EntityEntry dbEntityEntry = DbContext.Entry(entity);
+    //        if (dbEntityEntry.State != EntityState.Detached)
+    //        {
+    //            dbEntityEntry.State = EntityState.Added;
+    //        }
+    //        else
+    //        {
+    //            DbSet.Add(entity);
+    //        }
         }
 
         public async Task<T> AddAsync(T entity)
         {
-            if (entity is IChangeable)
+            if (entity is IChangeable changeable)
             {
-                ((IChangeable)entity).Created = DateTime.Now.AddHours(2);
-                ((IChangeable)entity).Updated = DateTime.Now.AddHours(2);
+                changeable.Created = DateTime.Now;
+                changeable.Updated = DateTime.Now;
             }
+            if (entity is ICreatable creatable)
+                creatable.CreatedAt = DateTime.Now;
 
             EntityEntry dbEntityEntry = DbContext.Entry(entity);
             if (dbEntityEntry.State != EntityState.Detached)
@@ -89,8 +95,8 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 				{
 					foreach (var ent in entity)
 					{
-						((IChangeable)ent).Created = DateTime.Now.AddHours(2);
-						((IChangeable)ent).Updated = DateTime.Now.AddHours(2);
+						((IChangeable)ent).Created = DateTime.Now;
+						((IChangeable)ent).Updated = DateTime.Now;
 					}
 				}
 				dbEntityEntry = DbContext.Entry(temp);
@@ -120,10 +126,10 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             }
             dbEntityEntry.State = EntityState.Modified;
 
-            if (entity is IChangeable)
+            if (entity is IChangeable changeable)
             {
-                ((IChangeable) entity).Updated = DateTime.Now;//GetDateTime();
-                DbContext.Entry((IChangeable)entity).Property(x => x.Created).IsModified = false;
+                changeable.Updated = DateTime.Now;//GetDateTime();
+                DbContext.Entry(changeable).Property(x => x.Created).IsModified = false;
             }
             
         }
@@ -135,9 +141,9 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         public virtual void Delete(T entity)
         {
-            if (entity is IDeletable)
+            if (entity is IDeletable deletable)
             {
-                (entity as IDeletable).IsDeleted = true;
+                deletable.IsDeleted = true;
                 Update(entity);
             }
             else
@@ -165,6 +171,14 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             var entity = GetById(id);
             if (entity == null) return; // not found; assume already deleted.
             Delete(entity);
+        }
+        public virtual void DeActivate(T entity)
+        {
+            if (entity is IActivable activable)
+            {
+                activable.IsActive = true;
+                Update(entity);
+            }
         }
 
         public DbSet<T> GetDbSet()

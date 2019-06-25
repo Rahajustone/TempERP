@@ -28,5 +28,6 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         //void Save(T item);
         //IQueryable<T> Find(Func<T, bool> expression);
         //void Attach(T item);        
+        void DeActivate(T entity);
     }
 }
