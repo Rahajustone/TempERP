@@ -12,7 +12,7 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task<BaseResponse<Department>> GetByIdAsync(Guid id);
         Task<BaseResponse<IEnumerable<Department>>> GetAll();
-        Task<BaseResponse<DepartmentViewModel>> CreateAsync(DepartmentViewModel department);
+        Task<BaseResponse<DepartmentViewModel>> CreateAsync(DepartmentViewModel departmentViewModel);
 
         Task<BaseResponse<DepartmentViewModel>> UpdateAsync(DepartmentViewModel department);
 
