@@ -37,11 +37,11 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(Guid id)
+        public async Task<BaseResponse<EditDepartmentViewModel>> Get(Guid id)
         {
             var department = await _departmentService.GetByIdAsync(id);
-            var vm = _mapper.Map<DepartmentViewModel>(department.Data);
-            return Ok(vm);
+            return Response(department);
+
         }
         
         [HttpPost]

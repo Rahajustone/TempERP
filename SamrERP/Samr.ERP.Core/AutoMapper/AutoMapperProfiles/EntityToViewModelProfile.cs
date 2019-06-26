@@ -6,7 +6,7 @@ using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 {
-    public class EntityToViewModelProfile:Profile
+    public class EntityToViewModelProfile : Profile
     {
         public EntityToViewModelProfile()
         {
@@ -17,7 +17,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Department, DepartmentViewModel>();
             CreateMap<DepartmentViewModel, Department>();
             CreateMap<EditDepartmentViewModel, Department>();
-            CreateMap<Department, EditDepartmentViewModel>();
+
+
+            CreateMap<Department, EditDepartmentViewModel>()
+                .ForMember(dst => dst.CreatedUserName,src=> src.MapFrom(map => map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Samr.ERP.Infrastructure.Entities
         public override String Email { get; set;  }
         [StringLength(maximumLength:100,ErrorMessage = "Address length must be not more 100")]
         public String Address { get; set; }
-        
+
+        //Todo need to complete with employee
+        public string GetToShortName() => $"{Email}";
     }
 }

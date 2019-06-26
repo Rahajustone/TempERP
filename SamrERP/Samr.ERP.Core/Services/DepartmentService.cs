@@ -24,14 +24,14 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<DepartmentViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id)
         {
             var departmentResult = await _unitOfWork.Departments.GetByIdAsync(id);
             var firstOrDefault = _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser).FirstOrDefault(p => p.Id == id);
 
-            var vm = _mapper.Map<DepartmentViewModel>(departmentResult);
+            var vm = _mapper.Map<EditDepartmentViewModel>(departmentResult);
 
-            var response = new BaseResponse<DepartmentViewModel>(vm, true);
+            var response = new BaseResponse<EditDepartmentViewModel>(vm, true);
 
             return response;
         }
