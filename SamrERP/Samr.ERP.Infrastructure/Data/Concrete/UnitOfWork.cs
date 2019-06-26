@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
@@ -46,13 +47,13 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         /// <summary>
         /// Save pending changes to the database
         /// </summary>
-        public void Commit()
+        public async Task<int> CommitAsync()
         {
 			
             //System.Diagnostics.Debug.WriteLine("Committed");
 			//try
 	       // {
-		        DbContext.SaveChanges();
+		        return await DbContext.SaveChangesAsync();
 	       // }
 		    //catch (Exception ex) // DbEntityValidationException ex)
 			//{
@@ -72,13 +73,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 			    // throw;
 			//}
         }
-
-
-        protected void CreateDbContext()
-        {
-            //DbContext = new SamrDbContext();
-       
-        }
+    
 
         protected IRepositoryProvider RepositoryProvider { get; set; }
 
