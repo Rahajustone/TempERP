@@ -28,8 +28,9 @@ namespace Samr.ERP.Core.Services
         {
             var departmentResult = await _unitOfWork.Departments.GetByIdAsync(id);
             var firstOrDefault = _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser).FirstOrDefault(p => p.Id == id);
-         
-            
+
+            var vm = _mapper.Map<DepartmentViewModel>(departmentResult);
+
             var response = new BaseResponse<DepartmentViewModel>(vm, true);
 
             return response;
@@ -55,7 +56,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(vm), null);
+            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department), null);
 
             return response;
         }
@@ -65,7 +66,7 @@ namespace Samr.ERP.Core.Services
             var department = _mapper.Map<Department>(model);
              _unitOfWork.Departments.Update(department);
 
-            _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
 
             var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department), null);
 
@@ -80,7 +81,7 @@ namespace Samr.ERP.Core.Services
             var vm = _mapper.Map<Department>(department);
             _unitOfWork.Departments.Delete(vm);
 
-            _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
 
             var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm), null);
 
