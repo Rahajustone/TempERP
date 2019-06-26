@@ -43,15 +43,15 @@ namespace Samr.ERP.Core.Services
             return response;
         }
 
-        public async Task<BaseResponse<DepartmentViewModel>> CreateAsync(DepartmentViewModel department)
+        public async Task<BaseResponse<DepartmentViewModel>> CreateAsync(DepartmentViewModel departmentViewModel)
         {
-            var vm = _mapper.Map<Department>(department);
+            var department = _mapper.Map<Department>(departmentViewModel);
 
-            var departmentResult = await _unitOfWork.Departments.AddAsync(vm);
+            var departmentResult = await _unitOfWork.Departments.AddAsync(department);
 
             _unitOfWork.Commit();
 
-            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm), null);
+            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(department), null);
 
             return response;
         }

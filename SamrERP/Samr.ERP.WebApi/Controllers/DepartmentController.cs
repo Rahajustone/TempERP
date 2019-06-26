@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
@@ -33,7 +34,7 @@ namespace Samr.ERP.WebApi.Controllers
             var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments.Data);
             return Ok(vm);
         }
-        // GET: api/Department
+
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(Guid id)
         {
@@ -41,18 +42,18 @@ namespace Samr.ERP.WebApi.Controllers
             var vm = _mapper.Map<DepartmentViewModel>(department.Data);
             return Ok(vm);
         }
-
-        // POST: api/Department
+        
         [HttpPost]
-        public async Task<BaseResponse<DepartmentViewModel>> Create([FromBody]DepartmentViewModel department)
+        [Authorize]
+        public async Task<BaseResponse<DepartmentViewModel>> Create([FromBody]DepartmentViewModel departmentViewModel)
         {
             if (ModelState.IsValid)
             {
-                var departmentResult = await _departmentService.CreateAsync(department);
+                var departmentResult = await _departmentService.CreateAsync(departmentViewModel);
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
+            return Response(BaseResponse<DepartmentViewModel>.Fail(departmentViewModel, null));
         }
 
         // PUT: api/Department/5

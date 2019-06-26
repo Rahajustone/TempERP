@@ -13,7 +13,7 @@ namespace Samr.ERP.Core.ViewModels.Department
         [Required]
         public string Name { get; set; }
 
-        public Guid RootId;
+        public Guid? RootId;
 
         public bool IsActive { get; set; }
 
