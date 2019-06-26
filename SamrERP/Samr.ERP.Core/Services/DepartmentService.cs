@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -25,9 +26,10 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<Department>> GetByIdAsync(Guid id)
         {
-            var departmentResult = await _unitOfWork.Departments.GetByIdAsync(id);
-
-            _unitOfWork.Commit();
+            var departmentResult = await _unitOfWork.Departments
+                .GetByIdAsync(id);
+            var firstOrDefault = _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser).FirstOrDefault(p => p.Id == id);
+         
 
             var response = new BaseResponse<Department>(departmentResult, true);
 
@@ -47,9 +49,9 @@ namespace Samr.ERP.Core.Services
         {
             var department = _mapper.Map<Department>(departmentViewModel);
 
-            var departmentResult = await _unitOfWork.Departments.AddAsync(department);
+            _unitOfWork.Departments.Add(department);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
 
             var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(department), null);
 
@@ -61,7 +63,7 @@ namespace Samr.ERP.Core.Services
             var department = _mapper.Map<Department>(model);
              _unitOfWork.Departments.Update(department);
 
-            _unitOfWork.Commit();
+            _unitOfWork.CommitAsync();
 
             var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(department), null);
 
@@ -76,7 +78,7 @@ namespace Samr.ERP.Core.Services
             var vm = _mapper.Map<Department>(department);
             _unitOfWork.Departments.Delete(vm);
 
-            _unitOfWork.Commit();
+            _unitOfWork.CommitAsync();
 
             var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm), null);
 

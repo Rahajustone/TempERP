@@ -53,18 +53,6 @@ namespace Samr.ERP.WebApi.Infrastructure
 
             return BaseResponse<AuthenticateResult>.Success(new AuthenticateResult(token), null);
         }
-        //TODO: Need move to UserService
-        //public async Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel)
-        //{
-        //    User user = await _userService.GetByPhoneNumber(resetPasswordModel.PhoneNumber);
-        //    if (user == null) return AuthenticateResult.Fail();
-
-        //    var generateNewPassword =
-        //        await _signInManager.UserManager.AddPasswordAsync(user, "test");
-        //    var token = GetJwtTokenForUser(user);
-
-        //    return AuthenticateResult.SuccessWithPassword("test");
-        //}
 
         private string GetJwtTokenForUser(User user)
         {
