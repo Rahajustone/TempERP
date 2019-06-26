@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities.BaseObjects;
 using Samr.ERP.Infrastructure.Interfaces;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Infrastructure.Data.Concrete
 {
@@ -16,10 +17,13 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
     /// <typeparam name="T">Type of entity for this Repository.</typeparam>
     public class EFRepository<T> : IRepository<T> where T : class
     {
-        public EFRepository(DbContext dbContext)
+        private readonly UserProvider _userProvider;
+
+        public EFRepository(DbContext dbContext, UserProvider userProvider)
         {
             if (dbContext == null)
                 throw new ArgumentNullException("dbContext");
+            _userProvider = userProvider;
             DbContext = dbContext;
             DbSet = DbContext.Set<T>();
         }
@@ -79,6 +83,9 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             if (entity is ICreatable creatable)
                 creatable.CreatedAt = DateTime.Now;
 
+            if (entity is ICreatableByUser creatableByUser)
+                creatableByUser.CreatedUserId = _userProvider.CurrentUser.Id;
+            
             EntityEntry dbEntityEntry = DbContext.Entry(entity);
             if (dbEntityEntry.State != EntityState.Detached)
             {

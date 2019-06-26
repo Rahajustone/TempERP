@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Infrastructure.Data.Concrete;
 using Samr.ERP.Infrastructure.Data.Contracts;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Infrastructure.Data.Helpers
 {
@@ -22,6 +23,8 @@ namespace Samr.ERP.Infrastructure.Data.Helpers
     /// </remarks>
     public class RepositoryFactories
     {
+        private readonly UserProvider _userProvider;
+
         /// <summary>
         /// Return the runtime repository factory functions,
         /// each one is a factory for a repository of a particular type.
@@ -42,8 +45,9 @@ namespace Samr.ERP.Infrastructure.Data.Helpers
         /// <summary>
         /// Constructor that initializes with runtime repository factories
         /// </summary>
-        public RepositoryFactories()
+        public RepositoryFactories(UserProvider userProvider)
         {
+            _userProvider = userProvider;
             _repositoryFactories = GetFactories();
         }
 
@@ -102,7 +106,7 @@ namespace Samr.ERP.Infrastructure.Data.Helpers
         /// <typeparam name="T">Type of the repository's root entity</typeparam>
         protected virtual Func<DbContext, object> DefaultEntityRepositoryFactory<T>() where T : class
         {
-            return dbContext => new EFRepository<T>(dbContext);
+            return dbContext => new EFRepository<T>(dbContext, _userProvider);
         }
 
         /// <summary>

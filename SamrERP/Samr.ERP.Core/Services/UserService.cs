@@ -49,7 +49,7 @@ namespace Samr.ERP.Core.Services
                     //Code = //TODO: надо доделать
                     Description = p.Description
                 }));
-
+            
             return response;
         }
 
@@ -66,7 +66,7 @@ namespace Samr.ERP.Core.Services
             return userResult;
         }
 
-        public async Task<User> GetCurrentUserAsync(ClaimsPrincipal userPrincipal)
+        public async Task<User> GetUserAsync(ClaimsPrincipal userPrincipal)
         {
             var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p=> p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
             return user;

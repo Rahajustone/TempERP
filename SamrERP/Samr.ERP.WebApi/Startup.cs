@@ -14,9 +14,11 @@ using Samr.ERP.Infrastructure.Data.Concrete;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Data.Helpers;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 using Samr.ERP.WebApi.Configurations.AutoMapper;
 using Samr.ERP.WebApi.Configurations.Models;
 using Samr.ERP.WebApi.Infrastructure;
+using Samr.ERP.WebApi.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Samr.ERP.WebApi
@@ -38,6 +40,7 @@ namespace Samr.ERP.WebApi
             services.AddDbContext<SamrDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<UserProvider>();
             services.AddScoped<RepositoryFactories, RepositoryFactories>();
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -128,7 +131,7 @@ namespace Samr.ERP.WebApi
             app.UseAuthentication();
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
-
+            app.UseMiddleware<UserMiddleware>();
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>

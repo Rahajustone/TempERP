@@ -12,7 +12,7 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseResponse<UserViewModel>> CreateAsync(RegisterUserViewModel user, string password);
         Task<User> GetByUserName(string userName);
         Task<User> GetByPhoneNumber(string phoneNumber);
-        Task<User> GetCurrentUserAsync(ClaimsPrincipal userPrincipal);
+        Task<User> GetUserAsync(ClaimsPrincipal userPrincipal);
         IEnumerable<User> GetAllUser();
         Task<BaseResponse<string>> ResetPassword(ResetPasswordViewModel resetPasswordModel);
     }

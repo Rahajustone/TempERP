@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Infrastructure.Data.Concrete
 {
@@ -24,8 +25,11 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
     /// </remarks>
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
-        public UnitOfWork(SamrDbContext dbContext, IRepositoryProvider repositoryProvider)
+        private readonly UserProvider _userProvider;
+
+        public UnitOfWork(SamrDbContext dbContext, IRepositoryProvider repositoryProvider, UserProvider userProvider)
         {
+            _userProvider = userProvider;
             DbContext = dbContext;
 
             repositoryProvider.DbContext = DbContext;
