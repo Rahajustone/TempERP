@@ -10,11 +10,11 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IDepartmentService
     {
-        Task<BaseResponse<Department>> GetByIdAsync(Guid id);
-        Task<BaseResponse<IEnumerable<Department>>> GetAll();
-        Task<BaseResponse<DepartmentViewModel>> CreateAsync(DepartmentViewModel departmentViewModel);
+        Task<BaseResponse<DepartmentViewModel>> GetByIdAsync(Guid id);
+        Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAll();
+        Task<BaseResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel);
 
-        Task<BaseResponse<DepartmentViewModel>> UpdateAsync(DepartmentViewModel department);
+        Task<BaseResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel department);
 
         Task<BaseResponse<DepartmentViewModel>> DeleteAsync(Guid id);
         //IEnumerable<Department> GetAllUser();

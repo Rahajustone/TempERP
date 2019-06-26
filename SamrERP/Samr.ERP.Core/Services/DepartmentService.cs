@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -23,50 +24,53 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<Department>> GetByIdAsync(Guid id)
+        public async Task<BaseResponse<DepartmentViewModel>> GetByIdAsync(Guid id)
         {
-            var departmentResult = await _unitOfWork.Departments.GetByIdAsync(id);
+            //var department = await _unitOfWork.Departments.GetByIdAsync(id);
+            var department = _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToList();
 
-            _unitOfWork.Commit();
-
-            var response = new BaseResponse<Department>(departmentResult, true);
+            var vm = _mapper.Map<DepartmentViewModel>(department);
+            
+            var response = new BaseResponse<DepartmentViewModel>(vm, true);
 
             return response;
         }
 
-        public async Task<BaseResponse<IEnumerable<Department>>> GetAll()
+        public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAll()
         {
-            var departmentResult = _unitOfWork.Departments.GetAll();
+            //var department = _unitOfWork.Departments.GetAll();
 
-            var response = new BaseResponse<IEnumerable<Department>>(departmentResult, true);
+            var department = _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToList();
+            var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(department);
+
+            var response = new BaseResponse<IEnumerable<DepartmentViewModel>>(vm, true);
 
             return response;
         }
 
-        public async Task<BaseResponse<DepartmentViewModel>> CreateAsync(DepartmentViewModel departmentViewModel)
+        public async Task<BaseResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel)
         {
             var department = _mapper.Map<Department>(departmentViewModel);
 
-            var departmentResult = await _unitOfWork.Departments.AddAsync(department);
+            var vm = await _unitOfWork.Departments.AddAsync(department);
 
             _unitOfWork.Commit();
 
-            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(department), null);
+            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(vm), null);
 
             return response;
         }
 
-        public async Task<BaseResponse<DepartmentViewModel>> UpdateAsync(DepartmentViewModel model)
+        public async Task<BaseResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel model)
         {
             var department = _mapper.Map<Department>(model);
              _unitOfWork.Departments.Update(department);
 
             _unitOfWork.Commit();
 
-            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(department), null);
+            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department), null);
 
             return response;
-
         }
 
         public async Task<BaseResponse<DepartmentViewModel>> DeleteAsync(Guid id)

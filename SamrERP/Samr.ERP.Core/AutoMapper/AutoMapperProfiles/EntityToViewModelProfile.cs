@@ -16,8 +16,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<AddEmployeeViewModel, Employee>();
             CreateMap<Department, DepartmentViewModel>();
             CreateMap<DepartmentViewModel, Department>();
-            //CreateMap<AddDepartmentViewModel, Department>();
-            //CreateMap<Department, AddDepartmentViewModel>();
+            CreateMap<EditDepartmentViewModel, Department>();
+            CreateMap<Department, EditDepartmentViewModel>();
         }
     }
 }

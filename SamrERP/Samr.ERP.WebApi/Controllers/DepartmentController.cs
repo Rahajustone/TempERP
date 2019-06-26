@@ -15,6 +15,7 @@ using Samr.ERP.Infrastructure.Entities;
 namespace Samr.ERP.WebApi.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [Authorize]
     [ApiController]
     public class DepartmentController : ApiController
     {
@@ -44,8 +45,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
-        [Authorize]
-        public async Task<BaseResponse<DepartmentViewModel>> Create([FromBody]DepartmentViewModel departmentViewModel)
+        public async Task<BaseResponse<EditDepartmentViewModel>> Create([FromBody]EditDepartmentViewModel departmentViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -53,12 +53,12 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<DepartmentViewModel>.Fail(departmentViewModel, null));
+            return Response(BaseResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
         }
 
         // PUT: api/Department/5
         [HttpPost("{id}")]
-        public async Task<BaseResponse<DepartmentViewModel>> Edit(Guid id, [FromBody] DepartmentViewModel model)
+        public async Task<BaseResponse<EditDepartmentViewModel>> Edit(Guid id, [FromBody] EditDepartmentViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +66,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
+            return Response(BaseResponse<EditDepartmentViewModel>.Fail(null, null));
         }
 
         // DELETE: api/ApiWithActions/5

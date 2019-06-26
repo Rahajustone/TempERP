@@ -10,7 +10,7 @@ namespace Samr.ERP.Infrastructure.Entities
         [Required]
         public string Name { get; set; }
 
-        public Guid RootId;
+        public Guid? RootId { get; set; }
 
         public bool IsActive { get; set; }
 
