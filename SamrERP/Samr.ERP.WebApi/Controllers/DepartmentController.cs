@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Infrastructure.Entities;
@@ -43,23 +44,41 @@ namespace Samr.ERP.WebApi.Controllers
 
         // POST: api/Department
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody]DepartmentViewModel department)
+        public async Task<BaseResponse<DepartmentViewModel>> Create([FromBody]DepartmentViewModel department)
         {
-            var createdDepartment = await _departmentService.CreateAsync(_mapper.Map<Department>(department));
-            var vm = _mapper.Map<DepartmentViewModel>(createdDepartment.Data);
-            return Ok(vm);
+            if (ModelState.IsValid)
+            {
+                var departmentResult = await _departmentService.CreateAsync(department);
+                return Response(departmentResult);
+            }
+
+            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
         }
 
         // PUT: api/Department/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("{id}")]
+        public async Task<BaseResponse<DepartmentViewModel>> Edit(Guid id, [FromBody] DepartmentViewModel model)
         {
+            if (ModelState.IsValid)
+            {
+                var departmentResult = await _departmentService.UpdateAsync(model);
+                return Response(departmentResult);
+            }
+
+            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<BaseResponse<DepartmentViewModel>> Delete(Guid id)
         {
+            if (ModelState.IsValid)
+            {
+                var departmentResult = await _departmentService.DeleteAsync(id);
+                return Response(departmentResult);
+            }
+
+            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
         }
     }
 }

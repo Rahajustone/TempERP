@@ -149,10 +149,14 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             
         }
 
+
+
         //public DateTime GetDateTime()
         //{
         //    return DbContext.Database.SqlQuery<DateTime>("select GETDATE()").Single();
         //}
+
+        
 
         public virtual void Delete(T entity)
         {
