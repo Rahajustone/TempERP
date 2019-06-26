@@ -22,7 +22,6 @@ namespace Samr.ERP.Core.Services
         }
         public async Task<BaseResponse<Employee>> CreateAsync(Employee employee)
         {
-            //var employeResult = await _unitOfWork.Employees.GetDbSet().AddAsync(employee);
             var employeResult = await _unitOfWork.Employees.AddAsync(employee);
 
             _unitOfWork.Commit();

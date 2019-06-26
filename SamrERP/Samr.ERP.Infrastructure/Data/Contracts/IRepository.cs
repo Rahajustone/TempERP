@@ -19,7 +19,6 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         void Reload(T entity);
 
         void Delete(Guid id);
-
         DbSet<T> GetDbSet();
 
         void Refresh(IEnumerable<T> list);

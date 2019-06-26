@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Interfaces
@@ -11,7 +12,11 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task<BaseResponse<Department>> GetByIdAsync(Guid id);
         Task<BaseResponse<IEnumerable<Department>>> GetAll();
-        Task<BaseResponse<Department>> CreateAsync(Department employee);
+        Task<BaseResponse<DepartmentViewModel>> CreateAsync(DepartmentViewModel department);
+
+        Task<BaseResponse<DepartmentViewModel>> UpdateAsync(DepartmentViewModel department);
+
+        Task<BaseResponse<DepartmentViewModel>> DeleteAsync(Guid id);
         //IEnumerable<Department> GetAllUser();
     }
 }

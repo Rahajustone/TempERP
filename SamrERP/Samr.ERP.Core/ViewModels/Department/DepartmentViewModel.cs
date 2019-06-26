@@ -10,13 +10,6 @@ namespace Samr.ERP.Core.ViewModels.Department
 {
     public class DepartmentViewModel
     {
-        public Guid Id;
-
-        [Required]
-        public Guid CreatedUserId { get; set; }
-
-        public UserViewModel CreatedUser { get; set; }
-
         [Required]
         public string Name { get; set; }
 
