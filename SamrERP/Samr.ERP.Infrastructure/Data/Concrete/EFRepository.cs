@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Infrastructure.Data.Contracts;
+using Samr.ERP.Infrastructure.Entities.BaseObjects;
 using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Data.Concrete
@@ -39,6 +40,12 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             return DbSet.Find(id);
         }
 
+        public async Task<T> GetByIdAsync(Guid id)
+        {
+            return await DbSet.FindAsync(id);
+        }
+
+
         public virtual void Add(T entity)
         {
             AddAsync(entity);
@@ -68,6 +75,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 changeable.Created = DateTime.Now;
                 changeable.Updated = DateTime.Now;
             }
+
             if (entity is ICreatable creatable)
                 creatable.CreatedAt = DateTime.Now;
 
@@ -172,6 +180,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             if (entity == null) return; // not found; assume already deleted.
             Delete(entity);
         }
+
         public virtual void DeActivate(T entity)
         {
             if (entity is IActivable activable)

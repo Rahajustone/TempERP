@@ -10,6 +10,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
     {
         //IQueryable<T> GetAll();
         T GetById(Guid id);
+        Task<T> GetByIdAsync(Guid id);
         void Add(T entity);
         Task<T> AddAsync(T entity);
 	    void AddList(List<T> entity);
@@ -25,6 +26,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         //IUnitOfWork UnitOfWork { get; set; }
         IQueryable<T> All();
         IEnumerable<T> GetAll();
+
         //void Save(T item);
         //IQueryable<T> Find(Func<T, bool> expression);
         //void Attach(T item);        

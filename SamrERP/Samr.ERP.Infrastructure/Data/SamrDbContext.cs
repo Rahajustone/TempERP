@@ -31,6 +31,7 @@ namespace Samr.ERP.Infrastructure.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<Employee>().ToTable("Employees");
+            builder.Entity<Department>().ToTable("Departments");
 
             // cascade delete false
             var cascadeFKs = builder.Model.GetEntityTypes()
