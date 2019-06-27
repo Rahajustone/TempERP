@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -85,7 +86,7 @@ namespace Samr.ERP.Core.Services
             if (user == null) return BaseResponse<string>.Fail("", new ErrorModel("user not found"));
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, "test");
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, PasswordGenerator.GenerateNewPassword());
 
             if (!resetPasswordResult.Succeeded)
                 return BaseResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
