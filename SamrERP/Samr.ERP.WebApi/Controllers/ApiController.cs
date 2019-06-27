@@ -16,13 +16,14 @@ namespace Samr.ERP.WebApi.Controllers
     {
         protected new BaseResponse<T> Response<T>(BaseResponse<T> responseModel)
         {
+            HttpContext.Response.StatusCode =  (int) responseModel.Meta.StatusCode;
+
             return responseModel.Meta.Success ? responseModel : BadRequest(responseModel);
         }
 
         protected BaseResponse<T> BadRequest<T>(BaseResponse<T> responseModel)
         {
             AddModelStateErrors(responseModel);
-            HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
             return responseModel;
         }

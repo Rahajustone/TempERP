@@ -51,7 +51,7 @@ namespace Samr.ERP.WebApi.Infrastructure
 
             var token = GetJwtTokenForUser(user);
 
-            return BaseResponse<AuthenticateResult>.Success(new AuthenticateResult(token), null);
+            return BaseResponse<AuthenticateResult>.Success(new AuthenticateResult(token));
         }
 
         private string GetJwtTokenForUser(User user)

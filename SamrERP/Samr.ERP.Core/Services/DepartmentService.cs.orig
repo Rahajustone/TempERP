@@ -38,7 +38,11 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync()
         {
+<<<<<<< HEAD
+            var department = _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToList();
+=======
             var department = await _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
+>>>>>>> fc6bbe1bed89f1c7a4d9374385bbb205104d120f
             var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(department);
 
             var response = BaseResponse<IEnumerable<DepartmentViewModel>>.Success(vm);
@@ -76,17 +80,19 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<DepartmentViewModel>> DeleteAsync(Guid id)
         {
-            var department = _unitOfWork.Departments.GetByIdAsync(id);
-            
-            var vm = _mapper.Map<Department>(department);
-            _unitOfWork.Departments.Delete(vm);
+
+            var department = await _unitOfWork.Departments.GetByIdAsync(id);
 
             _unitOfWork.Departments.Delete(department);
             await _unitOfWork.CommitAsync();
 
+<<<<<<< HEAD
             var vm = _mapper.Map<Department>(department);
 
+            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm), null);
+=======
             var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm));
+>>>>>>> fc6bbe1bed89f1c7a4d9374385bbb205104d120f
 
             return response;
         }
