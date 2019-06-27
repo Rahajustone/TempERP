@@ -14,6 +14,5 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync();
         Task<BaseResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel);
         Task<BaseResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel departmentViewModel);
-        Task<BaseResponse<DepartmentViewModel>> DeleteAsync(Guid id);
     }
 }

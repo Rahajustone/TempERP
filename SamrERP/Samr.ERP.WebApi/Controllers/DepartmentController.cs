@@ -40,8 +40,8 @@ namespace Samr.ERP.WebApi.Controllers
         public async Task<BaseResponse<EditDepartmentViewModel>> Get(Guid id)
         {
             var department = await _departmentService.GetByIdAsync(id);
-            return Response(department);
 
+            return Response(department);
         }
         
         [HttpPost]
@@ -56,7 +56,6 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
         }
 
-        // PUT: api/Department/5
         [HttpPost()]
         public async Task<BaseResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
         {
@@ -67,19 +66,6 @@ namespace Samr.ERP.WebApi.Controllers
             }
 
             return Response(BaseResponse<EditDepartmentViewModel>.Fail(null, null));
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public async Task<BaseResponse<DepartmentViewModel>> Delete(Guid id)
-        {
-            if (ModelState.IsValid)
-            {
-                var departmentResult = await _departmentService.DeleteAsync(id);
-                return Response(departmentResult);
-            }
-
-            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
         }
     }
 }

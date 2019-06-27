@@ -34,11 +34,11 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseResponse<EmployeeLockReasonViewModel>> Get(Guid id)
+        public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> Get(Guid id)
         {
             var employeeLockReason = await _employeeLockReason.GetByIdAsync(id);
-            return Response(employeeLockReason);
 
+            return Response(employeeLockReason);
         }
 
         [HttpPost]
@@ -64,17 +64,5 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseResponse<EditEmployeeLockReasonViewModel>.Fail(null, null));
         }
-
-        //[HttpDelete("{id}")]
-        //public async Task<BaseResponse<DepartmentViewModel>> Delete(Guid id)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var departmentResult = await _departmentService.DeleteAsync(id);
-        //        return Response(departmentResult);
-        //    }
-
-        //    return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
-        //}
     }
 }

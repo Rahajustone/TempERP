@@ -30,7 +30,9 @@ namespace Samr.ERP.Core.Services
             var department = await _unitOfWork.Departments.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .FirstOrDefaultAsync(p => p.Id == id);
+
             BaseResponse<EditDepartmentViewModel> response;
+
             if (department == null)
             {
                 response = BaseResponse<EditDepartmentViewModel>.NotFound(null);
@@ -57,13 +59,21 @@ namespace Samr.ERP.Core.Services
         {
             var departmentExists =
                 _unitOfWork.Departments.Any(p => p.Name.ToLower() == departmentViewModel.Name.ToLower());
-            var department = _mapper.Map<Department>(departmentViewModel);
 
-            _unitOfWork.Departments.Add(department);
+            BaseResponse<EditDepartmentViewModel> response;
 
-            await _unitOfWork.CommitAsync();
+            if (departmentExists)
+            {
+                response = BaseResponse<EditDepartmentViewModel>.Fail(departmentViewModel, new ErrorModel("Already this model in database."));
+            }
+            else
+            {
+                _unitOfWork.Departments.Add(_mapper.Map<Department>(departmentViewModel));
 
-            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
+                await _unitOfWork.CommitAsync();
+
+                response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(departmentViewModel));
+            }
 
             return response;
         }
@@ -71,6 +81,7 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel model)
         {
             BaseResponse<EditDepartmentViewModel> response;
+
             var departmentExists = await _unitOfWork.Departments.ExistsAsync(model.Id);
             if (departmentExists)
             {
@@ -86,23 +97,6 @@ namespace Samr.ERP.Core.Services
             {
                 response = BaseResponse<EditDepartmentViewModel>.NotFound(model);
             }
-
-            return response;
-        }
-
-        public async Task<BaseResponse<DepartmentViewModel>> DeleteAsync(Guid id)
-        {
-            var department = _unitOfWork.Departments.GetByIdAsync(id);
-
-            var vm = _mapper.Map<Department>(department);
-            _unitOfWork.Departments.Delete(vm);
-
-            _unitOfWork.Departments.Delete(department);
-            await _unitOfWork.CommitAsync();
-
-            var vm = _mapper.Map<Department>(department);
-
-            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm));
 
             return response;
         }
