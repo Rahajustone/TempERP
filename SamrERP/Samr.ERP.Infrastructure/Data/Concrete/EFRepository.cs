@@ -167,6 +167,21 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             }
         }
 
+        public async Task<bool> ExistsAsync(Guid id)
+        {
+            return await DbSet.AnyAsync(p => ((IBaseObject) p).Id == id);
+        }
+
+        public bool Exists(Guid id)
+        {
+            return Exists(id);
+        }
+
+        public bool Any(Expression<Func<T, bool>> predicate)
+        {
+            return DbSet.Any(predicate);
+        }
+
         public DbSet<T> GetDbSet()
         {
             return DbSet;

@@ -25,6 +25,9 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IQueryable<T> All();
         IEnumerable<T> GetAll();
         void DeActivate(T entity);
-      
+
+        Task<bool> ExistsAsync(Guid id);
+        bool Exists(Guid id);
+        bool Any(Expression<Func<T, bool>> predicate);
     }
 }

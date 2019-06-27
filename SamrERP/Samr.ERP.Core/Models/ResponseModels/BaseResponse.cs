@@ -26,6 +26,7 @@ namespace Samr.ERP.Core.Models.ResponseModels
 
         public static BaseResponse<TData> Fail(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model, HttpStatusCode.BadRequest, errors);
         public static BaseResponse<TData> NotFound(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model, HttpStatusCode.NotFound, errors);
+        public static BaseResponse<TData> NotFound(TData model) => new BaseResponse<TData>(model, HttpStatusCode.NotFound, new ErrorModel("Entity not found"));
         public static BaseResponse<TData> Unauthorized(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model, HttpStatusCode.Unauthorized, errors);
 
     }
