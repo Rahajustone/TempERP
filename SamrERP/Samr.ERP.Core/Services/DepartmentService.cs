@@ -38,8 +38,6 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAll()
         {
-            //var department = _unitOfWork.Departments.GetAll();
-
             var department = _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToList();
             var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(department);
 
@@ -76,12 +74,13 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<DepartmentViewModel>> DeleteAsync(Guid id)
         {
-            var department = _unitOfWork.Departments.GetByIdAsync(id);
-            
-            var vm = _mapper.Map<Department>(department);
-            _unitOfWork.Departments.Delete(vm);
 
+            var department = await _unitOfWork.Departments.GetByIdAsync(id);
+
+            _unitOfWork.Departments.Delete(department);
             await _unitOfWork.CommitAsync();
+
+            var vm = _mapper.Map<Department>(department);
 
             var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm), null);
 
