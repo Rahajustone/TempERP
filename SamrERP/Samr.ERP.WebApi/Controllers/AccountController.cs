@@ -92,7 +92,21 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(resetPasswordResponse);
 
             }
-            return BaseResponse<string>.Fail(null,null);
+            return Response(BaseResponse<string>.Fail(null));
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<BaseResponse<string>> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                //TODO:Need to complete
+                var resetPasswordResponse = await _userService.ChangePasswordAsync(changePasswordViewModel);
+
+                return Response(resetPasswordResponse);
+
+            }
+            return Response(BaseResponse<string>.Fail(null));
         }
     }
 }

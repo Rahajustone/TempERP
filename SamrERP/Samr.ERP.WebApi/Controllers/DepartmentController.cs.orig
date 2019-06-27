@@ -67,6 +67,9 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseResponse<EditDepartmentViewModel>.Fail(null, null));
         }
+<<<<<<< Updated upstream
+=======
      
+>>>>>>> Stashed changes
     }
 }

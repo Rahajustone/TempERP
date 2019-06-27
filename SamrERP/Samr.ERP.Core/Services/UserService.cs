@@ -16,7 +16,7 @@ using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Services
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
@@ -54,7 +54,7 @@ namespace Samr.ERP.Core.Services
             return BaseResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
         }
 
-        
+
         public async Task<User> GetByUserName(string userName)
         {
             var userResult = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.UserName == userName);
@@ -69,7 +69,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<User> GetUserAsync(ClaimsPrincipal userPrincipal)
         {
-            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p=> p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
+            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
             return user;
         }
 
@@ -82,8 +82,8 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseResponse<string>> ResetPassword(ResetPasswordViewModel resetPasswordModel)
         {
             var user = await GetByPhoneNumber(resetPasswordModel.PhoneNumber);
-            if (user == null) return BaseResponse<string>.Fail("",new ErrorModel("user not found"));
-            
+            if (user == null) return BaseResponse<string>.Fail("", new ErrorModel("user not found"));
+
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, "test");
 
@@ -95,6 +95,34 @@ namespace Samr.ERP.Core.Services
                 }).ToArray());
 
             return BaseResponse<string>.Success(null);
+        }
+
+        public async Task<BaseResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel)
+        {
+            BaseResponse<string> response;
+
+            var user = await _unitOfWork.Users.GetByIdAsync(viewModel.Id);
+            if (user == null) return BaseResponse<string>.NotFound("");
+
+            //TODO send smscode confirmation and check
+
+            if (viewModel.SmsConfirmationCode == 1234)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, viewModel.Password);
+
+                if (resetPasswordResult.Succeeded)
+                    response = BaseResponse<string>.Success(null);
+                else
+                    response = BaseResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
+                    {
+                        //Code = //TODO: надо доделать
+                        Description = p.Description
+                    }).ToArray());
+            }
+            else response = BaseResponse<string>.Fail(string.Empty);
+
+            return response;
         }
     }
 }
