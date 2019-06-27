@@ -31,19 +31,17 @@ namespace Samr.ERP.Core.Services
 
             var vm = _mapper.Map<EditDepartmentViewModel>(departmentResult);
 
-            var response = new BaseResponse<EditDepartmentViewModel>(vm, true);
+            var response = BaseResponse<EditDepartmentViewModel>.Success(vm);
 
             return response;
         }
 
-        public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAll()
+        public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync()
         {
-            //var department = _unitOfWork.Departments.GetAll();
-
-            var department = _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToList();
+            var department = await _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
             var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(department);
 
-            var response = new BaseResponse<IEnumerable<DepartmentViewModel>>(vm, true);
+            var response = BaseResponse<IEnumerable<DepartmentViewModel>>.Success(vm);
 
             return response;
         }
@@ -56,7 +54,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department), null);
+            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
 
             return response;
         }
@@ -68,7 +66,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department), null);
+            var response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
 
             return response;
 
@@ -83,7 +81,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm), null);
+            var response = BaseResponse<DepartmentViewModel>.Success(_mapper.Map<DepartmentViewModel>(vm));
 
             return response;
         }

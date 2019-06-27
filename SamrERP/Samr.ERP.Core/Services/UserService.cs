@@ -43,14 +43,15 @@ namespace Samr.ERP.Core.Services
             };
             var identityResult = await _userManager.CreateAsync(user, password);
 
-            var response = new BaseResponse<UserViewModel>(_mapper.Map<UserViewModel>(user), identityResult.Succeeded,
-                identityResult.Errors.Select(p => new ErrorModel()
-                {
-                    //Code = //TODO: надо доделать
-                    Description = p.Description
-                }));
-            
-            return response;
+            if (!identityResult.Succeeded)
+                return BaseResponse<UserViewModel>.Fail(_mapper.Map<UserViewModel>(user), identityResult.Errors.Select(
+                    p => new ErrorModel()
+                    {
+                        //Code = //TODO: надо доделать
+                        Description = p.Description
+                    }).ToArray());
+
+            return BaseResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
         }
 
         
@@ -86,14 +87,14 @@ namespace Samr.ERP.Core.Services
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, "test");
 
-            var response = new BaseResponse<string>(string.Empty, resetPasswordResult.Succeeded,
-                resetPasswordResult.Errors.Select(p => new ErrorModel()
+            if (!resetPasswordResult.Succeeded)
+                return BaseResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
                 {
                     //Code = //TODO: надо доделать
                     Description = p.Description
-                }));
-            
-            return response;
+                }).ToArray());
+
+            return BaseResponse<string>.Success(null);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult> All()
         {
-            var departments = await _departmentService.GetAll();
+            var departments = await _departmentService.GetAllAsync();
             var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments.Data);
             return Ok(vm);
         }

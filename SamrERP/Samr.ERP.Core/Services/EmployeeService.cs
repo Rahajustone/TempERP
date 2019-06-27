@@ -26,7 +26,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            var response = new BaseResponse<Employee>(employee, true);
+            var response = BaseResponse<Employee>.Success(employee);
 
             return response;
         }

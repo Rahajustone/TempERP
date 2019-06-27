@@ -11,7 +11,7 @@ namespace Samr.ERP.Core.Interfaces
     public interface IDepartmentService
     {
         Task<BaseResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id);
-        Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAll();
+        Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync();
         Task<BaseResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel);
 
         Task<BaseResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel department);

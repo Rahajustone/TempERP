@@ -7,12 +7,14 @@ namespace Samr.ERP.Core.Models.ResponseModels
 {
     public class ResponseMeta<TMessage>
     {
-        public ResponseMeta(bool success, IEnumerable<TMessage> errors)
+        public ResponseMeta(HttpStatusCode statusCode, IEnumerable<TMessage> errors)
         {
             Errors = errors?.ToList() ?? new List<TMessage>();
-            Success = success;
+            Success = statusCode == HttpStatusCode.OK;
+            StatusCode = statusCode;
         }
-        public bool Success { get; set; }
+        public bool Success { get; }
+        public HttpStatusCode StatusCode { get; }
         public IList<TMessage> Errors { get; set; }
 
     }
