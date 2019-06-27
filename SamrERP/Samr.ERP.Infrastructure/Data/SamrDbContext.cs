@@ -22,7 +22,7 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<Employee> Employees;
         public DbSet<Department> Departments { get; set; }
         public DbSet<Position> Positions { get; set; }
-        public DbSet<EmployeeLockType> EmployeeLockTypes { get; set; }
+        public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
 

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190627052728_ChangeEmployeeLockReasonName")]
+    partial class ChangeEmployeeLockReasonName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,7 +151,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid>("EmployeeLockReasonId");
+                    b.Property<Guid>("EmployeeLockTypeId");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -195,7 +197,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("CreatedUserId");
 
-                    b.HasIndex("EmployeeLockReasonId");
+                    b.HasIndex("EmployeeLockTypeId");
 
                     b.HasIndex("GenderId");
 
@@ -208,7 +210,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", b =>
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -225,7 +227,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("CreatedUserId");
 
-                    b.ToTable("EmployeeLockReasons");
+                    b.ToTable("EmployeeLockTypes");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Gender", b =>
@@ -419,9 +421,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", "EmployeeLockReason")
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockType", "EmployeeLockType")
                         .WithMany()
-                        .HasForeignKey("EmployeeLockReasonId")
+                        .HasForeignKey("EmployeeLockTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Samr.ERP.Infrastructure.Entities.Gender", "Gender")
@@ -445,7 +447,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", b =>
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockType", b =>
                 {
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()

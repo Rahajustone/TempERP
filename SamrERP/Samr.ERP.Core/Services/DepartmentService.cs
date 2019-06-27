@@ -61,8 +61,10 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel model)
         {
-            var department = _mapper.Map<Department>(model);
-             _unitOfWork.Departments.Update(department);
+            var department = _unitOfWork.Departments.GetByIdAsync(model.Id);
+            var vm = _mapper.Map<EditDepartmentViewModel>(department);
+
+            _unitOfWork.Departments.Update(vm);
 
             await _unitOfWork.CommitAsync();
 

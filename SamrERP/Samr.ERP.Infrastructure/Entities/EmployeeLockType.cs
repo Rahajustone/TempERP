@@ -6,7 +6,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class EmployeeLockType: CreatableByUserBaseObject, ICreatable, IActivable
+    public class EmployeeLockReason : CreatableByUserBaseObject, ICreatable, IActivable
     {
         public string Name { get; set; }
         public DateTime CreatedAt { get; set; }

@@ -42,6 +42,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<Role> Roles { get { return GetStandardRepo<Role>(); } }
         public IRepository<Employee> Employees { get { return GetStandardRepo<Employee>(); } }
         public IRepository<Department> Departments { get { return GetStandardRepo<Department>(); } }
+        public IRepository<EmployeeLockReason> EmployeeLockReasons { get { return GetStandardRepo<EmployeeLockReason>(); } }
 
 
         /// <summary>

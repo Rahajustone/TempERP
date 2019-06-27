@@ -48,6 +48,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IEmployeeLockReasonService, EmployeeLockReasonService>();
 
             #endregion
 

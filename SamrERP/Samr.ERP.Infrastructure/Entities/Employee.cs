@@ -57,9 +57,9 @@ namespace Samr.ERP.Infrastructure.Entities
 
         public DateTime LockDate { get; set; }
 
-        public Guid EmployeeLockTypeId { get; set; }
-        [ForeignKey(nameof(EmployeeLockTypeId))]
-        public EmployeeLockType EmployeeLockType { get; set; }
+        public Guid EmployeeLockReasonId { get; set; }
+        [ForeignKey(nameof(EmployeeLockReasonId))]
+        public EmployeeLockReason EmployeeLockReason { get; set; }
 
         public Guid LockUserId { get; set; }
         [ForeignKey(nameof(LockUserId))]

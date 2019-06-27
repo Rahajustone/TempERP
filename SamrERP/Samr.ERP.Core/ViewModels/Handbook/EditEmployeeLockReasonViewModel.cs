@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Samr.ERP.Core.ViewModels.Department
+namespace Samr.ERP.Core.ViewModels.Handbook
 {
-    public class EditDepartmentViewModel : DepartmentViewModel
+    public class EditEmployeeLockReasonViewModel : EmployeeLockReasonViewModel
     {
         public bool IsActive { get; set; }
 

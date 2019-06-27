@@ -149,7 +149,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid>("EmployeeLockTypeId");
+                    b.Property<Guid>("EmployeeLockReason");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -195,7 +195,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("CreatedUserId");
 
-                    b.HasIndex("EmployeeLockTypeId");
+                    b.HasIndex("EmployeeLockReason");
 
                     b.HasIndex("GenderId");
 
@@ -421,7 +421,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockType", "EmployeeLockType")
                         .WithMany()
-                        .HasForeignKey("EmployeeLockTypeId")
+                        .HasForeignKey("EmployeeLockReason")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Samr.ERP.Infrastructure.Entities.Gender", "Gender")

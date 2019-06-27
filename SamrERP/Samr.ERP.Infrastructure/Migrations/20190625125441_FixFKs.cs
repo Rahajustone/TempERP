@@ -116,7 +116,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                 newName: "PassportNationalityId");
 
             migrationBuilder.AddColumn<Guid>(
-                name: "EmployeeLockTypeId",
+                name: "EmployeeLockReason",
                 table: "Employees",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
@@ -174,9 +174,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                 column: "CreatedUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_EmployeeLockTypeId",
+                name: "IX_Employees_EmployeeLockReason",
                 table: "Employees",
-                column: "EmployeeLockTypeId");
+                column: "EmployeeLockReason");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_LockUserId",
@@ -268,9 +268,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Employees_EmployeeLockTypes_EmployeeLockTypeId",
+                name: "FK_Employees_EmployeeLockTypes_EmployeeLockReason",
                 table: "Employees",
-                column: "EmployeeLockTypeId",
+                column: "EmployeeLockReason",
                 principalTable: "EmployeeLockTypes",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -351,7 +351,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Employees");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Employees_EmployeeLockTypes_EmployeeLockTypeId",
+                name: "FK_Employees_EmployeeLockTypes_EmployeeLockReason",
                 table: "Employees");
 
             migrationBuilder.DropForeignKey(
@@ -385,7 +385,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Employees");
 
             migrationBuilder.DropIndex(
-                name: "IX_Employees_EmployeeLockTypeId",
+                name: "IX_Employees_EmployeeLockReason",
                 table: "Employees");
 
             migrationBuilder.DropIndex(
@@ -405,7 +405,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Genders");
 
             migrationBuilder.DropColumn(
-                name: "EmployeeLockTypeId",
+                name: "EmployeeLockReason",
                 table: "Employees");
 
             migrationBuilder.RenameTable(

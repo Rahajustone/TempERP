@@ -57,8 +57,8 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         // PUT: api/Department/5
-        [HttpPost("{id}")]
-        public async Task<BaseResponse<EditDepartmentViewModel>> Edit(Guid id, [FromBody] EditDepartmentViewModel model)
+        [HttpPost()]
+        public async Task<BaseResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
         {
             if (ModelState.IsValid)
             {
