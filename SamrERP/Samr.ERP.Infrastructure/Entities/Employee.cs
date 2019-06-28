@@ -80,6 +80,10 @@ namespace Samr.ERP.Infrastructure.Entities
         public DateTime CreatedAt { get; set; }
 
         public bool IsActive { get; set; }
-  
+        public Guid? UserId { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
+
+
     }
 }

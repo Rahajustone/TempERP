@@ -19,7 +19,7 @@ namespace Samr.ERP.WebApi.Infrastructure
     public interface IAuthenticateService
     {
         Task<BaseResponse<AuthenticateResult>> AuthenticateAsync(LoginViewModel loginModel);
-        //Task<AuthenticateResult> ResetPassword(ResetPasswordViewModel resetPasswordModel);
+        //Task<AuthenticateResult> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel);
     }
     public class TokenAuthenticationService:IAuthenticateService
     {

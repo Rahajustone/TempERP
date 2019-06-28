@@ -34,25 +34,11 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<UserViewModel>> CreateAsync(RegisterUserViewModel registerModel, string password)
+        public async Task<IdentityResult> CreateAsync(User user, string password)
         {
-            var user = new User()
-            {
-                UserName = registerModel.Phone,
-                Email = registerModel.Email,
-                PhoneNumber = registerModel.Phone
-            };
             var identityResult = await _userManager.CreateAsync(user, password);
 
-            if (!identityResult.Succeeded)
-                return BaseResponse<UserViewModel>.Fail(_mapper.Map<UserViewModel>(user), identityResult.Errors.Select(
-                    p => new ErrorModel()
-                    {
-                        //Code = //TODO: надо доделать
-                        Description = p.Description
-                    }).ToArray());
-
-            return BaseResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
+            return identityResult;
         }
 
 
@@ -80,7 +66,7 @@ namespace Samr.ERP.Core.Services
             return users;
         }
 
-        public async Task<BaseResponse<string>> ResetPassword(ResetPasswordViewModel resetPasswordModel)
+        public async Task<BaseResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel)
         {
             var user = await GetByPhoneNumber(resetPasswordModel.PhoneNumber);
             if (user == null) return BaseResponse<string>.Fail("", new ErrorModel("user not found"));
@@ -97,6 +83,7 @@ namespace Samr.ERP.Core.Services
 
             return BaseResponse<string>.Success(null);
         }
+    
 
         public async Task<BaseResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel)
         {

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using Samr.ERP.Core.Models.ErrorModels;
 
 //using NLog;
 
@@ -72,6 +75,11 @@ namespace Samr.ERP.Core.Stuff
             }
 
             return descriptions;
+        }
+
+        public static IEnumerable<ErrorModel> ToErrorModels(this IEnumerable<IdentityError> identityErrors)
+        {
+            return identityErrors.Select(p => new ErrorModel(p.Description));
         }
     }
 }
