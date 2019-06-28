@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
+<<<<<<< Updated upstream
 using Samr.ERP.Core.ViewModels.Account;
+=======
+>>>>>>> Stashed changes
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
 
@@ -48,12 +51,11 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
-        public async Task<BaseDataResponse<UserViewModel>> CreateUser([FromBody] Guid employeeId)
+        public async Task<BaseResponse<UserViewModel>> CreateUser([FromBody] Guid employeeId)
         {
             var createdUserResponse = await _employeeService.CreateUserForEmployee(employeeId);
 
             return Response(createdUserResponse);
         }
-
     }
 }
