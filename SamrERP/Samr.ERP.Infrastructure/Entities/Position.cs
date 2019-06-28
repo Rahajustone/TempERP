@@ -6,7 +6,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Position : BaseObject, IActivable, ICreatable
+    public class Position : CreatableByUserBaseObject, IActivable, ICreatable
     {
         public string Name { get; set; }
 
@@ -17,7 +17,5 @@ namespace Samr.ERP.Infrastructure.Entities
         public bool IsActive { get; set; }
 
         public DateTime CreatedAt { get; set; }
-
- 
     }
 }

@@ -19,6 +19,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<Department> Departments { get; }
         IRepository<EmployeeLockReason> EmployeeLockReasons { get; }
         IRepository<Nationality> Nationalities { get; }
+        IRepository<Position> Positions { get;  }
 
     }
 }

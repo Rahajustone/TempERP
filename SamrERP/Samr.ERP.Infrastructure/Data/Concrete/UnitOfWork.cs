@@ -38,12 +38,13 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         }
 
         // repositories
-        public IRepository<User> Users { get { return GetStandardRepo<User>(); } }
+        public IRepository<User> Users { get => GetStandardRepo<User>(); }
         public IRepository<Role> Roles { get { return GetStandardRepo<Role>(); } }
-        public IRepository<Employee> Employees { get { return GetStandardRepo<Employee>(); } }
-        public IRepository<Department> Departments { get { return GetStandardRepo<Department>(); } }
-        public IRepository<EmployeeLockReason> EmployeeLockReasons { get { return GetStandardRepo<EmployeeLockReason>(); } }
+        public IRepository<Employee> Employees => GetStandardRepo<Employee>();
+        public IRepository<Department> Departments => GetStandardRepo<Department>();
+        public IRepository<EmployeeLockReason> EmployeeLockReasons => GetStandardRepo<EmployeeLockReason>();
         public IRepository<Nationality> Nationalities => GetStandardRepo<Nationality>();
+        public IRepository<Position> Positions => GetStandardRepo<Position>();
 
 
         /// <summary>
