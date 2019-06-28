@@ -149,7 +149,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid>("EmployeeLockReasonId");
+                    b.Property<Guid>("EmployeeLockReason");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -195,7 +195,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("CreatedUserId");
 
-                    b.HasIndex("EmployeeLockReasonId");
+                    b.HasIndex("EmployeeLockReason");
 
                     b.HasIndex("GenderId");
 
@@ -208,7 +208,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", b =>
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -225,7 +225,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("CreatedUserId");
 
-                    b.ToTable("EmployeeLockReasons");
+                    b.ToTable("EmployeeLockTypes");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Gender", b =>
@@ -419,9 +419,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", "EmployeeLockReason")
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockType", "EmployeeLockType")
                         .WithMany()
-                        .HasForeignKey("EmployeeLockReasonId")
+                        .HasForeignKey("EmployeeLockReason")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Samr.ERP.Infrastructure.Entities.Gender", "Gender")
@@ -445,7 +445,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", b =>
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockType", b =>
                 {
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
