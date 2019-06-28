@@ -47,10 +47,10 @@ namespace Samr.ERP.WebApi.Controllers
             //    return Response(createdUserResponse);
 
             //}
-            //return Response(BaseResponse<UserViewModel>.Fail(null,null));
+            //return Response(BaseResponse<UserViewModel>.Fail(null, null));
 
         }
-        
+
         [HttpPost]
         //[AllowAnonymous]
         public async Task<BaseResponse<AuthenticateResult>> Login([FromBody]LoginViewModel model)

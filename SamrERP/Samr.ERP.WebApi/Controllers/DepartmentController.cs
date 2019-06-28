@@ -27,10 +27,10 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> All()
+        public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> All()
         {
             var departments = await _departmentService.GetAllAsync();
-            return Ok(departments);
+            return Response(departments);
         }
 
         [HttpGet("{id}")]
@@ -53,7 +53,7 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<BaseResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
         {
             if (ModelState.IsValid)

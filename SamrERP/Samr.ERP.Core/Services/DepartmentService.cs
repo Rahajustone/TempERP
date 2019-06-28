@@ -67,11 +67,12 @@ namespace Samr.ERP.Core.Services
             }
             else
             {
-                _unitOfWork.Departments.Add(_mapper.Map<Department>(departmentViewModel));
+                var department = _mapper.Map<Department>(departmentViewModel);
+                _unitOfWork.Departments.Add(department);
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(departmentViewModel));
+                response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
             }
 
             return response;
