@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190627055741_AddEmployeeReason.cs" />
     <Compile Remove="Migrations\20190627141100_Add_UserForEmployee.cs" />
     <Compile Remove="Migrations\20190627153715_UserMIgration.cs" />
   </ItemGroup>
