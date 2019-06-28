@@ -25,14 +25,14 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseResponse<IEnumerable<EditNationalityViewModel>>> All()
+        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> All()
         {
             var nationalities = await _nationalityService.GetAllAsync();
             return Response(nationalities);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseResponse<EditNationalityViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<EditNationalityViewModel>> Get(Guid id)
         {
             var nationality = await _nationalityService.GetByIdAsync(id);
 
@@ -41,7 +41,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         // POST: api/Nationality
         [HttpPost]
-        public  async Task<BaseResponse<EditNationalityViewModel>> Create([FromBody]EditNationalityViewModel nationalityViewModel)
+        public  async Task<BaseDataResponse<EditNationalityViewModel>> Create([FromBody]EditNationalityViewModel nationalityViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -49,13 +49,13 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(nationality);
             }
 
-            return Response(BaseResponse<EditNationalityViewModel>.Fail(nationalityViewModel,
+            return Response(BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel,
                 new ErrorModel("Model Not created")));
         }
 
 
         [HttpPost]
-        public async  Task<BaseResponse<EditNationalityViewModel>> Edit([FromBody]EditNationalityViewModel nationalityViewModel)
+        public async  Task<BaseDataResponse<EditNationalityViewModel>> Edit([FromBody]EditNationalityViewModel nationalityViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -64,7 +64,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(nationality);
             }
 
-            return Response(BaseResponse<EditNationalityViewModel>.Fail(nationalityViewModel, null));
+            return Response(BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, null));
         }
 
     }

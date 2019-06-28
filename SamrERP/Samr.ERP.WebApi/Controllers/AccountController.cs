@@ -37,7 +37,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
     
         [HttpPost]
-        public async Task<BaseResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
+        public async Task<BaseDataResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
         {
             throw new NotImplementedException();
             //if (ModelState.IsValid)
@@ -47,13 +47,13 @@ namespace Samr.ERP.WebApi.Controllers
             //    return Response(createdUserResponse);
 
             //}
-            //return Response(BaseResponse<UserViewModel>.Fail(null, null));
+            //return Response(BaseDataResponse<UserViewModel>.Fail(null, null));
 
         }
 
         [HttpPost]
         //[AllowAnonymous]
-        public async Task<BaseResponse<AuthenticateResult>> Login([FromBody]LoginViewModel model)
+        public async Task<BaseDataResponse<AuthenticateResult>> Login([FromBody]LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -63,7 +63,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(authenticateResponse);
                 
             }
-            return Response(BaseResponse<AuthenticateResult>.Fail(null, null));
+            return Response(BaseDataResponse<AuthenticateResult>.Fail(null, null));
         }
 
         [HttpGet]
@@ -84,7 +84,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<BaseResponse<string>> ResetPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
+        public async Task<BaseDataResponse<string>> ResetPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
         {
             if (ModelState.IsValid)
             {
@@ -94,11 +94,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(resetPasswordResponse);
 
             }
-            return Response(BaseResponse<string>.Fail(null));
+            return Response(BaseDataResponse<string>.Fail(null));
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<BaseResponse<string>> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
+        public async Task<BaseDataResponse<string>> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +108,19 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(resetPasswordResponse);
 
             }
-            return Response(BaseResponse<string>.Fail(null));
+            return Response(BaseDataResponse<string>.Fail(null));
+        }
+
+        [HttpPost]
+        public async Task<BaseResponse> EditUserDetails([FromBody] EditUserDetailsViewModel editUserDetailsView)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _userService.EditUserDetailsAsync(editUserDetailsView);
+
+                return Response(response);
+            }
+            return Response(BaseResponse.Fail());
         }
     }
 }

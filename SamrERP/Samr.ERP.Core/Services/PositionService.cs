@@ -23,62 +23,62 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<BaseResponse<EditPositionViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<EditPositionViewModel>> GetByIdAsync(Guid id)
         {
             var position = await _unitOfWork.Positions.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            BaseResponse<EditPositionViewModel> response;
+            BaseDataResponse<EditPositionViewModel> dataResponse;
 
             if (position == null)
             {
-                response = BaseResponse<EditPositionViewModel>.NotFound(null);
+                dataResponse = BaseDataResponse<EditPositionViewModel>.NotFound(null);
             }
             else
             {
-                response = BaseResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
             }
 
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<IEnumerable<PositionViewModel>>> GetAllAsync()
+        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllAsync()
         {
             var positions = await _unitOfWork.Positions.GetDbSet().Include(p => p.CreatedUser).ToListAsync();
             var vm = _mapper.Map<IEnumerable<PositionViewModel>>(positions);
 
-            var response = BaseResponse<IEnumerable<PositionViewModel>>.Success(vm);
+            var response = BaseDataResponse<IEnumerable<PositionViewModel>>.Success(vm);
 
             return response;
         }
 
-        public async Task<BaseResponse<EditPositionViewModel>> CreateAsync(EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<EditPositionViewModel>> CreateAsync(EditPositionViewModel positionViewModel)
         {
-            BaseResponse<EditPositionViewModel> response;
+            BaseDataResponse<EditPositionViewModel> dataResponse;
 
             var positionExists =
                 _unitOfWork.Positions.Any(p => p.Name.ToLower() == positionViewModel.Name.ToLower());
             if (positionExists)
             {
-                response = BaseResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Already this model in database."));
+                dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Already this model in database."));
             }
             else
             {
                 var position = _mapper.Map<Position>(positionViewModel);
                 _unitOfWork.Positions.Add(position);
 
-                response = BaseResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
 
                 await _unitOfWork.CommitAsync();
             }
 
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<EditPositionViewModel>> UpdateAsync(EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<EditPositionViewModel>> UpdateAsync(EditPositionViewModel positionViewModel)
         {
-            BaseResponse<EditPositionViewModel> response;
+            BaseDataResponse<EditPositionViewModel> dataResponse;
 
             var positionExists = await _unitOfWork.Positions.ExistsAsync(positionViewModel.Id);
             if (positionExists)
@@ -89,14 +89,14 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
             }
             else
             {
-                response = BaseResponse<EditPositionViewModel>.NotFound(positionViewModel);
+                dataResponse = BaseDataResponse<EditPositionViewModel>.NotFound(positionViewModel);
             }
 
-            return response;
+            return dataResponse;
         }
     }
 }

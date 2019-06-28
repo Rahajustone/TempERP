@@ -12,8 +12,8 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IEmployeeService
     {
-        Task<BaseResponse<Employee>> CreateAsync(Employee employee);
+        Task<BaseDataResponse<Employee>> CreateAsync(Employee employee);
         //IEnumerable<Employee> GetAllUser();
-        Task<BaseResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId);
+        Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId);
     }
 }

@@ -25,45 +25,45 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id)
         {
             var department = await _unitOfWork.Departments.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            BaseResponse<EditDepartmentViewModel> response;
+            BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
             if (department == null)
             {
-                response = BaseResponse<EditDepartmentViewModel>.NotFound(null);
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(null);
             }
             else
             {
-                response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
             }
             
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync()
+        public async Task<BaseDataResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync()
         {
             var departments = await _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
             var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments);
 
-            var response = BaseResponse<IEnumerable<DepartmentViewModel>>.Success(vm);
+            var response = BaseDataResponse<IEnumerable<DepartmentViewModel>>.Success(vm);
 
             return response;
         }
 
-        public async Task<BaseResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel)
         {
-            BaseResponse<EditDepartmentViewModel> response;
+            BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
             var departmentExists =
                 _unitOfWork.Departments.Any(p => p.Name.ToLower() == departmentViewModel.Name.ToLower());
             if (departmentExists)
             {
-                response = BaseResponse<EditDepartmentViewModel>.Fail(departmentViewModel, new ErrorModel("Already this model in database."));
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(departmentViewModel, new ErrorModel("Already this model in database."));
             }
             else
             {
@@ -72,15 +72,15 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
             }
 
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel model)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel model)
         {
-            BaseResponse<EditDepartmentViewModel> response;
+            BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
             var departmentExists = await _unitOfWork.Departments.ExistsAsync(model.Id);
             if (departmentExists)
@@ -91,14 +91,14 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
             }
             else
             {
-                response = BaseResponse<EditDepartmentViewModel>.NotFound(model);
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(model);
             }
 
-            return response;
+            return dataResponse;
         }
     }
 }

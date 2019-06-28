@@ -27,14 +27,14 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> All()
+        public async Task<BaseDataResponse<IEnumerable<DepartmentViewModel>>> All()
         {
             var departments = await _departmentService.GetAllAsync();
             return Response(departments);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseResponse<EditDepartmentViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> Get(Guid id)
         {
             var department = await _departmentService.GetByIdAsync(id);
 
@@ -42,7 +42,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
-        public async Task<BaseResponse<EditDepartmentViewModel>> Create([FromBody]EditDepartmentViewModel departmentViewModel)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> Create([FromBody]EditDepartmentViewModel departmentViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -50,11 +50,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
+            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
         }
 
         [HttpPost]
-        public async Task<BaseResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -62,7 +62,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<EditDepartmentViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(null, null));
         }
      
     }

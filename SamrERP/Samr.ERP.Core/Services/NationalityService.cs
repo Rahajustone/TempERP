@@ -25,45 +25,45 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<IEnumerable<EditNationalityViewModel>>> GetAllAsync()
+        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> GetAllAsync()
         {
             var nationalities = await _unitOfWork.Nationalities.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
             var vm = _mapper.Map<IEnumerable<EditNationalityViewModel>>(nationalities);
 
-            var response = BaseResponse<IEnumerable<EditNationalityViewModel>>.Success(vm);
+            var response = BaseDataResponse<IEnumerable<EditNationalityViewModel>>.Success(vm);
 
             return response;
         }
 
-        public async Task<BaseResponse<EditNationalityViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<EditNationalityViewModel>> GetByIdAsync(Guid id)
         {
-            BaseResponse<EditNationalityViewModel> response;
+            BaseDataResponse<EditNationalityViewModel> dataResponse;
 
             var nationality = await _unitOfWork.Nationalities.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (nationality == null)
             {
-                response = BaseResponse<EditNationalityViewModel>.NotFound(null, new ErrorModel("Not found Entity"));
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.NotFound(null, new ErrorModel("Not found Entity"));
             }
             else
             {
-                response = BaseResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
             }
 
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<EditNationalityViewModel>> CreateAsync(EditNationalityViewModel editNationalityViewModel)
+        public async Task<BaseDataResponse<EditNationalityViewModel>> CreateAsync(EditNationalityViewModel editNationalityViewModel)
         {
-            BaseResponse<EditNationalityViewModel> response;
+            BaseDataResponse<EditNationalityViewModel> dataResponse;
 
             var nationalityExists =
                 _unitOfWork.Nationalities
                     .Any(p => p.Name.ToLower() == editNationalityViewModel.Name.ToLower());
             if (nationalityExists)
             {
-                response = BaseResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel("Already this model is in Database"));
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel("Already this model is in Database"));
             }
             else
             {
@@ -72,15 +72,15 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
             }
 
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<EditNationalityViewModel>> UpdateAsync(EditNationalityViewModel nationalityViewModel)
+        public async Task<BaseDataResponse<EditNationalityViewModel>> UpdateAsync(EditNationalityViewModel nationalityViewModel)
         {
-            BaseResponse<EditNationalityViewModel> response;
+            BaseDataResponse<EditNationalityViewModel> dataResponse;
 
             var nationalityExists = await _unitOfWork.Nationalities.ExistsAsync(nationalityViewModel.Id);
             if (nationalityExists)
@@ -90,14 +90,14 @@ namespace Samr.ERP.Core.Services
                 _unitOfWork.Nationalities.Update(nationality);
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
             }
             else
             {
-                response = BaseResponse<EditNationalityViewModel>.NotFound(nationalityViewModel);
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.NotFound(nationalityViewModel);
             }
 
-            return response;
+            return dataResponse;
         }
     }
 }

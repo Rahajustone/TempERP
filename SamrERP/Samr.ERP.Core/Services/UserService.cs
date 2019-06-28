@@ -21,16 +21,19 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
+        private readonly EmployeeService _employeeService;
         private readonly IMapper _mapper;
 
         public UserService(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
+            EmployeeService employeeService,
             IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _employeeService = employeeService;
             _mapper = mapper;
         }
 
@@ -66,31 +69,31 @@ namespace Samr.ERP.Core.Services
             return users;
         }
 
-        public async Task<BaseResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel)
+        public async Task<BaseDataResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel)
         {
             var user = await GetByPhoneNumber(resetPasswordModel.PhoneNumber);
-            if (user == null) return BaseResponse<string>.Fail("", new ErrorModel("user not found"));
+            if (user == null) return BaseDataResponse<string>.Fail("", new ErrorModel("user not found"));
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, PasswordGenerator.GenerateNewPassword());
 
             if (!resetPasswordResult.Succeeded)
-                return BaseResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
+                return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
                 {
                     //Code = //TODO: надо доделать
                     Description = p.Description
                 }).ToArray());
 
-            return BaseResponse<string>.Success(null);
+            return BaseDataResponse<string>.Success(null);
         }
-    
 
-        public async Task<BaseResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel)
+
+        public async Task<BaseDataResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel)
         {
-            BaseResponse<string> response;
+            BaseDataResponse<string> dataResponse;
 
             var user = await _unitOfWork.Users.GetByIdAsync(viewModel.Id);
-            if (user == null) return BaseResponse<string>.NotFound("");
+            if (user == null) return BaseDataResponse<string>.NotFound("");
 
             //TODO send smscode confirmation and check
 
@@ -100,17 +103,34 @@ namespace Samr.ERP.Core.Services
                 var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, viewModel.Password);
 
                 if (resetPasswordResult.Succeeded)
-                    response = BaseResponse<string>.Success(null);
+                    dataResponse = BaseDataResponse<string>.Success(null);
                 else
-                    response = BaseResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
+                    dataResponse = BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
                     {
                         //Code = //TODO: надо доделать
                         Description = p.Description
                     }).ToArray());
             }
-            else response = BaseResponse<string>.Fail(string.Empty);
+            else dataResponse = BaseDataResponse<string>.Fail(string.Empty);
 
-            return response;
+            return dataResponse;
+        }
+
+        public async Task<BaseResponse> EditUserDetailsAsync(
+            EditUserDetailsViewModel editUserDetailsView)
+        {
+            var userExists = await _unitOfWork.Users.ExistsAsync(editUserDetailsView.UserId);
+
+            if (!userExists)
+                return BaseResponse.NotFound();
+
+            var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == editUserDetailsView.UserId);
+
+            employee.Email = editUserDetailsView.Email;
+            employee.AddressFact = editUserDetailsView.AddressFact;
+
+            await _employeeService.Update(employee);
+            return  BaseResponse.Success();
         }
     }
 }
