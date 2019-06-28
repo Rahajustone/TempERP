@@ -58,20 +58,21 @@ namespace Samr.ERP.Core.Services
         {
             BaseResponse<EditNationalityViewModel> response;
 
-            var nationality =
+            var nationalityExists =
                 _unitOfWork.Nationalities
                     .Any(p => p.Name.ToLower() == editNationalityViewModel.Name.ToLower());
-            if (nationality)
+            if (nationalityExists)
             {
                 response = BaseResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel("Already this model is in Database"));
             }
             else
             {
-                _unitOfWork.Nationalities.Add(_mapper.Map<Nationality>(editNationalityViewModel));
+                var nationality = _mapper.Map<Nationality>(editNationalityViewModel);
+                _unitOfWork.Nationalities.Add(nationality);
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditNationalityViewModel>.Success(editNationalityViewModel);
+                response = BaseResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
             }
 
             return response;
@@ -84,9 +85,12 @@ namespace Samr.ERP.Core.Services
             var nationalityExists = await _unitOfWork.Nationalities.ExistsAsync(nationalityViewModel.Id);
             if (nationalityExists)
             {
-                _unitOfWork.Nationalities.Update(_mapper.Map<Nationality>(nationalityViewModel));
+                var nationality = _mapper.Map<Nationality>(nationalityViewModel);
+
+                _unitOfWork.Nationalities.Update(nationality);
                 await _unitOfWork.CommitAsync();
-                response = BaseResponse<EditNationalityViewModel>.Success(nationalityViewModel);
+
+                response = BaseResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
             }
             else
             {

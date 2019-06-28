@@ -59,17 +59,20 @@ namespace Samr.ERP.Core.Services
         {
             BaseResponse<EditEmployeeLockReasonViewModel> response;
 
-            var employeeLockReason =
+            var employeeLockReasonExists =
                 _unitOfWork.Departments.Any(p => p.Name.ToLower() == employeeLockReasonViewModel.Name.ToLower());
-            if (employeeLockReason)
+            if (employeeLockReasonExists)
             {
                 response = BaseResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Already this model in database."));
             }
             else
             {
-                _unitOfWork.EmployeeLockReasons.Add(_mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel));
-                response = BaseResponse<EditEmployeeLockReasonViewModel>.Success(employeeLockReasonViewModel);
+                var employeeLockReason = _mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel);
+                _unitOfWork.EmployeeLockReasons.Add(employeeLockReason);
+
                 await _unitOfWork.CommitAsync();
+
+                response = BaseResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
             }
 
             return response;
