@@ -18,12 +18,10 @@ namespace Samr.ERP.WebApi.Controllers
     public class EmployeeLockReasonController : ApiController
     {
         private readonly IEmployeeLockReasonService _employeeLockReason;
-        private readonly IMapper _mapper;
 
-        public EmployeeLockReasonController(IEmployeeLockReasonService  employeeLockReason, IMapper iMapper)
+        public EmployeeLockReasonController(IEmployeeLockReasonService  employeeLockReason)
         {
             _employeeLockReason = employeeLockReason;
-            _mapper = iMapper;
         }
 
         [HttpGet]
@@ -53,7 +51,7 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, null));
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> Edit(Guid id, [FromBody] EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)

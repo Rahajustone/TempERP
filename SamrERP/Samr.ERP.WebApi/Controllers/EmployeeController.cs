@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.ViewModels.Employee;
@@ -9,16 +11,15 @@ using Samr.ERP.Infrastructure.Entities;
 namespace Samr.ERP.WebApi.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [Authorize]
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(IEmployeeService employeeService, IMapper mapper)
+        public EmployeeController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
-            _mapper = mapper;
         }
         // GET: api/Employee
         [HttpGet]
@@ -38,20 +39,12 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] AddEmployeeViewModel employee)
         {
-            var createdEmployee = await _employeeService.CreateAsync(_mapper.Map<Employee>(employee));
-            var vm = _mapper.Map<AddEmployeeViewModel>(createdEmployee.Data);
-            return Ok(vm);
+            throw  new NotImplementedException();
         }
 
         // PUT: api/Employee/5
         [HttpPut("{id}")]
         public void Edit(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
         {
         }
     }
