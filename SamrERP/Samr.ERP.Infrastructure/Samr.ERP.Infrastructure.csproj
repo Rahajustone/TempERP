@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190625103516_FixEntities.cs" />
+    <Compile Remove="Migrations\20190625125441_FixFKs.cs" />
+    <Compile Remove="Migrations\20190626121942_DepartmentRootIdNullable.cs" />
     <Compile Remove="Migrations\20190627052728_ChangeEmployeeLockReasonName.cs" />
     <Compile Remove="Migrations\20190627141100_Add_UserForEmployee.cs" />
     <Compile Remove="Migrations\20190627153715_UserMIgration.cs" />
