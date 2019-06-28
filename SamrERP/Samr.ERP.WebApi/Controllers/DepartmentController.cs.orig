@@ -20,17 +20,20 @@ namespace Samr.ERP.WebApi.Controllers
     public class DepartmentController : ApiController
     {
         private readonly IDepartmentService _departmentService;
+        private readonly IMapper _mapper;
 
-        public DepartmentController(IDepartmentService departmentService)
+        public DepartmentController(IDepartmentService departmentService, IMapper iMapper)
         {
             _departmentService = departmentService;
+            _mapper = iMapper;
         }
 
         [HttpGet]
         public async Task<ActionResult> All()
         {
             var departments = await _departmentService.GetAllAsync();
-            return Ok(departments);
+            var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments.Data);
+            return Ok(vm);
         }
 
         [HttpGet("{id}")]
@@ -64,6 +67,9 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseResponse<EditDepartmentViewModel>.Fail(null, null));
         }
+<<<<<<< Updated upstream
+=======
      
+>>>>>>> Stashed changes
     }
 }

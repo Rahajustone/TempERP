@@ -15,5 +15,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<User> GetUserAsync(ClaimsPrincipal userPrincipal);
         IEnumerable<User> GetAllUser();
         Task<BaseResponse<string>> ResetPassword(ResetPasswordViewModel resetPasswordModel);
+        Task<BaseResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel);
     }
 }
