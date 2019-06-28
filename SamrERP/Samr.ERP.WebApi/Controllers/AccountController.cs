@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -38,14 +39,15 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpPost]
         public async Task<BaseResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
         {
-            if (ModelState.IsValid)
-            {
-                var createdUserResponse = await _userService.CreateAsync(registerModel, registerModel.Password);
+            throw new NotImplementedException();
+            //if (ModelState.IsValid)
+            //{
+            //    var createdUserResponse = await _userService.CreateAsync(registerModel, registerModel.Password);
 
-                return Response(createdUserResponse);
+            //    return Response(createdUserResponse);
 
-            }
-            return Response(BaseResponse<UserViewModel>.Fail(null,null));
+            //}
+            //return Response(BaseResponse<UserViewModel>.Fail(null,null));
 
         }
         
@@ -87,7 +89,7 @@ namespace Samr.ERP.WebApi.Controllers
             if (ModelState.IsValid)
             {
                 //TODO:Need to complete
-                var resetPasswordResponse = await _userService.ResetPassword(resetPasswordModel);
+                var resetPasswordResponse = await _userService.ResetPasswordAsync(resetPasswordModel);
 
                 return Response(resetPasswordResponse);
 
