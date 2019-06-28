@@ -37,7 +37,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] AddEmployeeViewModel employee)
+        public async Task<ActionResult> Create([FromBody] EditEmployeeViewModel employee)
         {
             throw  new NotImplementedException();
         }

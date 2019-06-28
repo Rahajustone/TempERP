@@ -22,8 +22,14 @@ namespace Samr.ERP.Core.ViewModels.Employee
         [StringLength(32, ErrorMessage = "MiddleName length must be not more 32")]
         public string MiddleName { get; set; }
 
+        [Required]
+        public Guid PositionId { get; set; }
+
         [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
         public string ImageName { get; set; }
+
+        [Required]
+        public Guid GenderId { get; set; }
 
         [Required]
         public DateTime DateOfBirth { get; set; }
@@ -48,13 +54,19 @@ namespace Samr.ERP.Core.ViewModels.Employee
 
         public string AddressFact { get; set; }
 
-        public DateTime LockDate { get; set; }
+        public DateTime? LockDate { get; set; }
+
+        public Guid? EmployeeLockReasonId { get; set; }
+
+        public Guid? LockUserId { get; set; }
 
         public string PassportNumber { get; set; }
 
         public string PassportMvdName { get; set; }
 
         public DateTime PassportDate { get; set; }
+
+        public Guid PassportNationalityId { get; set; }
 
         public string PassportAddress { get; set; }
     }

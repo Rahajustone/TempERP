@@ -39,15 +39,18 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpPost]
         public async Task<BaseResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
         {
-            throw new NotImplementedException();
-            //if (ModelState.IsValid)
-            //{
-            //    var createdUserResponse = await _userService.CreateAsync(registerModel, registerModel.Password);
+            if (ModelState.IsValid)
+            {
+                var user  = new User()
+                {
+                    PhoneNumber = registerModel.Phone
+                };
+                var createdUserResponse = await _userService.CreateAsync(user, registerModel.Password);
 
-            //    return Response(createdUserResponse);
+                return Response(BaseResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user)));
 
-            //}
-            //return Response(BaseResponse<UserViewModel>.Fail(null, null));
+            }
+            return Response(BaseResponse<UserViewModel>.Fail(null, null));
 
         }
 

@@ -8,6 +8,7 @@ namespace Samr.ERP.Infrastructure.Entities
     public class Department : CreatableByUserBaseObject, IActivable, ICreatable
     {
         [Required]
+        [StringLength(64)]
         public string Name { get; set; }
 
         public Guid? RootId { get; set; }
