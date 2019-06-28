@@ -49,6 +49,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IEmployeeLockReasonService, EmployeeLockReasonService>();
+            services.AddScoped<INationalityService, NationalityService>();
 
             #endregion
 

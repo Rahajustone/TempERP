@@ -47,8 +47,8 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync()
         {
-            var department = await _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
-            var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(department);
+            var departments = await _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
+            var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments);
 
             var response = BaseResponse<IEnumerable<DepartmentViewModel>>.Success(vm);
 
@@ -57,11 +57,10 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel)
         {
-            var departmentExists =
-                _unitOfWork.Departments.Any(p => p.Name.ToLower() == departmentViewModel.Name.ToLower());
-
             BaseResponse<EditDepartmentViewModel> response;
 
+            var departmentExists =
+                _unitOfWork.Departments.Any(p => p.Name.ToLower() == departmentViewModel.Name.ToLower());
             if (departmentExists)
             {
                 response = BaseResponse<EditDepartmentViewModel>.Fail(departmentViewModel, new ErrorModel("Already this model in database."));
