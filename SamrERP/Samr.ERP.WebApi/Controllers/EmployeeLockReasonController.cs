@@ -53,7 +53,7 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, null));
         }
 
-        [HttpPost("{id}")]
+        [HttpPost()]
         public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> Edit(Guid id, [FromBody] EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)

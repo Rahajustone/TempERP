@@ -20,20 +20,17 @@ namespace Samr.ERP.WebApi.Controllers
     public class DepartmentController : ApiController
     {
         private readonly IDepartmentService _departmentService;
-        private readonly IMapper _mapper;
 
-        public DepartmentController(IDepartmentService departmentService, IMapper iMapper)
+        public DepartmentController(IDepartmentService departmentService)
         {
             _departmentService = departmentService;
-            _mapper = iMapper;
         }
 
         [HttpGet]
         public async Task<ActionResult> All()
         {
             var departments = await _departmentService.GetAllAsync();
-            var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments.Data);
-            return Ok(vm);
+            return Ok(departments);
         }
 
         [HttpGet("{id}")]
