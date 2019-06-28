@@ -7,9 +7,6 @@ namespace Samr.ERP.Core.ViewModels.Position
     public class EditPositionViewModel : PositionViewModel
     {
         public bool IsActive { get; set; }
-
-        public string CreatedUserName { get; set; }
-
         public DateTime CreatedAt { get; set; }
     }
 }

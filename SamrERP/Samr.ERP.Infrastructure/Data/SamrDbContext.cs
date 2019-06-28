@@ -44,8 +44,6 @@ namespace Samr.ERP.Infrastructure.Data
                 fk.DeleteBehavior = fk.IsRequired ? DeleteBehavior.Restrict :  DeleteBehavior.SetNull;
             }
 
-            
-
             //builder.Entity<Employee>()
             //    .HasIndex(e => e.PhotoPath)
             //    .IsUnique();
