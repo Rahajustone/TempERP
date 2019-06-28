@@ -47,10 +47,10 @@ namespace Samr.ERP.WebApi.Controllers
                 };
                 var createdUserResponse = await _userService.CreateAsync(user, registerModel.Password);
 
-                return Response(BaseResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user)));
+                return Response(BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user)));
 
             }
-            return Response(BaseResponse<UserViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<UserViewModel>.Fail(null, null));
 
         }
 
