@@ -25,14 +25,14 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseResponse<IEnumerable<PositionViewModel>>> All()
+        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> All()
         {
             var position = await _positionService.GetAllAsync();
             return Response(position);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseResponse<EditPositionViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<EditPositionViewModel>> Get(Guid id)
         {
             var position = await _positionService.GetByIdAsync(id);
 
@@ -40,7 +40,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseResponse<EditPositionViewModel>> Create([FromBody]EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<EditPositionViewModel>> Create([FromBody]EditPositionViewModel positionViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -48,11 +48,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(position);
             }
 
-            return Response(BaseResponse<EditPositionViewModel>.Fail(positionViewModel, null));
+            return Response(BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, null));
         }
 
         [HttpPost]
-        public async Task<BaseResponse<EditPositionViewModel>> Edit(Guid id, [FromBody] EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<EditPositionViewModel>> Edit(Guid id, [FromBody] EditPositionViewModel positionViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -60,7 +60,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(positionResult);
             }
 
-            return Response(BaseResponse<EditPositionViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<EditPositionViewModel>.Fail(null, null));
         }
     }
 }

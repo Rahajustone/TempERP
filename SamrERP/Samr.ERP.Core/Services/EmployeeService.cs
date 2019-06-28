@@ -31,23 +31,23 @@ namespace Samr.ERP.Core.Services
             _userService = userService;
             _mapper = mapper;
         }
-        public async Task<BaseResponse<Employee>> CreateAsync(Employee employee)
+        public async Task<BaseDataResponse<Employee>> CreateAsync(Employee employee)
         {
             _unitOfWork.Employees.Add(employee);
 
             await _unitOfWork.CommitAsync();
 
-            var response = BaseResponse<Employee>.Success(employee);
+            var response = BaseDataResponse<Employee>.Success(employee);
 
             return response;
         }
 
-        public async Task<BaseResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId)
+        public async Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId)
         {
             var employee = await _unitOfWork.Employees.GetByIdAsync(employeeId);
-            
+
             if (employee == null)
-                return BaseResponse<UserViewModel>.NotFound(null);
+                return BaseDataResponse<UserViewModel>.NotFound(null);
 
             var user = new User()
             {
@@ -59,15 +59,36 @@ namespace Samr.ERP.Core.Services
             var createUserResult = await _userService.CreateAsync(user, PasswordGenerator.GenerateNewPassword());
 
             if (!createUserResult.Succeeded)
-                return BaseResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
+                return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
 
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
 
-            return  BaseResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
+            return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
 
         }
+
+        internal async Task Update(Employee employee)
+        {
+            if (employee == null) return;
+
+            User employeeUser;
+            if (employee.UserId != null)
+            {
+                if (employee.User != null) employeeUser = employee.User;
+                else
+                {
+                    employeeUser = await _unitOfWork.Users.GetByIdAsync(employee.UserId.Value);
+                }
+                employeeUser.Email = employee.Email;
+                //TODO need to complete phone changing
+
+                _unitOfWork.Employees.Update(employee);
+                await _unitOfWork.CommitAsync();
+            }
+        }
+
 
     }
 }

@@ -25,45 +25,45 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> GetByIdAsync(Guid id)
         {
             var employeeLockReason = await _unitOfWork.EmployeeLockReasons.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            BaseResponse<EditEmployeeLockReasonViewModel> response;
+            BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
 
             if (employeeLockReason == null)
             {
-                response = BaseResponse<EditEmployeeLockReasonViewModel>.NotFound( null);
+                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.NotFound( null);
             }
             else
             {
-                response = BaseResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
             }
 
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<IEnumerable<EmployeeLockReasonViewModel>>> GetAll()
+        public async Task<BaseDataResponse<IEnumerable<EmployeeLockReasonViewModel>>> GetAll()
         {
             var employeeLockReason = await _unitOfWork.EmployeeLockReasons.GetDbSet().Include(p => p.CreatedUser).ToListAsync();
             var vm = _mapper.Map<IEnumerable<EmployeeLockReasonViewModel>>(employeeLockReason);
 
-            var response = BaseResponse<IEnumerable<EmployeeLockReasonViewModel>>.Success(vm);
+            var response = BaseDataResponse<IEnumerable<EmployeeLockReasonViewModel>>.Success(vm);
 
             return response;
         }
 
-        public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
-            BaseResponse<EditEmployeeLockReasonViewModel> response;
+            BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
 
             var employeeLockReasonExists =
                 _unitOfWork.Departments.Any(p => p.Name.ToLower() == employeeLockReasonViewModel.Name.ToLower());
             if (employeeLockReasonExists)
             {
-                response = BaseResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Already this model in database."));
+                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Already this model in database."));
             }
             else
             {
@@ -72,15 +72,15 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
             }
 
-            return response;
+            return dataResponse;
         }
 
-        public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> UpdateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> UpdateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
-            BaseResponse<EditEmployeeLockReasonViewModel> response;
+            BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
 
             var employeeLockReasonExists = await _unitOfWork.Departments.ExistsAsync(employeeLockReasonViewModel.Id);
             if (employeeLockReasonExists)
@@ -91,14 +91,14 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
-                response = BaseResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
             }
             else
             {
-                response = BaseResponse<EditEmployeeLockReasonViewModel>.NotFound(employeeLockReasonViewModel);
+                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.NotFound(employeeLockReasonViewModel);
             }
 
-            return response;
+            return dataResponse;
         }
     }
 }

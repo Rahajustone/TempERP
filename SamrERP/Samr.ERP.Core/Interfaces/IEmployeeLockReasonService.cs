@@ -10,9 +10,9 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IEmployeeLockReasonService
     {
-        Task<BaseResponse<EditEmployeeLockReasonViewModel>> GetByIdAsync(Guid id);
-        Task<BaseResponse<IEnumerable<EmployeeLockReasonViewModel>>> GetAll();
-        Task<BaseResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel);
-        Task<BaseResponse<EditEmployeeLockReasonViewModel>> UpdateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel);
+        Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<IEnumerable<EmployeeLockReasonViewModel>>> GetAll();
+        Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel);
+        Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> UpdateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel);
     }
 }

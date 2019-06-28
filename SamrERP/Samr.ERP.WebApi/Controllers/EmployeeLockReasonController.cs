@@ -25,14 +25,14 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseResponse<IEnumerable<EmployeeLockReasonViewModel>>> All()
+        public async Task<BaseDataResponse<IEnumerable<EmployeeLockReasonViewModel>>> All()
         {
             var employeeLockReasons = await _employeeLockReason.GetAll();
             return Response(employeeLockReasons);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> Get(Guid id)
         {
             var employeeLockReason = await _employeeLockReason.GetByIdAsync(id);
 
@@ -40,7 +40,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> Create([FromBody]EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> Create([FromBody]EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -48,11 +48,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(employeeLockResult);
             }
 
-            return Response(BaseResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, null));
+            return Response(BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, null));
         }
 
         [HttpPost]
-        public async Task<BaseResponse<EditEmployeeLockReasonViewModel>> Edit(Guid id, [FromBody] EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> Edit(Guid id, [FromBody] EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -60,7 +60,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<EditEmployeeLockReasonViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(null, null));
         }
     }
 }

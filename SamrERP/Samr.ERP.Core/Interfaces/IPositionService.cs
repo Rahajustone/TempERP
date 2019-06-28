@@ -9,9 +9,9 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IPositionService
     {
-        Task<BaseResponse<EditPositionViewModel>> GetByIdAsync(Guid id);
-        Task<BaseResponse<IEnumerable<PositionViewModel>>> GetAllAsync();
-        Task<BaseResponse<EditPositionViewModel>> CreateAsync(EditPositionViewModel positionViewModel);
-        Task<BaseResponse<EditPositionViewModel>> UpdateAsync(EditPositionViewModel positionViewModel);
+        Task<BaseDataResponse<EditPositionViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllAsync();
+        Task<BaseDataResponse<EditPositionViewModel>> CreateAsync(EditPositionViewModel positionViewModel);
+        Task<BaseDataResponse<EditPositionViewModel>> UpdateAsync(EditPositionViewModel positionViewModel);
     }
 }

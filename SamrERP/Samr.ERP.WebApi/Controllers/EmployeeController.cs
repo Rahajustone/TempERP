@@ -48,11 +48,12 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
-        public async Task<BaseResponse<UserViewModel>> CreateUser([FromBody] Guid employeeId)
+        public async Task<BaseDataResponse<UserViewModel>> CreateUser([FromBody] Guid employeeId)
         {
             var createdUserResponse = await _employeeService.CreateUserForEmployee(employeeId);
 
             return Response(createdUserResponse);
         }
+
     }
 }
