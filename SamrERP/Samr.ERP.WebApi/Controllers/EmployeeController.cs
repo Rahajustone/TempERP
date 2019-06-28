@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
 
@@ -10,7 +13,7 @@ namespace Samr.ERP.WebApi.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class EmployeeController : ApiController
     {
         private readonly IMapper _mapper;
         private readonly IEmployeeService _employeeService;
@@ -48,11 +51,13 @@ namespace Samr.ERP.WebApi.Controllers
         public void Edit(int id, [FromBody] string value)
         {
         }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        
+        [HttpPost]
+        public async Task<BaseResponse<UserViewModel>> CreateUser([FromBody] Guid employeeId)
         {
+            var createdUserResponse = await _employeeService.CreateUserForEmployee(employeeId);
+
+            return Response(createdUserResponse);
         }
     }
 }
