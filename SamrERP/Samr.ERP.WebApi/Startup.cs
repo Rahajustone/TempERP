@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,7 @@ using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
 using Samr.ERP.WebApi.Configurations.AutoMapper;
 using Samr.ERP.WebApi.Configurations.Models;
+using Samr.ERP.WebApi.Configurations.Swagger;
 using Samr.ERP.WebApi.Infrastructure;
 using Samr.ERP.WebApi.Middleware;
 using Swashbuckle.AspNetCore.Swagger;
@@ -45,8 +47,8 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IEmployeeLockReasonService, EmployeeLockReasonService>();
             services.AddScoped<INationalityService, NationalityService>();
@@ -101,10 +103,8 @@ namespace Samr.ERP.WebApi
 
             services.AddAutoMapperSetup();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "Samr.ERP API", Version = "v1" });
-            });
+            services.AddSwaggerDocumentation();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -132,16 +132,10 @@ namespace Samr.ERP.WebApi
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
+          
             app.UseMiddleware<UserMiddleware>();
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Samr.ERP API V1");
-                c.RoutePrefix = string.Empty;
-            });
+
+            app.UseSwaggerDocumentation();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

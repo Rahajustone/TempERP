@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -69,7 +70,7 @@ namespace Samr.ERP.Core.Services
 
         }
 
-        internal async Task Update(Employee employee)
+        public async Task UpdateAsync(Employee employee)
         {
             if (employee == null) return;
 
@@ -84,9 +85,29 @@ namespace Samr.ERP.Core.Services
                 employeeUser.Email = employee.Email;
                 //TODO need to complete phone changing
 
+                _unitOfWork.Users.Update(employeeUser);
+
                 _unitOfWork.Employees.Update(employee);
+
                 await _unitOfWork.CommitAsync();
             }
+        }
+        public async Task<BaseResponse> EditUserDetailsAsync(
+            EditUserDetailsViewModel editUserDetailsView)
+        {
+            var userExists = await _unitOfWork.Users.ExistsAsync(editUserDetailsView.UserId);
+
+            if (!userExists)
+                return BaseResponse.NotFound();
+
+            var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == editUserDetailsView.UserId);
+
+            employee.Email = editUserDetailsView.Email;
+            employee.AddressFact = editUserDetailsView.AddressFact;
+
+            await UpdateAsync(employee);
+
+            return BaseResponse.Success();
         }
 
 

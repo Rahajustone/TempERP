@@ -21,19 +21,16 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
-        private readonly EmployeeService _employeeService;
         private readonly IMapper _mapper;
 
         public UserService(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
-            EmployeeService employeeService,
             IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
-            _employeeService = employeeService;
             _mapper = mapper;
         }
 
@@ -115,22 +112,6 @@ namespace Samr.ERP.Core.Services
 
             return dataResponse;
         }
-
-        public async Task<BaseResponse> EditUserDetailsAsync(
-            EditUserDetailsViewModel editUserDetailsView)
-        {
-            var userExists = await _unitOfWork.Users.ExistsAsync(editUserDetailsView.UserId);
-
-            if (!userExists)
-                return BaseResponse.NotFound();
-
-            var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == editUserDetailsView.UserId);
-
-            employee.Email = editUserDetailsView.Email;
-            employee.AddressFact = editUserDetailsView.AddressFact;
-
-            await _employeeService.Update(employee);
-            return  BaseResponse.Success();
-        }
+      
     }
 }
