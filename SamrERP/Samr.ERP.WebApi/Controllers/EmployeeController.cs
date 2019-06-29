@@ -55,5 +55,26 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(createdUserResponse);
         }
 
+        [HttpPost]
+        public async Task<BaseResponse> LockEmployee([FromBody] LockEmployeeViewModel lockEmployeeViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _employeeService.LockEmployeeAsync(lockEmployeeViewModel);
+                return Response(response);
+            }
+            return Response(BaseResponse.Fail());
+        }
+
+        [HttpPost]
+        public async Task<BaseResponse> UnLockEmployee([FromBody] Guid id)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _employeeService.UnLockEmployeeAsync(id);
+                return Response(response);
+            }
+            return Response(BaseResponse.Fail());
+        }
     }
 }

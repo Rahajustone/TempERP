@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Interfaces
@@ -20,5 +21,8 @@ namespace Samr.ERP.Core.Interfaces
 
         Task<BaseResponse> EditUserDetailsAsync(
             EditUserDetailsViewModel editUserDetailsView);
+
+        Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel);
+        Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId);
     }
 }
