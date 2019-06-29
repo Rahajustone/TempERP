@@ -10,9 +10,11 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -20,18 +22,22 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
+        private readonly UserProvider _userProvider;
         private readonly IMapper _mapper;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
             IUserService userService,
+            UserProvider userProvider,
             IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _userService = userService;
+            _userProvider = userProvider;
             _mapper = mapper;
         }
+
         public async Task<BaseDataResponse<Employee>> CreateAsync(Employee employee)
         {
             _unitOfWork.Employees.Add(employee);
@@ -72,11 +78,9 @@ namespace Samr.ERP.Core.Services
 
         public async Task UpdateAsync(Employee employee)
         {
-            if (employee == null) return;
-
-            User employeeUser;
-            if (employee.UserId != null)
+            if (employee?.UserId != null)
             {
+                User employeeUser;
                 if (employee.User != null) employeeUser = employee.User;
                 else
                 {
@@ -106,6 +110,46 @@ namespace Samr.ERP.Core.Services
             employee.AddressFact = editUserDetailsView.AddressFact;
 
             await UpdateAsync(employee);
+
+            return BaseResponse.Success();
+        }
+
+        public async Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel)
+        {
+            var employee = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == lockEmployeeViewModel.EmployeeId);
+
+            var employeeLockReason =
+                await _unitOfWork.EmployeeLockReasons.GetByIdAsync(lockEmployeeViewModel.EmployeeLockReasonId);
+
+            if (employee == null
+                || employeeLockReason == null
+                || !employeeLockReason.IsActive
+                || employee.EmployeeLockReasonId != null) return BaseResponse.NotFound();
+
+            employee.LockUserId = _userProvider.CurrentUser.Id;
+            employee.EmployeeLockReasonId = employeeLockReason.Id;
+            employee.LockDate = DateTime.Now;
+
+            await _unitOfWork.CommitAsync();
+
+            return BaseResponse.Success();
+        }
+
+        public async Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId)
+        {
+            var employee = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == employeeId);
+
+            if (employee == null || employee.EmployeeLockReasonId != null) return BaseResponse.NotFound();
+
+            employee.LockUserId = null;
+            employee.EmployeeLockReasonId = null;
+            employee.LockDate = null;
+
+            await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
         }
