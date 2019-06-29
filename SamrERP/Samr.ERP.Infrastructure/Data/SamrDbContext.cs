@@ -44,9 +44,7 @@ namespace Samr.ERP.Infrastructure.Data
                 fk.DeleteBehavior = fk.IsRequired ? DeleteBehavior.Restrict :  DeleteBehavior.SetNull;
             }
 
-            //builder.Entity<Position>()
-            //    .HasIndex(e => e.Name)
-            //    .IsUnique();
+            EntitiesConfiguration.ConfigureEntities(builder);
         }
     }
 }
