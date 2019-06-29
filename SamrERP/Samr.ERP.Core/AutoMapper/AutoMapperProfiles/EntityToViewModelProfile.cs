@@ -46,7 +46,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Position, PositionViewModel>();
             CreateMap<PositionViewModel, Position>();
             CreateMap<EditPositionViewModel, Position>();
-            CreateMap<Position, PositionViewModel>()
+            CreateMap<Position, EditPositionViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));

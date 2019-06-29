@@ -68,9 +68,9 @@ namespace Samr.ERP.Core.Services
                 var position = _mapper.Map<Position>(positionViewModel);
                 _unitOfWork.Positions.Add(position);
 
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
-
                 await _unitOfWork.CommitAsync();
+
+                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
             }
 
             return dataResponse;
