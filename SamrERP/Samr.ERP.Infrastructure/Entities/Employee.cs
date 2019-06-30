@@ -10,21 +10,21 @@ namespace Samr.ERP.Infrastructure.Entities
     public class Employee : CreatableByUserBaseObject, ICreatable, IActivable
     {
         [Required]
-        [StringLength(32, ErrorMessage = "FistName length must be not more 32")]
+        [StringLength(32)]
         public string FirstName { get; set; }
 
         [Required]
-        [StringLength(32, ErrorMessage = "LastName length must be not more 32")]
+        [StringLength(32)]
         public string LastName { get; set; }
 
-        [StringLength(32, ErrorMessage = "MiddleName length must be not more 32")]
+        [StringLength(32)]
         public string MiddleName { get; set; }
 
         [Required]
         public Guid PositionId { get; set; }
         public Position Position { get; set; }
         
-        [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
+        [StringLength(32)]
         public string ImageName { get; set; }
 
         [Required]
@@ -36,7 +36,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        [StringLength(9, ErrorMessage = "Phone Number length must not be more than 9 character")]
+        [StringLength(9)]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
@@ -53,33 +53,39 @@ namespace Samr.ERP.Infrastructure.Entities
         [StringLength(128)]
         public string Email { get; set; }
 
+        [StringLength(256)]
         public string AddressFact { get; set; }
 
-        public DateTime LockDate { get; set; }
+        public DateTime? LockDate { get; set; }
 
-        public Guid EmployeeLockTypeId { get; set; }
-        [ForeignKey(nameof(EmployeeLockTypeId))]
-        public EmployeeLockType EmployeeLockType { get; set; }
+        public Guid? EmployeeLockReasonId { get; set; }
+        [ForeignKey(nameof(EmployeeLockReasonId))]
+        public EmployeeLockReason EmployeeLockReason { get; set; }
 
-        public Guid LockUserId { get; set; }
+        public Guid? LockUserId { get; set; }
         [ForeignKey(nameof(LockUserId))]
         public User LockUser { get; set; }
 
+        [StringLength(32)]
         public string PassportNumber { get; set; }
 
+        [StringLength(64)]
         public string PassportMvdName { get; set; }
 
         public DateTime PassportDate { get; set; }
 
         public Guid PassportNationalityId { get; set; }
         [ForeignKey(nameof(PassportNationalityId))]
-        public Nationality PassporNationality { get; set; }
+        public Nationality PassportNationality { get; set; }
 
+        [StringLength(256)]
         public string PassportAddress { get; set; }
         
         public DateTime CreatedAt { get; set; }
 
         public bool IsActive { get; set; }
-  
+        public Guid? UserId { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
     }
 }

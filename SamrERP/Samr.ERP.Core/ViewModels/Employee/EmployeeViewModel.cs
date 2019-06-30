@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Samr.ERP.Core.ViewModels.Common;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.ViewModels.Employee
 {
-    public class AddEmployeeViewModel
+    public class EmployeeViewModel
     {
+        public Guid Id { get; set; }
+
         [Required]
         [StringLength(32, ErrorMessage = "FistName length must be not more 32")]
         public string FirstName { get; set; }
@@ -17,18 +22,26 @@ namespace Samr.ERP.Core.ViewModels.Employee
         [StringLength(32, ErrorMessage = "MiddleName length must be not more 32")]
         public string MiddleName { get; set; }
 
-        // TODO make this field unique
+        [Required]
+        public Guid PositionId { get; set; }
+
         [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
-        public string PhotoPath { get; set; }
-        
+        public string ImageName { get; set; }
+
+        [Required]
+        public Guid GenderId { get; set; }
+
         [Required]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
+        [StringLength(9, ErrorMessage = "Phone Number length must not be more than 9 character")]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime HireDate { get; set; }
 
         [StringLength(256, ErrorMessage = "Description length must be not more 256")]
@@ -39,12 +52,22 @@ namespace Samr.ERP.Core.ViewModels.Employee
         [StringLength(128)]
         public string Email { get; set; }
 
-        public DateTime LockDate { get; set; }
-            
-        public int LockTypeId { get; set; }
+        public string AddressFact { get; set; }
 
-        public Guid LockUserId { get; set; }
+        public DateTime? LockDate { get; set; }
 
-        public Gender Genre;
+        public Guid? EmployeeLockReasonId { get; set; }
+
+        public Guid? LockUserId { get; set; }
+
+        public string PassportNumber { get; set; }
+
+        public string PassportMvdName { get; set; }
+
+        public DateTime PassportDate { get; set; }
+
+        public Guid PassportNationalityId { get; set; }
+
+        public string PassportAddress { get; set; }
     }
 }

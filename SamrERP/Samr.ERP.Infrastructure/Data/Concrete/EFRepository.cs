@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Samr.ERP.Infrastructure.Data.Contracts;
+using Samr.ERP.Infrastructure.Data.Helpers;
 using Samr.ERP.Infrastructure.Entities.BaseObjects;
 using Samr.ERP.Infrastructure.Interfaces;
 using Samr.ERP.Infrastructure.Providers;
@@ -22,7 +25,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public EFRepository(DbContext dbContext, UserProvider userProvider)
         {
             if (dbContext == null)
-                throw new ArgumentNullException("dbContext");
+                throw new ArgumentNullException(nameof(dbContext));
             _userProvider = userProvider;
             DbContext = dbContext;
             DbSet = DbContext.Set<T>();
@@ -32,47 +35,18 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         protected DbSet<T> DbSet { get; set; }
 
-        //public virtual IQueryable<T> GetAll()
-        //{
-        //    return DbSet;
-        //}
-
         public virtual T GetById(Guid id)
         {
-            
-            //return DbSet.FirstOrDefault(_=> ((_ as IBaseObject)).Id == id);
             return DbSet.Find(id);
         }
-
+     
         public async Task<T> GetByIdAsync(Guid id)
         {
             return await DbSet.FindAsync(id);
+
         }
 
-
-        public virtual void Add(T entity)
-        {
-            AddAsync(entity);
-    //        if (entity is IChangeable changeable)
-	   //     {
-				//changeable.Created = DateTime.Now;
-				//changeable.Updated = DateTime.Now;
-	   //     }
-    //        if (entity is ICreatable creatable)
-    //            creatable.CreatedAt = DateTime.Now;
-
-    //        EntityEntry dbEntityEntry = DbContext.Entry(entity);
-    //        if (dbEntityEntry.State != EntityState.Detached)
-    //        {
-    //            dbEntityEntry.State = EntityState.Added;
-    //        }
-    //        else
-    //        {
-    //            DbSet.Add(entity);
-    //        }
-        }
-
-        public async Task<T> AddAsync(T entity)
+        public void Add(T entity)
         {
             if (entity is IChangeable changeable)
             {
@@ -93,12 +67,9 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             }
             else
             {
-                await DbSet.AddAsync(entity);
+                DbSet.Add(entity);
             }
-
-            return entity;
         }
-
 
         public virtual void AddList(List<T> entity)
 		{
@@ -120,7 +91,6 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 			{
 				return;
 			}
-	       
             
             if (dbEntityEntry.State != EntityState.Detached)
             {
@@ -140,7 +110,8 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 DbSet.Attach(entity);
             }
             dbEntityEntry.State = EntityState.Modified;
-
+            if (entity is ICreatableByUser creatableByUser)
+                DbContext.Entry(creatableByUser).Property(x => x.CreatedUserId).IsModified = false;
             if (entity is IChangeable changeable)
             {
                 changeable.Updated = DateTime.Now;//GetDateTime();
@@ -148,16 +119,12 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             }
             
         }
-
-
-
+        
         //public DateTime GetDateTime()
         //{
         //    return DbContext.Database.SqlQuery<DateTime>("select GETDATE()").Single();
         //}
-
         
-
         public virtual void Delete(T entity)
         {
             if (entity is IDeletable deletable)
@@ -201,6 +168,21 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             }
         }
 
+        public async Task<bool> ExistsAsync(Guid id)
+        {
+            return await DbSet.AnyAsync(p => ((IBaseObject) p).Id == id);
+        }
+
+        public bool Exists(Guid id)
+        {
+            return Exists(id);
+        }
+
+        public bool Any(Expression<Func<T, bool>> predicate)
+        {
+            return DbSet.Any(predicate);
+        }
+
         public DbSet<T> GetDbSet()
         {
             return DbSet;
@@ -227,5 +209,8 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         {
             return DbSet;
         }
+
+      
+       
     }
 }

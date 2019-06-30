@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
-    public partial class FixFKs : Migration
+    public partial class FixEntities : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -32,10 +32,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "AspNetUserTokens");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Departments_AspNetUsers_UserId",
-                table: "Departments");
-
-            migrationBuilder.DropForeignKey(
                 name: "FK_Employees_EmployeeLock_EmployeeLockId",
                 table: "Employees");
 
@@ -43,40 +39,8 @@ namespace Samr.ERP.Infrastructure.Migrations
                 name: "FK_Employees_Gender_GenderId",
                 table: "Employees");
 
-            migrationBuilder.DropForeignKey(
-                name: "FK_Employees_Positions_PositionId",
-                table: "Employees");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Employees_AspNetUsers_UserId",
-                table: "Employees");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Positions_Departments_DepartmentId",
-                table: "Positions");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Positions_AspNetUsers_UserId",
-                table: "Positions");
-
             migrationBuilder.DropTable(
                 name: "EmployeeLock");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Positions_UserId",
-                table: "Positions");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Employees_EmployeeLockId",
-                table: "Employees");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Employees_UserId",
-                table: "Employees");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Departments_UserId",
-                table: "Departments");
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_Gender",
@@ -87,24 +51,12 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Positions");
 
             migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Positions");
-
-            migrationBuilder.DropColumn(
-                name: "EmployeeLockId",
-                table: "Employees");
-
-            migrationBuilder.DropColumn(
                 name: "LockTypeId",
                 table: "Employees");
 
             migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Employees");
-
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Departments");
+                name: "Address",
+                table: "AspNetUsers");
 
             migrationBuilder.RenameTable(
                 name: "Gender",
@@ -115,11 +67,36 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Employees",
                 newName: "PassportNationalityId");
 
+            migrationBuilder.RenameColumn(
+                name: "EmployeeLockId",
+                table: "Employees",
+                newName: "UserId");
+
+            migrationBuilder.RenameColumn(
+                name: "CreateUserId",
+                table: "Employees",
+                newName: "EmployeeLockReasonId");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_Employees_EmployeeLockId",
+                table: "Employees",
+                newName: "IX_Employees_UserId");
+
+            migrationBuilder.RenameColumn(
+                name: "CreateUserId",
+                table: "Departments",
+                newName: "CreatedUserId");
+
             migrationBuilder.AddColumn<Guid>(
-                name: "EmployeeLockTypeId",
+                name: "CreatedUserId",
                 table: "Employees",
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "RootId",
+                table: "Departments",
+                nullable: true);
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Genders",
@@ -127,7 +104,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                 column: "Id");
 
             migrationBuilder.CreateTable(
-                name: "EmployeeLockTypes",
+                name: "EmployeeLockReasons",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -138,9 +115,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeLockTypes", x => x.Id);
+                    table.PrimaryKey("PK_EmployeeLockReasons", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EmployeeLockTypes_AspNetUsers_CreatedUserId",
+                        name: "FK_EmployeeLockReasons_AspNetUsers_CreatedUserId",
                         column: x => x.CreatedUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -169,14 +146,19 @@ namespace Samr.ERP.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Positions_DepartmentId",
+                table: "Positions",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Employees_CreatedUserId",
                 table: "Employees",
                 column: "CreatedUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_EmployeeLockTypeId",
+                name: "IX_Employees_EmployeeLockReasonId",
                 table: "Employees",
-                column: "EmployeeLockTypeId");
+                column: "EmployeeLockReasonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_LockUserId",
@@ -189,13 +171,18 @@ namespace Samr.ERP.Infrastructure.Migrations
                 column: "PassportNationalityId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Employees_PositionId",
+                table: "Employees",
+                column: "PositionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Departments_CreatedUserId",
                 table: "Departments",
                 column: "CreatedUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployeeLockTypes_CreatedUserId",
-                table: "EmployeeLockTypes",
+                name: "IX_EmployeeLockReasons_CreatedUserId",
+                table: "EmployeeLockReasons",
                 column: "CreatedUserId");
 
             migrationBuilder.CreateIndex(
@@ -268,10 +255,10 @@ namespace Samr.ERP.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Employees_EmployeeLockTypes_EmployeeLockTypeId",
+                name: "FK_Employees_EmployeeLockReasons_EmployeeLockReasonId",
                 table: "Employees",
-                column: "EmployeeLockTypeId",
-                principalTable: "EmployeeLockTypes",
+                column: "EmployeeLockReasonId",
+                principalTable: "EmployeeLockReasons",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -304,6 +291,14 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Employees",
                 column: "PositionId",
                 principalTable: "Positions",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Employees_AspNetUsers_UserId",
+                table: "Employees",
+                column: "UserId",
+                principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
 
@@ -351,7 +346,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Employees");
 
             migrationBuilder.DropForeignKey(
-                name: "FK_Employees_EmployeeLockTypes_EmployeeLockTypeId",
+                name: "FK_Employees_EmployeeLockReasons_EmployeeLockReasonId",
                 table: "Employees");
 
             migrationBuilder.DropForeignKey(
@@ -371,21 +366,29 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Employees");
 
             migrationBuilder.DropForeignKey(
+                name: "FK_Employees_AspNetUsers_UserId",
+                table: "Employees");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Positions_Departments_DepartmentId",
                 table: "Positions");
 
             migrationBuilder.DropTable(
-                name: "EmployeeLockTypes");
+                name: "EmployeeLockReasons");
 
             migrationBuilder.DropTable(
                 name: "Nationalities");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Positions_DepartmentId",
+                table: "Positions");
 
             migrationBuilder.DropIndex(
                 name: "IX_Employees_CreatedUserId",
                 table: "Employees");
 
             migrationBuilder.DropIndex(
-                name: "IX_Employees_EmployeeLockTypeId",
+                name: "IX_Employees_EmployeeLockReasonId",
                 table: "Employees");
 
             migrationBuilder.DropIndex(
@@ -397,6 +400,10 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Employees");
 
             migrationBuilder.DropIndex(
+                name: "IX_Employees_PositionId",
+                table: "Employees");
+
+            migrationBuilder.DropIndex(
                 name: "IX_Departments_CreatedUserId",
                 table: "Departments");
 
@@ -405,17 +412,41 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "Genders");
 
             migrationBuilder.DropColumn(
-                name: "EmployeeLockTypeId",
+                name: "CreatedUserId",
                 table: "Employees");
+
+            migrationBuilder.DropColumn(
+                name: "RootId",
+                table: "Departments");
 
             migrationBuilder.RenameTable(
                 name: "Genders",
                 newName: "Gender");
 
             migrationBuilder.RenameColumn(
+                name: "UserId",
+                table: "Employees",
+                newName: "EmployeeLockId");
+
+            migrationBuilder.RenameColumn(
                 name: "PassportNationalityId",
                 table: "Employees",
                 newName: "PassportNationality");
+
+            migrationBuilder.RenameColumn(
+                name: "EmployeeLockReasonId",
+                table: "Employees",
+                newName: "CreateUserId");
+
+            migrationBuilder.RenameIndex(
+                name: "IX_Employees_UserId",
+                table: "Employees",
+                newName: "IX_Employees_EmployeeLockId");
+
+            migrationBuilder.RenameColumn(
+                name: "CreatedUserId",
+                table: "Departments",
+                newName: "CreateUserId");
 
             migrationBuilder.AddColumn<Guid>(
                 name: "CreateUserId",
@@ -423,30 +454,16 @@ namespace Samr.ERP.Infrastructure.Migrations
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
-            migrationBuilder.AddColumn<Guid>(
-                name: "UserId",
-                table: "Positions",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "EmployeeLockId",
-                table: "Employees",
-                nullable: true);
-
             migrationBuilder.AddColumn<int>(
                 name: "LockTypeId",
                 table: "Employees",
                 nullable: false,
                 defaultValue: 0);
 
-            migrationBuilder.AddColumn<Guid>(
-                name: "UserId",
-                table: "Employees",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "UserId",
-                table: "Departments",
+            migrationBuilder.AddColumn<string>(
+                name: "Address",
+                table: "AspNetUsers",
+                maxLength: 100,
                 nullable: true);
 
             migrationBuilder.AddPrimaryKey(
@@ -459,8 +476,8 @@ namespace Samr.ERP.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
+                    CreateUserId = table.Column<Guid>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
-                    CreatedUserId = table.Column<Guid>(nullable: false),
                     IsActive = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
@@ -468,26 +485,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_EmployeeLock", x => x.Id);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Positions_UserId",
-                table: "Positions",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_EmployeeLockId",
-                table: "Employees",
-                column: "EmployeeLockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_UserId",
-                table: "Employees",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Departments_UserId",
-                table: "Departments",
-                column: "UserId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
@@ -538,14 +535,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Departments_AspNetUsers_UserId",
-                table: "Departments",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_Employees_EmployeeLock_EmployeeLockId",
                 table: "Employees",
                 column: "EmployeeLockId",
@@ -560,38 +549,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                 principalTable: "Gender",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employees_Positions_PositionId",
-                table: "Employees",
-                column: "PositionId",
-                principalTable: "Positions",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employees_AspNetUsers_UserId",
-                table: "Employees",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Positions_Departments_DepartmentId",
-                table: "Positions",
-                column: "DepartmentId",
-                principalTable: "Departments",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Positions_AspNetUsers_UserId",
-                table: "Positions",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
         }
     }
 }

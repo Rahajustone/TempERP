@@ -22,7 +22,7 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<Employee> Employees;
         public DbSet<Department> Departments { get; set; }
         public DbSet<Position> Positions { get; set; }
-        public DbSet<EmployeeLockType> EmployeeLockTypes { get; set; }
+        public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
 
@@ -44,10 +44,8 @@ namespace Samr.ERP.Infrastructure.Data
                 fk.DeleteBehavior = fk.IsRequired ? DeleteBehavior.Restrict :  DeleteBehavior.SetNull;
             }
 
-            
-
-            //builder.Entity<Employee>()
-            //    .HasIndex(e => e.PhotoPath)
+            //builder.Entity<Position>()
+            //    .HasIndex(e => e.Name)
             //    .IsUnique();
         }
     }

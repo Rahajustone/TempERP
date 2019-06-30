@@ -5,9 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190625103516_FixEntities.cs" />
+    <Compile Remove="Migrations\20190625125441_FixFKs.cs" />
+    <Compile Remove="Migrations\20190626121942_DepartmentRootIdNullable.cs" />
+    <Compile Remove="Migrations\20190627052728_ChangeEmployeeLockReasonName.cs" />
+    <Compile Remove="Migrations\20190627141100_Add_UserForEmployee.cs" />
+    <Compile Remove="Migrations\20190627153715_UserMIgration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

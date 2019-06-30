@@ -15,37 +15,34 @@ using Samr.ERP.Infrastructure.Entities;
 namespace Samr.ERP.WebApi.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [Authorize]
     [ApiController]
     public class DepartmentController : ApiController
     {
         private readonly IDepartmentService _departmentService;
-        private readonly IMapper _mapper;
 
-        public DepartmentController(IDepartmentService departmentService, IMapper iMapper)
+        public DepartmentController(IDepartmentService departmentService)
         {
             _departmentService = departmentService;
-            _mapper = iMapper;
         }
 
         [HttpGet]
-        public async Task<ActionResult> All()
+        public async Task<BaseDataResponse<IEnumerable<DepartmentViewModel>>> All()
         {
-            var departments = await _departmentService.GetAll();
-            var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments.Data);
-            return Ok(vm);
+            var departments = await _departmentService.GetAllAsync();
+            return Response(departments);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(Guid id)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> Get(Guid id)
         {
             var department = await _departmentService.GetByIdAsync(id);
-            var vm = _mapper.Map<DepartmentViewModel>(department.Data);
-            return Ok(vm);
+
+            return Response(department);
         }
         
         [HttpPost]
-        [Authorize]
-        public async Task<BaseResponse<DepartmentViewModel>> Create([FromBody]DepartmentViewModel departmentViewModel)
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> Create([FromBody]EditDepartmentViewModel departmentViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -53,12 +50,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<DepartmentViewModel>.Fail(departmentViewModel, null));
+            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
         }
 
-        // PUT: api/Department/5
-        [HttpPost("{id}")]
-        public async Task<BaseResponse<DepartmentViewModel>> Edit(Guid id, [FromBody] DepartmentViewModel model)
+        [HttpPost]
+        public async Task<BaseDataResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -66,20 +62,8 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(null, null));
         }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public async Task<BaseResponse<DepartmentViewModel>> Delete(Guid id)
-        {
-            if (ModelState.IsValid)
-            {
-                var departmentResult = await _departmentService.DeleteAsync(id);
-                return Response(departmentResult);
-            }
-
-            return Response(BaseResponse<DepartmentViewModel>.Fail(null, null));
-        }
+     
     }
 }

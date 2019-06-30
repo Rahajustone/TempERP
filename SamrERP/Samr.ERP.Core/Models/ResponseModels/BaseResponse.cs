@@ -1,53 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Net;
 using Samr.ERP.Core.Models.ErrorModels;
 
 namespace Samr.ERP.Core.Models.ResponseModels
 {
-    public class BaseResponse<TData> : BaseResponse<TData, ErrorModel>
-    {
-        /// <summary>
-        /// Creates a BaseResponse .
-        /// </summary>
-        /// <param name="data">TModel value.</param>
-        /// <param name="success">IsSuccesed.</param>
-        /// <param name="errors">String messsages.</param>
-        /// <returns>BaseResponse</returns>
-        public BaseResponse(TData data, bool success, params ErrorModel[] errors) : base(data, success, errors)
-        {
-        }
-        public BaseResponse(TData data, bool success, IEnumerable<ErrorModel> errors) : base(data, success, errors)
-        {
-        }
-        public static BaseResponse<TData> Success(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model,true,errors);
 
-        public static BaseResponse<TData> Fail(TData model, params ErrorModel[] errors) => new BaseResponse<TData>(model, false, errors);
-      
+    public class BaseResponse : BaseResponse<ErrorModel>
+    {
+        public BaseResponse(HttpStatusCode statusCode, params ErrorModel[] errors) : base(statusCode, errors)
+        {
+        }
+        public BaseResponse(HttpStatusCode statusCode, IEnumerable<ErrorModel> errors) : base(statusCode, errors)
+        {
+        }
+        public static BaseResponse Success() => new BaseResponse(HttpStatusCode.OK);
+        public static BaseResponse Fail(params ErrorModel[] errors) => new BaseResponse(HttpStatusCode.BadRequest, errors);
+        public static BaseResponse Fail(IEnumerable<ErrorModel> errors) => new BaseResponse(HttpStatusCode.BadRequest, errors);
+        public static BaseResponse NotFound(params ErrorModel[] errors) => new BaseResponse(HttpStatusCode.NotFound, errors);
+        public static BaseResponse NotFound() => new BaseResponse(HttpStatusCode.NotFound, new ErrorModel("Entity not found"));
+        public static BaseResponse Unauthorized(params ErrorModel[] errors) => new BaseResponse(HttpStatusCode.Unauthorized, errors);
     }
-    public class BaseResponse<TData, TMessage>
+
+    public class BaseResponse<TMessage>
     {
         public ResponseMeta<TMessage> Meta;
-        public TData Data { get; set; }
 
         /// <summary>
         /// Creates a BaseResponse .
         /// </summary>
-        /// <param name="data">TModel value.</param>
-        /// <param name="success">IsSuccesed.</param>
+        /// <param>TModel value.</param>
+        /// <param name="statusCode"></param>
         /// <param name="errors">TMessage messsages.</param>
         /// <returns>BaseResponse</returns>
-        public BaseResponse(TData data, bool success, params TMessage[] errors)
+        public BaseResponse(HttpStatusCode statusCode, params TMessage[] errors)
         {
-            Meta = new ResponseMeta<TMessage>(success, errors);
-            Data = data;
+            Meta = new ResponseMeta<TMessage>(statusCode, errors);
         }
-        public BaseResponse(TData data, bool success, IEnumerable<TMessage> errors)
+        public BaseResponse(HttpStatusCode statusCode, IEnumerable<TMessage> errors)
         {
-            Meta = new ResponseMeta<TMessage>(success, errors);
-            Data = data;
-
+            Meta = new ResponseMeta<TMessage>(statusCode, errors);
         }
 
     }
+
 }

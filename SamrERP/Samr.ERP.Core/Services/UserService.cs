@@ -10,13 +10,15 @@ using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
@@ -33,27 +35,14 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<UserViewModel>> CreateAsync(RegisterUserViewModel registerModel, string password)
+        public async Task<IdentityResult> CreateAsync(User user, string password)
         {
-            var user = new User()
-            {
-                UserName = registerModel.Phone,
-                Email = registerModel.Email,
-                PhoneNumber = registerModel.Phone
-            };
             var identityResult = await _userManager.CreateAsync(user, password);
 
-            var response = new BaseResponse<UserViewModel>(_mapper.Map<UserViewModel>(user), identityResult.Succeeded,
-                identityResult.Errors.Select(p => new ErrorModel()
-                {
-                    //Code = //TODO: надо доделать
-                    Description = p.Description
-                }));
-            
-            return response;
+            return identityResult;
         }
 
-        
+
         public async Task<User> GetByUserName(string userName)
         {
             var userResult = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.UserName == userName);
@@ -68,7 +57,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<User> GetUserAsync(ClaimsPrincipal userPrincipal)
         {
-            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p=> p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
+            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
             return user;
         }
 
@@ -78,22 +67,52 @@ namespace Samr.ERP.Core.Services
             return users;
         }
 
-        public async Task<BaseResponse<string>> ResetPassword(ResetPasswordViewModel resetPasswordModel)
+        public async Task<BaseDataResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel)
         {
             var user = await GetByPhoneNumber(resetPasswordModel.PhoneNumber);
-            if (user == null) return BaseResponse<string>.Fail("",new ErrorModel("user not found"));
-            
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, "test");
+            if (user == null) return BaseDataResponse<string>.Fail("", new ErrorModel("user not found"));
 
-            var response = new BaseResponse<string>(string.Empty, resetPasswordResult.Succeeded,
-                resetPasswordResult.Errors.Select(p => new ErrorModel()
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, PasswordGenerator.GenerateNewPassword());
+
+            if (!resetPasswordResult.Succeeded)
+                return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
                 {
                     //Code = //TODO: надо доделать
                     Description = p.Description
-                }));
-            
-            return response;
+                }).ToArray());
+
+            return BaseDataResponse<string>.Success(null);
         }
+
+
+        public async Task<BaseDataResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel)
+        {
+            BaseDataResponse<string> dataResponse;
+
+            var user = await _unitOfWork.Users.GetByIdAsync(viewModel.Id);
+            if (user == null) return BaseDataResponse<string>.NotFound("");
+
+            //TODO send smscode confirmation and check
+
+            if (viewModel.SmsConfirmationCode == 1234)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, viewModel.Password);
+
+                if (resetPasswordResult.Succeeded)
+                    dataResponse = BaseDataResponse<string>.Success(null);
+                else
+                    dataResponse = BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
+                    {
+                        //Code = //TODO: надо доделать
+                        Description = p.Description
+                    }).ToArray());
+            }
+            else dataResponse = BaseDataResponse<string>.Fail(string.Empty);
+
+            return dataResponse;
+        }
+      
     }
 }

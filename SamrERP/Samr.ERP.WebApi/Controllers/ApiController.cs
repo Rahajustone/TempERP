@@ -14,31 +14,39 @@ namespace Samr.ERP.WebApi.Controllers
 
     public abstract class ApiController : ControllerBase
     {
-        protected new BaseResponse<T> Response<T>(BaseResponse<T> responseModel)
+        protected new BaseResponse Response(BaseResponse responseModel)
         {
-            return responseModel.Meta.Success ? responseModel : BadRequest(responseModel);
-        }
-
-        protected BaseResponse<T> BadRequest<T>(BaseResponse<T> responseModel)
-        {
-            AddModelStateErrors(responseModel);
-            HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            ResponseMetaHandler(responseModel.Meta);
 
             return responseModel;
         }
-
-        protected void AddModelStateErrors<T>(BaseResponse<T> baseResponse)
+        protected new BaseDataResponse<T> Response<T>(BaseDataResponse<T> dataResponseModel)
         {
-            if (baseResponse.Meta.Errors == null)
+            ResponseMetaHandler(dataResponseModel.Meta);
+
+            return dataResponseModel;
+
+        }
+
+        private void ResponseMetaHandler(ResponseMeta<ErrorModel> responseMeta)
+        {
+            HttpContext.Response.StatusCode =  (int) responseMeta.StatusCode;
+
+            if (!responseMeta.Success) AddModelStateErrors(responseMeta);
+        }
+
+        protected void AddModelStateErrors(ResponseMeta<ErrorModel> responseMeta)
+        {
+            if (responseMeta.Errors == null)
             {
-                baseResponse.Meta.Errors = new List<ErrorModel>();
+                responseMeta.Errors = new List<ErrorModel>();
             }
 
             foreach (var error in ModelState.Values)
             {
                 foreach (var item in error.Errors)
                 {
-                    baseResponse.Meta.Errors.Add(new ErrorModel()
+                    responseMeta.Errors.Add(new ErrorModel()
                     {
                         Description = item.ErrorMessage
                     });

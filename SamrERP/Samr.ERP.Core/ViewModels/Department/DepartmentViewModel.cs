@@ -10,13 +10,11 @@ namespace Samr.ERP.Core.ViewModels.Department
 {
     public class DepartmentViewModel
     {
+        public Guid Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
-        public Guid? RootId;
-
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
+        public Guid? RootId { get; set; }
     }
 }

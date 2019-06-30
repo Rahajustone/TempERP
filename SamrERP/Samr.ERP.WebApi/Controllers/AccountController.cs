@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Infrastructure;
@@ -21,37 +23,50 @@ namespace Samr.ERP.WebApi.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
+        private readonly IEmployeeService _employeeService;
         private readonly IAuthenticateService _authenticateService;
 
 
         public AccountController(
             IMapper mapper,
             IUserService userService,
+            IEmployeeService employeeService,
             IAuthenticateService authenticateService
         )
         {
             _mapper = mapper;
             _userService = userService;
+            _employeeService = employeeService;
             _authenticateService = authenticateService;
         }
-    
+
         [HttpPost]
-        public async Task<BaseResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
+        public async Task<BaseDataResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
         {
             if (ModelState.IsValid)
             {
-                var createdUserResponse = await _userService.CreateAsync(registerModel, registerModel.Password);
+                var user = new User()
+                {
+                    PhoneNumber = registerModel.Phone,
+                    Email = registerModel.Email,
+                    UserName = registerModel.Phone
+                };
 
-                return Response(createdUserResponse);
+                var createdUserResponse = await _userService.CreateAsync(user, registerModel.Password);
+                if (createdUserResponse.Succeeded)
+                {
+                    return Response(BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user)));
 
+                }
+                return Response(BaseDataResponse<UserViewModel>.Fail(_mapper.Map<UserViewModel>(user),createdUserResponse.Errors.ToErrorModels()));
             }
-            return Response(BaseResponse<UserViewModel>.Fail(null,null));
+            return Response(BaseDataResponse<UserViewModel>.Fail(null, null));
 
         }
-        
+
         [HttpPost]
         //[AllowAnonymous]
-        public async Task<BaseResponse<AuthenticateResult>> Login([FromBody]LoginViewModel model)
+        public async Task<BaseDataResponse<AuthenticateResult>> Login([FromBody]LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -59,9 +74,9 @@ namespace Samr.ERP.WebApi.Controllers
                 var authenticateResponse = await _authenticateService.AuthenticateAsync(model);
 
                 return Response(authenticateResponse);
-                
+
             }
-            return Response(BaseResponse<AuthenticateResult>.Fail(null, null));
+            return Response(BaseDataResponse<AuthenticateResult>.Fail(null, null));
         }
 
         [HttpGet]
@@ -82,17 +97,43 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<BaseResponse<string>> ResetPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
+        public async Task<BaseDataResponse<string>> ResetPassword([FromBody] ResetPasswordViewModel resetPasswordModel)
         {
             if (ModelState.IsValid)
             {
                 //TODO:Need to complete
-                var resetPasswordResponse = await _userService.ResetPassword(resetPasswordModel);
+                var resetPasswordResponse = await _userService.ResetPasswordAsync(resetPasswordModel);
 
                 return Response(resetPasswordResponse);
 
             }
-            return BaseResponse<string>.Fail(null,null);
+            return Response(BaseDataResponse<string>.Fail(null));
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<BaseDataResponse<string>> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                //TODO:Need to complete
+                var resetPasswordResponse = await _userService.ChangePasswordAsync(changePasswordViewModel);
+
+                return Response(resetPasswordResponse);
+
+            }
+            return Response(BaseDataResponse<string>.Fail(null));
+        }
+
+        [HttpPost]
+        public async Task<BaseResponse> EditUserDetails([FromBody] EditUserDetailsViewModel editUserDetailsView)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _employeeService.EditUserDetailsAsync(editUserDetailsView);
+
+                return Response(response);
+            }
+            return Response(BaseResponse.Fail());
         }
     }
 }

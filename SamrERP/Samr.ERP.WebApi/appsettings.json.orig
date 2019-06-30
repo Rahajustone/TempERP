@@ -1,0 +1,19 @@
+{
+  "ConnectionStrings": {
+<<<<<<< HEAD
+    "DefaultConnection": "Data Source=sql6005.site4now.net;Initial Catalog=DB_A49FB5_samrERP;User Id=DB_A49FB5_samrERP_admin;Password=Passw0rd;",
+    //"DefaultConnection": "Server=raha;Database=samr-erp;Trusted_Connection=True;MultipleActiveResultSets=true"
+=======
+    //"DefaultConnection": "Data Source=sql6005.site4now.net;Initial Catalog=DB_A49FB5_samrERP;User Id=DB_A49FB5_samrERP_admin;Password=Passw0rd;",
+    "DefaultConnection": "Server=raha;Database=samr-erp;Trusted_Connection=True;MultipleActiveResultSets=true"
+>>>>>>> dev
+    //"DefaultConnection": "Server=stein\\sqlexpress;Database=samr-erp;Trusted_Connection=True;MultipleActiveResultSets=true"
+
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

@@ -8,7 +8,7 @@ namespace Samr.ERP.Tests
         [Fact]
         public void Test1()
         {
-            
+               
         }
     }
 }

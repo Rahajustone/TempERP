@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
@@ -37,22 +38,25 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         }
 
         // repositories
-        public IRepository<User> Users { get { return GetStandardRepo<User>(); } }
+        public IRepository<User> Users { get => GetStandardRepo<User>(); }
         public IRepository<Role> Roles { get { return GetStandardRepo<Role>(); } }
-        public IRepository<Employee> Employees { get { return GetStandardRepo<Employee>(); } }
-        public IRepository<Department> Departments { get { return GetStandardRepo<Department>(); } }
+        public IRepository<Employee> Employees => GetStandardRepo<Employee>();
+        public IRepository<Department> Departments => GetStandardRepo<Department>();
+        public IRepository<EmployeeLockReason> EmployeeLockReasons => GetStandardRepo<EmployeeLockReason>();
+        public IRepository<Nationality> Nationalities => GetStandardRepo<Nationality>();
+        public IRepository<Position> Positions => GetStandardRepo<Position>();
 
 
         /// <summary>
         /// Save pending changes to the database
         /// </summary>
-        public void Commit()
+        public async Task<int> CommitAsync()
         {
 			
             //System.Diagnostics.Debug.WriteLine("Committed");
 			//try
 	       // {
-		        DbContext.SaveChanges();
+		        return await DbContext.SaveChangesAsync();
 	       // }
 		    //catch (Exception ex) // DbEntityValidationException ex)
 			//{
@@ -72,13 +76,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 			    // throw;
 			//}
         }
-
-
-        protected void CreateDbContext()
-        {
-            //DbContext = new SamrDbContext();
-       
-        }
+    
 
         protected IRepositoryProvider RepositoryProvider { get; set; }
 

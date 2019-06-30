@@ -118,7 +118,10 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<bool>("IsActive");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(64);
+
+                    b.Property<Guid?>("RootId");
 
                     b.HasKey("Id");
 
@@ -132,7 +135,8 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AddressFact");
+                    b.Property<string>("AddressFact")
+                        .HasMaxLength(256);
 
                     b.Property<DateTime>("CreatedAt");
 
@@ -147,7 +151,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(128);
 
-                    b.Property<Guid>("EmployeeLockTypeId");
+                    b.Property<Guid?>("EmployeeLockReasonId");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -166,22 +170,25 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(32);
 
-                    b.Property<DateTime>("LockDate");
+                    b.Property<DateTime?>("LockDate");
 
-                    b.Property<Guid>("LockUserId");
+                    b.Property<Guid?>("LockUserId");
 
                     b.Property<string>("MiddleName")
                         .HasMaxLength(32);
 
-                    b.Property<string>("PassportAddress");
+                    b.Property<string>("PassportAddress")
+                        .HasMaxLength(256);
 
                     b.Property<DateTime>("PassportDate");
 
-                    b.Property<string>("PassportMvdName");
+                    b.Property<string>("PassportMvdName")
+                        .HasMaxLength(64);
 
                     b.Property<Guid>("PassportNationalityId");
 
-                    b.Property<string>("PassportNumber");
+                    b.Property<string>("PassportNumber")
+                        .HasMaxLength(32);
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -189,11 +196,13 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<Guid>("PositionId");
 
+                    b.Property<Guid?>("UserId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedUserId");
 
-                    b.HasIndex("EmployeeLockTypeId");
+                    b.HasIndex("EmployeeLockReasonId");
 
                     b.HasIndex("GenderId");
 
@@ -203,10 +212,12 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("PositionId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockType", b =>
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -217,13 +228,14 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<bool>("IsActive");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(32);
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedUserId");
 
-                    b.ToTable("EmployeeLockTypes");
+                    b.ToTable("EmployeeLockReasons");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Gender", b =>
@@ -231,7 +243,8 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(16);
 
                     b.HasKey("Id");
 
@@ -266,13 +279,18 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt");
 
+                    b.Property<Guid>("CreatedUserId");
+
                     b.Property<Guid>("DepartmentId");
 
                     b.Property<bool>("IsActive");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasMaxLength(64);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedUserId");
 
                     b.HasIndex("DepartmentId");
 
@@ -309,9 +327,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AccessFailedCount");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(100);
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
@@ -417,10 +432,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .HasForeignKey("CreatedUserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockType", "EmployeeLockType")
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", "EmployeeLockReason")
                         .WithMany()
-                        .HasForeignKey("EmployeeLockTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("EmployeeLockReasonId");
 
                     b.HasOne("Samr.ERP.Infrastructure.Entities.Gender", "Gender")
                         .WithMany()
@@ -429,10 +443,9 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "LockUser")
                         .WithMany()
-                        .HasForeignKey("LockUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("LockUserId");
 
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.Nationality", "PassporNationality")
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.Nationality", "PassportNationality")
                         .WithMany()
                         .HasForeignKey("PassportNationalityId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -441,9 +454,13 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockType", b =>
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", b =>
                 {
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
@@ -461,6 +478,11 @@ namespace Samr.ERP.Infrastructure.Migrations
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Position", b =>
                 {
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Samr.ERP.Infrastructure.Entities.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")

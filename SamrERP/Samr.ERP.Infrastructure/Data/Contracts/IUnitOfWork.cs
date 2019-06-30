@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Infrastructure.Data.Contracts
@@ -9,13 +10,16 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
     public interface IUnitOfWork : IDisposable
     {
         // Save pending changes to the data store.
-        void Commit();
+        Task<int> CommitAsync();
         // Repositories
 
         IRepository<User> Users { get; }
         IRepository<Role> Roles { get; }
         IRepository<Employee> Employees { get; }
         IRepository<Department> Departments { get; }
+        IRepository<EmployeeLockReason> EmployeeLockReasons { get; }
+        IRepository<Nationality> Nationalities { get; }
+        IRepository<Position> Positions { get;  }
 
     }
 }
