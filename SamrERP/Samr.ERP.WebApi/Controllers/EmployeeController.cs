@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.Account;
@@ -18,10 +20,12 @@ namespace Samr.ERP.WebApi.Controllers
     public class EmployeeController : ApiController
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IHostingEnvironment _host;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, IHostingEnvironment host)
         {
             _employeeService = employeeService;
+            _host = host;
         }
 
         [HttpGet]
@@ -37,9 +41,17 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] EditEmployeeViewModel employee)
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromForm] EditEmployeeViewModel editEmployeeViewModel, IFormFile photoFile)
         {
-            throw  new NotImplementedException();
+            if (ModelState.IsValid)
+            {
+                var employeeResult =  await _employeeService.CreateAsync(editEmployeeViewModel, photoFile);
+
+                return Response(employeeResult);
+            }
+
+            return Response(BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, null));
+
         }
 
         [HttpPost]
