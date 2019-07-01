@@ -5,12 +5,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190625095144_FixEmployeeEntity.cs" />
+    <Compile Remove="Migrations\20190625095329_FixGenderEntity.cs" />
+    <Compile Remove="Migrations\20190625100004_FixEployeeLockentity.cs" />
+    <Compile Remove="Migrations\20190625100021_FixEmployeeLockentity.cs" />
+    <Compile Remove="Migrations\20190625100703_FixNationalityEntity.cs" />
+    <Compile Remove="Migrations\20190625101434_FixPositionEntity.cs" />
     <Compile Remove="Migrations\20190625103516_FixEntities.cs" />
     <Compile Remove="Migrations\20190625125441_FixFKs.cs" />
     <Compile Remove="Migrations\20190626121942_DepartmentRootIdNullable.cs" />
     <Compile Remove="Migrations\20190627052728_ChangeEmployeeLockReasonName.cs" />
     <Compile Remove="Migrations\20190627141100_Add_UserForEmployee.cs" />
     <Compile Remove="Migrations\20190627153715_UserMIgration.cs" />
+    <Compile Remove="Migrations\20190628055522_ChangePositionToCreatableByUserBaseObject.cs" />
+    <Compile Remove="Migrations\20190628084132_FixEntities.cs" />
+    <Compile Remove="Migrations\20190628110015_AnnotionToEntities.cs" />
+    <Compile Remove="Migrations\20190629101813_EmployeeLockNUllabe.cs" />
+    <Compile Remove="Migrations\20190701105316_NewsCategoriesEntity.cs" />
+    <Compile Remove="Migrations\20190701105903_NewsCategoriesEntity.cs" />
   </ItemGroup>
 
   <ItemGroup>

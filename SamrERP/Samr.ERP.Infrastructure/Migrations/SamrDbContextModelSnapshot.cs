@@ -272,6 +272,28 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.ToTable("Nationalities");
                 });
 
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.NewsCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<Guid>("CreatedUserId");
+
+                    b.Property<bool>("IsActive");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedUserId");
+
+                    b.ToTable("NewsCategories");
+                });
+
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Position", b =>
                 {
                     b.Property<Guid>("Id")
@@ -286,6 +308,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<bool>("IsActive");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -469,6 +492,14 @@ namespace Samr.ERP.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Nationality", b =>
+                {
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.NewsCategory", b =>
                 {
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
