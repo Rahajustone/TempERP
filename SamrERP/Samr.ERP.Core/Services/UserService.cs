@@ -73,7 +73,9 @@ namespace Samr.ERP.Core.Services
             if (user == null) return BaseDataResponse<string>.Fail("", new ErrorModel("user not found"));
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, PasswordGenerator.GenerateNewPassword());
+
+            var generatedPass = PasswordGenerator.GenerateNewPassword();
+            var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, generatedPass);
 
             if (!resetPasswordResult.Succeeded)
                 return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
@@ -82,7 +84,7 @@ namespace Samr.ERP.Core.Services
                     Description = p.Description
                 }).ToArray());
 
-            return BaseDataResponse<string>.Success(null);
+            return BaseDataResponse<string>.Success(generatedPass);
         }
 
 
