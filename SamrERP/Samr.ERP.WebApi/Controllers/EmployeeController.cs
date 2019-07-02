@@ -20,32 +20,34 @@ namespace Samr.ERP.WebApi.Controllers
     public class EmployeeController : ApiController
     {
         private readonly IEmployeeService _employeeService;
-        private readonly IHostingEnvironment _host;
 
         public EmployeeController(IEmployeeService employeeService, IHostingEnvironment host)
         {
             _employeeService = employeeService;
-            _host = host;
         }
 
         [HttpGet]
-        public  async  Task<BaseResponse<IEnumerable<Employee>>> All()
+        public  async  Task<BaseDataResponse<IEnumerable<AllEmployeeViewModel>>> All()
         {
-            throw new NotImplementedException();
+            var employee = await _employeeService.AllAsync();
+
+            return Response(employee);
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<BaseDataResponse<GetEmployeeViewModel>> Get(Guid id)
         {
-            return "value";
+            var employee = await _employeeService.GetByIdAsync(id);
+
+            return Response(employee);
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromForm] EditEmployeeViewModel editEmployeeViewModel, IFormFile photoFile)
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromBody] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)
             {
-                var employeeResult =  await _employeeService.CreateAsync(editEmployeeViewModel, photoFile);
+                var employeeResult =  await _employeeService.CreateAsync(editEmployeeViewModel);
 
                 return Response(employeeResult);
             }
@@ -55,10 +57,18 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public void Edit([FromBody] string value)
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> Update(
+            [FromBody] EditEmployeeViewModel editEmployeeViewModel)
         {
+            if (ModelState.IsValid)
+            {
+                var employeeResult = await _employeeService.UpdateAsync(editEmployeeViewModel);
+                return Response(employeeResult);
+            }
+
+            return Response(BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, null));
         }
-        
+
         [HttpPost]
         public async Task<BaseDataResponse<UserViewModel>> CreateUser([FromBody] Guid employeeId)
         {

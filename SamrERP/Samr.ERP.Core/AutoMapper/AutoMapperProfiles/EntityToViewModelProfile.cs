@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.IO.Compression;
+using AutoMapper;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Employee;
@@ -16,8 +18,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
         {
             CreateMap<User, UserViewModel>();
             CreateMap<UserViewModel, User>();
-            CreateMap<Employee, EditEmployeeViewModel>();
-            CreateMap<EditEmployeeViewModel, Employee>();
             CreateMap<Department, DepartmentViewModel>();
             CreateMap<DepartmentViewModel, Department>();
             CreateMap<EditDepartmentViewModel, Department>();
@@ -57,6 +57,73 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+
+            CreateMap<Employee, EmployeeViewModel>();
+            CreateMap<EmployeeViewModel, Employee>();
+            CreateMap<EditEmployeeViewModel, Employee>();
+            CreateMap<Employee, EditEmployeeViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()))
+                .ForMember(dst => dst.GenderName,
+                    src => src.MapFrom(map
+                        => map.Gender.Name))
+                .ForMember(dst => dst.PositionName,
+                    src => src.MapFrom(map
+                        => map.Position.Name))
+                .ForMember(dst => dst.EmployeeLockReasonName,
+                    src => src.MapFrom(map => map.EmployeeLockReason.Name))
+                .ForMember(dst => dst.LockUserName,
+                    src => src.MapFrom(map
+                        => map.LockUser.UserName))
+                .ForMember(dst => dst.PassportNationalityName,
+                    src => src.MapFrom(map
+                        => map.PassportNationality.Name));
+
+            CreateMap<AllEmployeeViewModel, Employee>();
+            CreateMap<Employee, AllEmployeeViewModel>()
+                .ForMember(dst => dst.FullName,
+                    src => src.MapFrom(
+                        map => map.FullName()))
+                .ForMember(dst => dst.HireDate,
+                    src => src.MapFrom(
+                        map => map.HireDate.ToString("dd-MM-yyyy")))
+                .ForMember(dst => dst.Department,
+                    src => src.MapFrom(
+                        map => map.Position.Department.Name))
+                .ForMember(dst => dst.Position,
+                    src => src.MapFrom(
+                        map => map.Position.Name))
+                .ForMember(dst => dst.LockReason,
+                    src => src.MapFrom(
+                        map => map.EmployeeLockReason.Name))
+                .ForMember(dst => dst.HasUser,
+                    src => src.MapFrom(
+                        dst => dst.UserId != null));
+
+            CreateMap<GetEmployeeViewModel, Employee>();
+            CreateMap<Employee, GetEmployeeViewModel>()
+                .ForMember(dst => dst.FullName,
+                    src => src.MapFrom(
+                        map => map.FullName()))
+                .ForMember(dst => dst.HireDate,
+                    src => src.MapFrom(
+                        map => map.HireDate.ToString("dd-MM-yyyy")))
+                .ForMember(dst => dst.Department,
+                    src => src.MapFrom(
+                        map => map.Position.Department.Name))
+                .ForMember(dst => dst.Position,
+                    src => src.MapFrom(
+                        map => map.Position.Name))
+                .ForMember(dst => dst.LockReason,
+                    src => src.MapFrom(
+                        map => map.EmployeeLockReason.Name))
+                .ForMember(dst => dst.HasUser,
+                    src => src.MapFrom(
+                        dst => dst.UserId != null))
+                .ForMember( dst => dst.DateOfBirth,
+                    src => src.MapFrom(
+                        map => map.DateOfBirth.ToString("dd-MM-yyyy")));
         }
     }
 }
