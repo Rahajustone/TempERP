@@ -4,6 +4,7 @@ using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
+using Samr.ERP.Core.ViewModels.News.Categories;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Entities;
 
@@ -47,6 +48,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<PositionViewModel, Position>();
             CreateMap<EditPositionViewModel, Position>();
             CreateMap<Position, EditPositionViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+
+            CreateMap<NewsCategoriesViewModel, NewsCategory>();
+            CreateMap<NewsCategory, NewsCategoriesViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));

@@ -5,6 +5,7 @@ namespace Samr.ERP.Core.ViewModels.News.Categories
 {
     public class NewsCategoriesViewModel
     {
+        public Guid Id { get; set; }
         [Required]
         [StringLength(64)]
         public string Name { get; set; }    
