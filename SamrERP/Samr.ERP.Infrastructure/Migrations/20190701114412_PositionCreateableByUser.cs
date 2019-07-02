@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
-    public partial class ChangePositionToCreatableByUserBaseObject : Migration
+    public partial class PositionCreateableByUser : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

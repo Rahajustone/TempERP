@@ -10,6 +10,7 @@ namespace Samr.ERP.Infrastructure.Entities
 {
     public class Position : CreatableByUserBaseObject, IActivable, ICreatable
     {
+        [Required]
         [StringLength(64)]
         public string Name { get; set; }
 

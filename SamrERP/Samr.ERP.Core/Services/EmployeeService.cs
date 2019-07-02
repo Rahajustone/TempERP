@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Core.Interfaces;
@@ -11,6 +12,7 @@ using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Data;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -24,29 +26,51 @@ namespace Samr.ERP.Core.Services
         private readonly IUserService _userService;
         private readonly UserProvider _userProvider;
         private readonly IMapper _mapper;
+        private readonly IUploadFileService _file;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
             IUserService userService,
             UserProvider userProvider,
-            IMapper mapper
+            IMapper mapper,
+            IUploadFileService file
             )
         {
             _unitOfWork = unitOfWork;
             _userService = userService;
             _userProvider = userProvider;
             _mapper = mapper;
+            _file = file;
         }
 
-        public async Task<BaseDataResponse<Employee>> CreateAsync(Employee employee)
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel, IFormFile filePath)
         {
-            _unitOfWork.Employees.Add(employee);
+            BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-            await _unitOfWork.CommitAsync();
+            // TODO raha
+            //var filePathName = await _file.StorePhoto("wwwroot/employers", filePath);
+            //dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(editEmployeeViewModel);
 
-            var response = BaseDataResponse<Employee>.Success(employee);
+            var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
+                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() &&
+                e.PassportNumber.ToLower() == editEmployeeViewModel.PassportNumber.ToLower());
 
-            return response;
+            if (employeeExists)
+            {
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number or Passport already exist"));
+
+            }
+            else
+            {
+
+                var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+                _unitOfWork.Employees.Add(employee);
+                await _unitOfWork.CommitAsync();
+
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
+            }
+
+            return dataResponse;
         }
 
         public async Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId)

@@ -53,6 +53,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IEmployeeLockReasonService, EmployeeLockReasonService>();
             services.AddScoped<INationalityService, NationalityService>();
             services.AddScoped<IPositionService, PositionService>();
+            services.AddScoped<IUploadFileService, UploadFileService>();
 
             #endregion
 
@@ -129,7 +130,7 @@ namespace Samr.ERP.WebApi
                 .AllowCredentials()
             );
 
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseAuthentication();
           

@@ -25,6 +25,9 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
+        public DbSet<NewsCategory> NewsCategories { get; set; }
+
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -44,9 +47,7 @@ namespace Samr.ERP.Infrastructure.Data
                 fk.DeleteBehavior = fk.IsRequired ? DeleteBehavior.Restrict :  DeleteBehavior.SetNull;
             }
 
-            //builder.Entity<Position>()
-            //    .HasIndex(e => e.Name)
-            //    .IsUnique();
+            //EntitiesConfiguration.ConfigureEntities(builder);
         }
     }
 }
