@@ -70,9 +70,9 @@ namespace Samr.ERP.Infrastructure.Entities
         public string PassportNumber { get; set; }
 
         [StringLength(64)]
-        public string PassportMvdName { get; set; }
+        public string PassportIssuer { get; set; }
 
-        public DateTime PassportDate { get; set; }
+        public DateTime PassportIssueDate { get; set; }
 
         public Guid PassportNationalityId { get; set; }
         [ForeignKey(nameof(PassportNationalityId))]
