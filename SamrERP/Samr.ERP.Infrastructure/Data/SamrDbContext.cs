@@ -27,6 +27,8 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<Nationality> Nationalities { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<NewsCategory> NewsCategories { get; set; }
+        public DbSet<EmailSetting> EmailSettings { get; set; }
+        public DbSet<EmailMessageHistory> EmailMessageHistories { get; set; }
 
 
 
