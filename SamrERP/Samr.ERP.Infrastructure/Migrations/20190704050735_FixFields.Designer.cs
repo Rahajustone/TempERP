@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190704050735_FixFields")]
+    partial class FixFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -272,42 +274,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.ToTable("Nationalities");
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.News", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<Guid>("CreatedUserId");
-
-                    b.Property<string>("Description")
-                        .IsRequired();
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<Guid>("NewsCategoryId");
-
-                    b.Property<string>("PublishAt")
-                        .IsRequired();
-
-                    b.Property<string>("ShortDescription")
-                        .IsRequired()
-                        .HasMaxLength(256);
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(64);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("NewsCategoryId");
-
-                    b.ToTable("News");
-                });
-
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.NewsCategory", b =>
                 {
                     b.Property<Guid>("Id")
@@ -532,19 +498,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
                         .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.News", b =>
-                {
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.NewsCategory", "NewsCategory")
-                        .WithMany()
-                        .HasForeignKey("NewsCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

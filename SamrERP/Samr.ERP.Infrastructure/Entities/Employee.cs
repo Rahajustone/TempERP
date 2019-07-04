@@ -33,6 +33,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public Gender Gender { get; set; }
 
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
@@ -42,7 +43,7 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime HireDate { get; set; }
 
         [StringLength(256, ErrorMessage = "Description length must be not more 256")]
@@ -54,14 +55,17 @@ namespace Samr.ERP.Infrastructure.Entities
         public string Email { get; set; }
 
         [StringLength(256)]
-        public string AddressFact { get; set; }
+        public string FactualAddress { get; set; }
 
+        // TODO
         public DateTime? LockDate { get; set; }
 
+        // TODO
         public Guid? EmployeeLockReasonId { get; set; }
         [ForeignKey(nameof(EmployeeLockReasonId))]
         public EmployeeLockReason EmployeeLockReason { get; set; }
 
+        // TODO
         public Guid? LockUserId { get; set; }
         [ForeignKey(nameof(LockUserId))]
         public User LockUser { get; set; }
@@ -70,13 +74,14 @@ namespace Samr.ERP.Infrastructure.Entities
         public string PassportNumber { get; set; }
 
         [StringLength(64)]
-        public string PassportMvdName { get; set; }
+        public string PassportIssuer { get; set; }
 
-        public DateTime PassportDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
+        public DateTime PassportIssueDate { get; set; }
 
-        public Guid PassportNationalityId { get; set; }
-        [ForeignKey(nameof(PassportNationalityId))]
-        public Nationality PassportNationality { get; set; }
+        public Guid NationalityId { get; set; }
+        [ForeignKey(nameof(NationalityId))]
+        public Nationality Nationality { get; set; }
 
         [StringLength(256)]
         public string PassportAddress { get; set; }
@@ -87,5 +92,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public Guid? UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
+
+        public string FullName() => $"{LastName} {FirstName} {MiddleName}";
     }
 }

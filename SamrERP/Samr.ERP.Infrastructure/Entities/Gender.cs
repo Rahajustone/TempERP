@@ -8,5 +8,7 @@ namespace Samr.ERP.Infrastructure.Entities
     {
         [StringLength(16)]
         public string Name { get; set; }
+
+        public string GetToShortName() => $"{Name}";
     }
 }

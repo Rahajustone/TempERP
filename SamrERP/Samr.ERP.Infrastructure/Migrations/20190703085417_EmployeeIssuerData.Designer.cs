@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190703085417_EmployeeIssuerData")]
+    partial class EmployeeIssuerData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,6 +137,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("AddressFact")
+                        .HasMaxLength(256);
+
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<Guid>("CreatedUserId");
@@ -149,9 +154,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .HasMaxLength(128);
 
                     b.Property<Guid?>("EmployeeLockReasonId");
-
-                    b.Property<string>("FactualAddress")
-                        .HasMaxLength(256);
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -177,8 +179,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<string>("MiddleName")
                         .HasMaxLength(32);
 
-                    b.Property<Guid>("NationalityId");
-
                     b.Property<string>("PassportAddress")
                         .HasMaxLength(256);
 
@@ -186,6 +186,8 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<string>("PassportIssuer")
                         .HasMaxLength(64);
+
+                    b.Property<Guid>("PassportNationalityId");
 
                     b.Property<string>("PassportNumber")
                         .HasMaxLength(32);
@@ -208,7 +210,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("LockUserId");
 
-                    b.HasIndex("NationalityId");
+                    b.HasIndex("PassportNationalityId");
 
                     b.HasIndex("PositionId");
 
@@ -270,42 +272,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasIndex("CreatedUserId");
 
                     b.ToTable("Nationalities");
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.News", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<Guid>("CreatedUserId");
-
-                    b.Property<string>("Description")
-                        .IsRequired();
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<Guid>("NewsCategoryId");
-
-                    b.Property<string>("PublishAt")
-                        .IsRequired();
-
-                    b.Property<string>("ShortDescription")
-                        .IsRequired()
-                        .HasMaxLength(256);
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(64);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("NewsCategoryId");
-
-                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.NewsCategory", b =>
@@ -504,9 +470,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("LockUserId");
 
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.Nationality", "Nationality")
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.Nationality", "PassportNationality")
                         .WithMany()
-                        .HasForeignKey("NationalityId")
+                        .HasForeignKey("PassportNationalityId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Samr.ERP.Infrastructure.Entities.Position", "Position")
@@ -532,19 +498,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
                         .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.News", b =>
-                {
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.NewsCategory", "NewsCategory")
-                        .WithMany()
-                        .HasForeignKey("NewsCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

@@ -14,16 +14,18 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IEmployeeService
     {
-        Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel, IFormFile file);
-        //IEnumerable<Employee> GetAllUser();
+        Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<IEnumerable<AllEmployeeViewModel>>> AllAsync();
+        Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel);
         Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId);
 
-        Task UpdateAsync(Employee employee);
+        Task<BaseDataResponse<EditEmployeeViewModel>> UpdateAsync(EditEmployeeViewModel editEmployeeViewModel);
 
         Task<BaseResponse> EditUserDetailsAsync(
             EditUserDetailsViewModel editUserDetailsView);
 
         Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel);
         Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId);
+        Task<BaseDataResponse<GetPassportDataEmployeeViewModel>> GetPassportDataAsync(Guid employeeId);
     }
 }

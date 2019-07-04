@@ -25,6 +25,7 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
+        public DbSet<News> News { get; set; }
         public DbSet<NewsCategory> NewsCategories { get; set; }
 
 

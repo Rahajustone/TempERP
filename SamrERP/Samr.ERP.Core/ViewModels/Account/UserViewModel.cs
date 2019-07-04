@@ -1,4 +1,6 @@
-﻿namespace Samr.ERP.Core.ViewModels.Account
+﻿using System;
+
+namespace Samr.ERP.Core.ViewModels.Account
 {
     public class UserViewModel
     {

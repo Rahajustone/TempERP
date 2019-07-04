@@ -81,5 +81,17 @@ namespace Samr.ERP.Core.Stuff
         {
             return identityErrors.Select(p => new ErrorModel(p.Description));
         }
+
+        /// <summary>
+        /// if the object this method is called on is not null, runs the given function and returns the value.
+        /// if the object is null, returns default(TResult)
+        /// </summary>
+        public static TResult IfNotNull<T, TResult>(this T target, Func<T, TResult> getValue)
+        {
+            if (target != null)
+                return getValue(target);
+            else
+                return default(TResult);
+        }
     }
 }
