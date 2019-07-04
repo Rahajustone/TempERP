@@ -33,6 +33,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public Gender Gender { get; set; }
 
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
@@ -42,7 +43,7 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime HireDate { get; set; }
 
         [StringLength(256, ErrorMessage = "Description length must be not more 256")]
@@ -72,6 +73,7 @@ namespace Samr.ERP.Infrastructure.Entities
         [StringLength(64)]
         public string PassportIssuer { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime PassportIssueDate { get; set; }
 
         public Guid PassportNationalityId { get; set; }

@@ -26,5 +26,6 @@ namespace Samr.ERP.Core.Interfaces
 
         Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel);
         Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId);
+        Task<BaseDataResponse<GetPassportDataEmployeeViewModel>> GetPassportDataAsync(Guid employeeId);
     }
 }

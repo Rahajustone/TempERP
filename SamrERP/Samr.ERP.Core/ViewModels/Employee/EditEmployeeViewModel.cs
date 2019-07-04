@@ -34,9 +34,9 @@ namespace Samr.ERP.Core.ViewModels.Employee
 
         public string PassportNumber { get; set; }
 
-        public string PassportMvdName { get; set; }
+        public string PassportIssuer { get; set; }
 
-        public DateTime PassportDate { get; set; }
+        public DateTime PassportIssueDate { get; set; }
 
         public Guid PassportNationalityId { get; set; }
 

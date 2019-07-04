@@ -230,6 +230,23 @@ namespace Samr.ERP.Core.Services
             return BaseResponse.Success();
         }
 
+        public async Task<BaseDataResponse<GetPassportDataEmployeeViewModel>> GetPassportDataAsync(Guid employeeId)
+        {
+            BaseDataResponse<GetPassportDataEmployeeViewModel> dataResponse;
 
+            var passportDataAsync = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.PassportNationality)
+                .FirstOrDefaultAsync(p => p.Id == employeeId);
+            if (passportDataAsync == null)
+            {
+                dataResponse = BaseDataResponse<GetPassportDataEmployeeViewModel>.NotFound(null, new ErrorModel("Not found employee"));
+            }
+            else
+            {
+                dataResponse = BaseDataResponse<GetPassportDataEmployeeViewModel>.Success(_mapper.Map<GetPassportDataEmployeeViewModel>(passportDataAsync));
+            }
+
+            return dataResponse;
+        }
     }
 }

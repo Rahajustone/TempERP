@@ -124,6 +124,18 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember( dst => dst.DateOfBirth,
                     src => src.MapFrom(
                         map => map.DateOfBirth.ToString("dd-MM-yyyy")));
+
+            CreateMap<GetPassportDataEmployeeViewModel, Employee>();
+            CreateMap<Employee, GetPassportDataEmployeeViewModel>()
+                .ForMember(dst => dst.Nationality,
+                    src => src.MapFrom(
+                        map => map.PassportNationality.Name))
+                .ForMember(dst => dst.DateOfBirth,
+                    src => src.MapFrom(
+                        map => map.DateOfBirth.ToString("dd-MM-yyyy")))
+                .ForMember(dst => dst.PassportIssueDate,
+                    src => src.MapFrom(
+                        map => map.PassportIssueDate.ToString("dd-MM-yyyy")));
         }
     }
 }
