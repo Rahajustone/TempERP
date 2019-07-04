@@ -209,8 +209,9 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         {
             return DbSet;
         }
+     
 
-      
-       
+
+
     }
 }

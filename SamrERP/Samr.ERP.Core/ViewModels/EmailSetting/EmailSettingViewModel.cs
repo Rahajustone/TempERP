@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
-using Samr.ERP.Infrastructure.Entities.BaseObjects;
-using Samr.ERP.Infrastructure.Interfaces;
 
-namespace Samr.ERP.Infrastructure.Entities
+namespace Samr.ERP.Core.ViewModels.EmailSetting
 {
-    public class EmailSetting:CreatableByUserBaseObject,ICreatable,IActivable
+    public class EmailSettingViewModel
     {
         [Required]
         [StringLength(128)]
