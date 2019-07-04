@@ -54,6 +54,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<INationalityService, NationalityService>();
             services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<IUploadFileService, UploadFileService>();
+            services.AddScoped<INewsService, NewsService>();
             services.AddScoped<INewsCategoriesService, NewsCategoriesService>();
 
             #endregion

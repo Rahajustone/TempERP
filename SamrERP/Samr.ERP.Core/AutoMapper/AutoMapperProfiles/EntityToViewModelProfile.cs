@@ -6,6 +6,7 @@ using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
+using Samr.ERP.Core.ViewModels.News;
 using Samr.ERP.Core.ViewModels.News.Categories;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Entities;
@@ -52,12 +53,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
 
-            CreateMap<NewsCategoriesViewModel, NewsCategory>();
-            CreateMap<NewsCategory, NewsCategoriesViewModel>()
-                .ForMember(dst => dst.CreatedUserName,
-                    src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
-
             CreateMap<Employee, EmployeeViewModel>();
             CreateMap<EmployeeViewModel, Employee>();
             CreateMap<EditEmployeeViewModel, Employee>();
@@ -97,7 +92,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.LockReason,
                     src => src.MapFrom(
                         map => map.EmployeeLockReason.Name))
-                .ForMember(dst => dst.HasUser,
+                .ForMember(dst => dst.HasUserAccount,
                     src => src.MapFrom(
                         dst => dst.UserId != null));
 
@@ -118,7 +113,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.LockReason,
                     src => src.MapFrom(
                         map => map.EmployeeLockReason.Name))
-                .ForMember(dst => dst.HasUser,
+                .ForMember(dst => dst.HasUserAccount,
                     src => src.MapFrom(
                         dst => dst.UserId != null))
                 .ForMember( dst => dst.DateOfBirth,
@@ -136,6 +131,24 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
                         map => map.PassportIssueDate.ToString("dd-MM-yyyy")));
+
+            // TODO
+            CreateMap<NewsViewModel, News>();
+            CreateMap<News, NewsViewModel>();
+            CreateMap<EditNewsViewModel, News>();
+            CreateMap<News, EditNewsViewModel>()
+                .ForMember(dst => dst.NewsCategoryName,
+                    src => src.MapFrom(
+                        map => map.NewsCategory.Name));
+
+            CreateMap<ListNewsViewModel, News>();
+            CreateMap<News, ListNewsViewModel>();
+
+            CreateMap<NewsCategoriesViewModel, NewsCategory>();
+            CreateMap<NewsCategory, NewsCategoriesViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
         }
     }
 }

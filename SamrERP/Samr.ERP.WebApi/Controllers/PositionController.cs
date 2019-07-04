@@ -52,7 +52,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditPositionViewModel>> Edit(Guid id, [FromBody] EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<EditPositionViewModel>> Edit([FromBody] EditPositionViewModel positionViewModel)
         {
             if (ModelState.IsValid)
             {

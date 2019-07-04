@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Samr.ERP.Infrastructure.Entities.BaseObjects;
 using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class News : CreatableByUserBaseObject, ICreatable
+    public class News : CreatableByUserBaseObject, ICreatable, IActivable
     {
-        public Guid CatId { get; set; }
+        public Guid NewsCategoryId { get; set; }
+        [ForeignKey(nameof(NewsCategoryId))]
+        public NewsCategory NewsCategory { get; set; }
 
         [Required]
         [StringLength(64)]
@@ -26,6 +30,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public  string PublishAt { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; }
     }
 }
 
