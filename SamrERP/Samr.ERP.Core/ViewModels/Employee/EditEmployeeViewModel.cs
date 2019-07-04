@@ -24,7 +24,7 @@ namespace Samr.ERP.Core.ViewModels.Employee
         [StringLength(256, ErrorMessage = "Description length must be not more 256")]
         public string Description { get; set; }
 
-        public string AddressFact { get; set; }
+        public string FactualAddress { get; set; }
 
         public DateTime? LockDate { get; set; }
 
@@ -38,7 +38,7 @@ namespace Samr.ERP.Core.ViewModels.Employee
 
         public DateTime PassportIssueDate { get; set; }
 
-        public Guid PassportNationalityId { get; set; }
+        public Guid NationalityId { get; set; }
 
         public string PassportAddress { get; set; }
 
@@ -51,7 +51,7 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public string PositionName { get; set; }
         public string EmployeeLockReasonName { get; set; }
         public string LockUserName { get; set; }
-        public string PassportNationalityName { get; set; }
+        public string NationalityName { get; set; }
         public Guid? UserId { get; set; }
 
     }

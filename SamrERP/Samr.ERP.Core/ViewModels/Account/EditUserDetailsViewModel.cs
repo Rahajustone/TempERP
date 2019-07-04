@@ -14,6 +14,6 @@ namespace Samr.ERP.Core.ViewModels.Account
         [StringLength(128)]
         public string Email { get; set; }
         [StringLength(256)]
-        public string AddressFact { get; set; }
+        public string FactualAddress { get; set; }
     }
 }

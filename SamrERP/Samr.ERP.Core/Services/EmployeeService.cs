@@ -183,7 +183,7 @@ namespace Samr.ERP.Core.Services
             var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == editUserDetailsView.UserId);
 
             employee.Email = editUserDetailsView.Email;
-            employee.AddressFact = editUserDetailsView.AddressFact;
+            employee.FactualAddress = editUserDetailsView.FactualAddress;
 
             await UpdateAsync(_mapper.Map<EditEmployeeViewModel>(employee));
 
@@ -235,7 +235,7 @@ namespace Samr.ERP.Core.Services
             BaseDataResponse<GetPassportDataEmployeeViewModel> dataResponse;
 
             var passportDataAsync = await _unitOfWork.Employees.GetDbSet()
-                .Include(p => p.PassportNationality)
+                .Include(p => p.Nationality)
                 .FirstOrDefaultAsync(p => p.Id == employeeId);
             if (passportDataAsync == null)
             {
