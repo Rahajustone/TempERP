@@ -183,6 +183,11 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             return DbSet.Any(predicate);
         }
 
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await DbSet.AnyAsync(predicate);
+        }
+
         public DbSet<T> GetDbSet()
         {
             return DbSet;

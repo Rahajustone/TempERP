@@ -29,9 +29,25 @@ namespace Samr.ERP.Core.Services
         }
 
      
-        public async Task SendEmailToEmployeeAsync(Employee employee,string subject,string message)
+        public async Task SendEmailToEmployeeAsync(User user,string subject,string message)
         {
-            await SendEmailAsync(employee.Email, subject, message);
+            await SendEmailAsync(user.Email, subject, message);
+        }
+
+        private async Task AddEmailMessageHistory(User destUser, string subject, string message)
+        {
+            var emailMessageHistory = new EmailMessageHistory()
+            {
+                RecieverUserId = destUser.Id,
+                EmailSettingId = _emailSetting.Id,
+                Subject = subject,
+                Message = message,
+                RecieverEMail = destUser.Email
+            };
+
+            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory);
+
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task SendEmailAsync(string email, string subject, string message)

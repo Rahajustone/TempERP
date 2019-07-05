@@ -52,6 +52,35 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting));
         }
 
+        public async Task<BaseDataResponse<EmailSettingViewModel>> UpdateAsync(
+            EmailSettingViewModel emailSettingViewModel)
+        {
+            var emailSettingExist =  await _unitOfWork.EmailSettings.AnyAsync(p => p.Sender == emailSettingViewModel.Sender && p.IsActive);
+
+            if (emailSettingExist) return BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel, new ErrorModel("emailsetting exist with same sender"));
+
+            var emailSetting = _mapper.Map<EmailSetting>(emailSettingViewModel);
+
+            _unitOfWork.EmailSettings.Update(emailSetting);
+
+            await _unitOfWork.CommitAsync();
+
+            if (emailSettingViewModel.IsDefault) SetDefaultAsync(emailSetting);
+
+            return BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting));
+            ;
+        }
+
+        public async Task<BaseDataResponse<EmailSettingViewModel>> GetByIdAsync(Guid id)
+        {
+            var emailSetting = await _unitOfWork.EmailSettings.GetByIdAsync(id);
+
+            return emailSetting != null
+                ? BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting))
+                : BaseDataResponse<EmailSettingViewModel>.NotFound(null);
+        }
+        
+
         private async void SetDefaultAsync(EmailSetting emailSetting)
         {
             var emailSettings = await _unitOfWork.EmailSettings.All().Where(p => p.IsActive && p.IsDefault && p.Id != emailSetting.Id).ToListAsync();

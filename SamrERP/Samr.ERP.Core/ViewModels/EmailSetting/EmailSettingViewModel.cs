@@ -5,6 +5,7 @@ namespace Samr.ERP.Core.ViewModels.EmailSetting
 {
     public class EmailSettingViewModel
     {
+        public Guid Id { get; set; }
         [Required]
         [StringLength(128)]
         public string MailServerName { get; set; }

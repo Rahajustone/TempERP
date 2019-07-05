@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -13,5 +14,7 @@ namespace Samr.ERP.Core.Interfaces
     {
         EmailSetting GetDefaultEmailSetting();
         Task<BaseDataResponse<EmailSettingViewModel>> CreateAsync(EmailSettingViewModel emailSettingView);
+        Task<BaseDataResponse<EmailSettingViewModel>> GetByIdAsync(Guid id);
+        BaseDataResponse<IEnumerable<EmailSettingViewModel>> GetAll();
     }
 }
