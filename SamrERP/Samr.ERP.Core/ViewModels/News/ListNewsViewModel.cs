@@ -6,6 +6,6 @@ namespace Samr.ERP.Core.ViewModels.News
 {
     public class ListNewsViewModel : NewsViewModel
     {
-        public string NewsCategory { get; set; }
+        public string NewsCategoryName { get; set; }
     }
 }

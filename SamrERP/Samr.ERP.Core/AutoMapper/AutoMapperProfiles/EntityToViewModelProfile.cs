@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System;
+using System.IO.Compression;
 using AutoMapper;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
@@ -138,6 +139,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<News, NewsViewModel>();
             CreateMap<EditNewsViewModel, News>();
             CreateMap<News, EditNewsViewModel>()
+                //.ForMember( dst => dst.PublishAt, opt => opt.ConvertUsing<DateTimeFormatter, DateTime>())
                 .ForMember(dst => dst.NewsCategoryName,
                     src => src.MapFrom(
                         map => map.NewsCategory.Name));

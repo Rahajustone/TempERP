@@ -70,6 +70,11 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
+                // TODO
+                news = await _unitOfWork.News.GetDbSet()
+                    .Include(p => p.NewsCategory)
+                    .FirstOrDefaultAsync(p => p.Id == news.Id);
+
                 response = BaseDataResponse<EditNewsViewModel>.Success(_mapper.Map<EditNewsViewModel>(news));
             }
 
