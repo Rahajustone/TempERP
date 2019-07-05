@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190704113922_EmalSettings")]
+    partial class EmalSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,21 +177,15 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<int>("MailPort");
 
-                    b.Property<string>("MailServer")
-                        .IsRequired()
-                        .HasMaxLength(128);
+                    b.Property<string>("MailServer");
 
-                    b.Property<string>("MailServerName")
-                        .IsRequired()
-                        .HasMaxLength(128);
+                    b.Property<string>("MailServerName");
 
                     b.Property<string>("Password");
 
-                    b.Property<string>("Sender")
-                        .IsRequired();
+                    b.Property<string>("Sender");
 
-                    b.Property<string>("SenderName")
-                        .HasMaxLength(128);
+                    b.Property<string>("SenderName");
 
                     b.HasKey("Id");
 

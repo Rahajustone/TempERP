@@ -4,6 +4,7 @@ using AutoMapper;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Department;
+using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
@@ -23,7 +24,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Department, DepartmentViewModel>();
             CreateMap<DepartmentViewModel, Department>();
             CreateMap<EditDepartmentViewModel, Department>();
-            
+
             CreateMap<Department, EditDepartmentViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
@@ -43,7 +44,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<EditNationalityViewModel, Nationality>();
             CreateMap<Nationality, EditNationalityViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
-                src => src.MapFrom(map => 
+                src => src.MapFrom(map =>
                     map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
 
             CreateMap<Position, PositionViewModel>();
@@ -117,7 +118,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.HasUserAccount,
                     src => src.MapFrom(
                         dst => dst.UserId != null))
-                .ForMember( dst => dst.DateOfBirth,
+                .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
                         map => map.DateOfBirth.ToString("dd-MM-yyyy")));
 
@@ -151,6 +152,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+
+            CreateMap<EmailSetting, EmailSettingViewModel>();
+            CreateMap<EmailSettingViewModel, EmailSetting>();
+
         }
     }
 }
