@@ -93,5 +93,10 @@ namespace Samr.ERP.Core.Stuff
             else
                 return default(TResult);
         }
+
+        public static string ToStringFormat(this DateTime target)
+        {
+            return target.ToString("dd-MM-yyyy");
+        }
     }
 }
