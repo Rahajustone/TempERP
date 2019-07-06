@@ -24,7 +24,7 @@ namespace Samr.ERP.Core.ViewModels.Employee
 
 
         [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
-        public string ImageName { get; set; }
+        public string PhotoPath { get; set; }
 
         [Required]
         [StringLength(9, ErrorMessage = "Phone Number length must not be more than 9 character")]

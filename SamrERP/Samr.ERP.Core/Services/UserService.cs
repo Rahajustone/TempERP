@@ -22,16 +22,19 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
 
         public UserService(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
+            IEmailSender emailSender,
             IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _emailSender = emailSender;
             _mapper = mapper;
         }
 
@@ -76,6 +79,8 @@ namespace Samr.ERP.Core.Services
 
             var generatedPass = PasswordGenerator.GenerateNewPassword();
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, generatedPass);
+
+            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}");
 
             if (!resetPasswordResult.Succeeded)
                 return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()

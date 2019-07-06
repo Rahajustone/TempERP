@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -43,11 +44,47 @@ namespace Samr.ERP.Core.Services
             _file = file;
         }
 
-        public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel, IFormFile filePath)
+        public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
+        {
+            BaseDataResponse<GetEmployeeViewModel> dataResponse;
+
+            var employee = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (employee == null)
+            {
+                dataResponse = BaseDataResponse<GetEmployeeViewModel>.NotFound(null);
+            }
+            else
+            {
+                dataResponse = BaseDataResponse<GetEmployeeViewModel>.Success(_mapper.Map<GetEmployeeViewModel>(employee));
+            }
+
+            return dataResponse;
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<AllEmployeeViewModel>>> AllAsync()
+        {
+            var employee = await _unitOfWork.Employees
+                .GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(l => l.EmployeeLockReason)
+                .Include(u => u.LockUser)
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<AllEmployeeViewModel>>(employee);
+
+            return BaseDataResponse<IEnumerable<AllEmployeeViewModel>>.Success(vm);
+        }
+
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-            // TODO raha
+            // TODO Raha
             //var filePathName = await _file.StorePhoto("wwwroot/employers", filePath);
             //dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(editEmployeeViewModel);
 
@@ -100,26 +137,41 @@ namespace Samr.ERP.Core.Services
 
         }
 
-        public async Task UpdateAsync(Employee employee)
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> UpdateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
-            if (employee?.UserId != null)
-            {
-                User employeeUser;
-                if (employee.User != null) employeeUser = employee.User;
-                else
-                {
-                    employeeUser = await _unitOfWork.Users.GetByIdAsync(employee.UserId.Value);
-                }
-                employeeUser.Email = employee.Email;
-                //TODO need to complete phone changing
+            BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-                _unitOfWork.Users.Update(employeeUser);
+            var employeExists = await _unitOfWork.Employees.ExistsAsync(editEmployeeViewModel.Id);
+
+            if (!employeExists)
+            {
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel("Not found employee"));
+            }
+            else
+            {
+                var existsUser = await _unitOfWork.Employees.GetDbSet()
+                    .Where(p => p.Id == editEmployeeViewModel.Id && p.UserId != null)
+                    .Select(p => p.User)
+                    .FirstOrDefaultAsync();
+                if (existsUser != null)
+                {
+                    existsUser.Email = editEmployeeViewModel.Email;
+
+                    _unitOfWork.Users.Update(existsUser);
+                }
+
+                var employee = _mapper.Map<Employee>(editEmployeeViewModel);
 
                 _unitOfWork.Employees.Update(employee);
 
                 await _unitOfWork.CommitAsync();
+
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
             }
+
+            return dataResponse;
         }
+
         public async Task<BaseResponse> EditUserDetailsAsync(
             EditUserDetailsViewModel editUserDetailsView)
         {
@@ -131,9 +183,9 @@ namespace Samr.ERP.Core.Services
             var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == editUserDetailsView.UserId);
 
             employee.Email = editUserDetailsView.Email;
-            employee.AddressFact = editUserDetailsView.AddressFact;
+            employee.FactualAddress = editUserDetailsView.FactualAddress;
 
-            await UpdateAsync(employee);
+            await UpdateAsync(_mapper.Map<EditEmployeeViewModel>(employee));
 
             return BaseResponse.Success();
         }
@@ -178,6 +230,23 @@ namespace Samr.ERP.Core.Services
             return BaseResponse.Success();
         }
 
+        public async Task<BaseDataResponse<GetPassportDataEmployeeViewModel>> GetPassportDataAsync(Guid employeeId)
+        {
+            BaseDataResponse<GetPassportDataEmployeeViewModel> dataResponse;
 
+            var passportDataAsync = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.Nationality)
+                .FirstOrDefaultAsync(p => p.Id == employeeId);
+            if (passportDataAsync == null)
+            {
+                dataResponse = BaseDataResponse<GetPassportDataEmployeeViewModel>.NotFound(null, new ErrorModel("Not found employee"));
+            }
+            else
+            {
+                dataResponse = BaseDataResponse<GetPassportDataEmployeeViewModel>.Success(_mapper.Map<GetPassportDataEmployeeViewModel>(passportDataAsync));
+            }
+
+            return dataResponse;
+        }
     }
 }

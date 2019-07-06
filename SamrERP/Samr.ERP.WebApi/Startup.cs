@@ -46,6 +46,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<RepositoryFactories, RepositoryFactories>();
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
@@ -54,6 +55,9 @@ namespace Samr.ERP.WebApi
             services.AddScoped<INationalityService, NationalityService>();
             services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<IUploadFileService, UploadFileService>();
+            services.AddScoped<INewsService, NewsService>();
+            services.AddScoped<INewsCategoriesService, NewsCategoriesService>();
+            services.AddScoped<IEmailSettingService, EmailSettingSettingService>();
 
             #endregion
 

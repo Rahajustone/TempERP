@@ -29,5 +29,6 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         Task<bool> ExistsAsync(Guid id);
         bool Exists(Guid id);
         bool Any(Expression<Func<T, bool>> predicate);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
     }
 }
