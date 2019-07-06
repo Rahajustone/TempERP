@@ -63,42 +63,36 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Employee, EmployeeViewModel>();
             CreateMap<EmployeeViewModel, Employee>();
             CreateMap<EditEmployeeViewModel, Employee>();
-            CreateMap<Employee, EditEmployeeViewModel>()
-                .ForMember(dst => dst.CreatedUserName,
-                    src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()))
-                .ForMember(dst => dst.GenderName,
-                    src => src.MapFrom(map
-                        => map.Gender.Name))
-                .ForMember(dst => dst.PositionName,
-                    src => src.MapFrom(map
-                        => map.Position.Name))
-                .ForMember(dst => dst.EmployeeLockReasonName,
-                    src => src.MapFrom(map => map.EmployeeLockReason.Name))
-                .ForMember(dst => dst.LockUserName,
-                    src => src.MapFrom(map
-                        => map.LockUser.UserName))
-                .ForMember(dst => dst.NationalityName,
-                    src => src.MapFrom(map
-                        => map.Nationality.Name));
+            CreateMap<Employee, EditEmployeeViewModel>();
+                //.ForMember(dst => dst.CreatedUserName,
+                //    src => src.MapFrom(map =>
+                //        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()))
+                //.ForMember(dst => dst.GenderName,
+                //    src => src.MapFrom(map
+                //        => map.Gender.Name))
+                //.ForMember(dst => dst.PositionName,
+                //    src => src.MapFrom(map
+                //        => map.Position.Name))
+                //.ForMember(dst => dst.EmployeeLockReasonName,
+                //    src => src.MapFrom(map => map.EmployeeLockReason.Name))
+                //.ForMember(dst => dst.LockUserName,
+                //    src => src.MapFrom(map
+                //        => map.LockUser.UserName))
+                //.ForMember(dst => dst.NationalityName,
+                //    src => src.MapFrom(map
+                //        => map.Nationality.Name));
 
             CreateMap<AllEmployeeViewModel, Employee>();
             CreateMap<Employee, AllEmployeeViewModel>()
-                .ForMember(dst => dst.FullName,
-                    src => src.MapFrom(
-                        map => map.FullName()))
-                .ForMember(dst => dst.HireDate,
-                    src => src.MapFrom(
-                        map => map.HireDate.ToString("dd-MM-yyyy")))
-                .ForMember(dst => dst.Department,
-                    src => src.MapFrom(
-                        map => map.Position.Department.Name))
                 .ForMember(dst => dst.Position,
                     src => src.MapFrom(
                         map => map.Position.Name))
-                .ForMember(dst => dst.LockReason,
+                .ForMember(dst => dst.Department,
+                src => src.MapFrom(
+                    map => map.Position.Department.Name))
+                .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.EmployeeLockReason.Name))
+                        map => map.FullName()))
                 .ForMember(dst => dst.HasUserAccount,
                     src => src.MapFrom(
                         dst => dst.UserId != null));
@@ -108,18 +102,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
                         map => map.FullName()))
-                .ForMember(dst => dst.HireDate,
-                    src => src.MapFrom(
-                        map => map.HireDate.ToString("dd-MM-yyyy")))
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
                 .ForMember(dst => dst.Position,
                     src => src.MapFrom(
                         map => map.Position.Name))
-                .ForMember(dst => dst.LockReason,
-                    src => src.MapFrom(
-                        map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.HasUserAccount,
                     src => src.MapFrom(
                         dst => dst.UserId != null))

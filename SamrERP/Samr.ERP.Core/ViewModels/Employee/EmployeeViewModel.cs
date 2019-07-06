@@ -22,10 +22,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
         [StringLength(32, ErrorMessage = "MiddleName length must be not more 32")]
         public string MiddleName { get; set; }
 
-
-        [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
-        public string PhotoPath { get; set; }
-
         [Required]
         [StringLength(9, ErrorMessage = "Phone Number length must not be more than 9 character")]
         [DataType(DataType.PhoneNumber)]

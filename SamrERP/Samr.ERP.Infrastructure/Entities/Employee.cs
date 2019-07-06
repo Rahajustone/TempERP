@@ -79,7 +79,7 @@ namespace Samr.ERP.Infrastructure.Entities
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime PassportIssueDate { get; set; }
 
-        public Guid NationalityId { get; set; }
+        public Guid? NationalityId { get; set; }
         [ForeignKey(nameof(NationalityId))]
         public Nationality Nationality { get; set; }
 

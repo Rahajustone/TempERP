@@ -34,6 +34,14 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(employee);
         }
 
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> AllLockedEmployees()
+        {
+            var employee = await _employeeService.GetAllLockedEmployeeAsync();
+
+            return Response(employee);
+        }
+
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<GetEmployeeViewModel>> Get(Guid id)
         {

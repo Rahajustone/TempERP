@@ -50,6 +50,8 @@ namespace Samr.ERP.Core.Services
 
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.CreatedUser)
+                .Include( p => p.Position)
+                .Include( p => p.Position.Department)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (employee == null)
@@ -71,8 +73,8 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.CreatedUser)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
-                .Include(l => l.EmployeeLockReason)
                 .Include(u => u.LockUser)
+                .Where(e => e.EmployeeLockReasonId == null)
                 .ToListAsync();
 
             var vm = _mapper.Map<IEnumerable<AllEmployeeViewModel>>(employee);
@@ -89,12 +91,11 @@ namespace Samr.ERP.Core.Services
             //dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(editEmployeeViewModel);
 
             var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() &&
-                e.PassportNumber.ToLower() == editEmployeeViewModel.PassportNumber.ToLower());
+                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower());
 
             if (employeeExists)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number or Passport already exist"));
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number already exists"));
 
             }
             else
@@ -247,6 +248,22 @@ namespace Samr.ERP.Core.Services
             }
 
             return dataResponse;
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync()
+        {
+            var employeeLockEmployees = await _unitOfWork.Employees
+                .GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(u => u.LockUser)
+                .Where(e => e.EmployeeLockReasonId != null)
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<AllLockEmployeeViewModel>>(employeeLockEmployees);
+
+            return BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>.Success(vm);
         }
     }
 }
