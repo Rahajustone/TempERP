@@ -8,6 +8,7 @@ using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
+using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Core.ViewModels.News;
 using Samr.ERP.Core.ViewModels.News.Categories;
 using Samr.ERP.Core.ViewModels.Position;
@@ -21,6 +22,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
         {
             CreateMap<User, UserViewModel>();
             CreateMap<UserViewModel, User>();
+
+            CreateMap<LockUserViewModel, User>();
+            CreateMap<User, LockUserViewModel>();
+
             CreateMap<Department, DepartmentViewModel>();
             CreateMap<DepartmentViewModel, Department>();
             CreateMap<EditDepartmentViewModel, Department>();
@@ -132,7 +137,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.DateOfBirth.ToString("dd-MM-yyyy")))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
-                        map => map.PassportIssueDate.ToString("dd-MM-yyyy")));
+                        map => map.PassportIssueDate.ToShortDateString()));
 
             // TODO
             CreateMap<NewsViewModel, News>();
@@ -155,6 +160,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 
             CreateMap<EmailSetting, EmailSettingViewModel>();
             CreateMap<EmailSettingViewModel, EmailSetting>();
+
+            CreateMap<UserLockReasonViewModel, UserLockReason>();
+            CreateMap<UserLockReason, UserLockReasonViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
 
         }
     }

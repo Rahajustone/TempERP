@@ -13,8 +13,5 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public string Email { get; set; }
         public string Description { get; set; }
         public string FactualAddress { get; set; }
-
-
-
     }
 }
