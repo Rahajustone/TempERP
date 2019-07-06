@@ -120,6 +120,30 @@ namespace Samr.ERP.Core.Services
 
             return dataResponse;
         }
-      
+
+        public async Task<BaseResponse> UserLockAsync(LockUserViewModel lockUserViewModel)
+        {
+            var userExists = await _unitOfWork
+                .Users.GetDbSet()
+                .FirstOrDefaultAsync(u => u.Id == lockUserViewModel.Id);
+
+            var userLockReasonExists = await _unitOfWork
+                .UserLockReasons.GetDbSet()
+                .FirstOrDefaultAsync(u => u.Id == lockUserViewModel.UserLockReasonId);
+
+            if (userExists == null 
+                || userLockReasonExists == null
+                || !userExists.IsActive
+                || userExists.UserLockReasonId == null)
+                return BaseResponse.Fail();
+            
+                userExists.UserLockReasonId = lockUserViewModel.UserLockReasonId;
+                userExists.IsActive = false;
+                userExists.LockDate = DateTime.Now;
+
+                await _unitOfWork.CommitAsync();
+
+                return BaseResponse.Success();
+        }
     }
 }

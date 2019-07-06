@@ -15,9 +15,5 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public bool HasUserAccount { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
-        public string HireDate { get; set; }
-        public string LockDate { get; set; }
-        public string LockReason { get; set; }
     }
 }
