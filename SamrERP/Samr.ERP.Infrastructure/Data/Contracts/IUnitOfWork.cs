@@ -24,6 +24,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<NewsCategory> NewsCategories { get; }
         IRepository<EmailSetting> EmailSettings{ get; }
         IRepository<EmailMessageHistory> EmailMessageHistories { get; }
+        IRepository<UserLockReason> UserLockReasons { get; }
 
 
     }
