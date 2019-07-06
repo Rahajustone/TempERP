@@ -32,19 +32,12 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> All(Guid id)
+        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> AllByDepartmentId(Guid id)
         {
             var position = await _positionService.GetAllByDepartmentId(id);
             return Response(position);
         }
-
-        [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> AllByPosition()
-        {
-            var position = await _positionService.GetAllAsync();
-            return Response(position);
-        }
-
+ 
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<EditPositionViewModel>> Get(Guid id)
         {
