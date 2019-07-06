@@ -45,7 +45,11 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<EmployeeLockReason> EmployeeLockReasons => GetStandardRepo<EmployeeLockReason>();
         public IRepository<Nationality> Nationalities => GetStandardRepo<Nationality>();
         public IRepository<Position> Positions => GetStandardRepo<Position>();
+        public IRepository<News> News => GetStandardRepo<News>();
         public IRepository<NewsCategory> NewsCategories => GetStandardRepo<NewsCategory>();
+        public IRepository<EmailSetting> EmailSettings => GetStandardRepo<EmailSetting>();
+        public IRepository<EmailMessageHistory> EmailMessageHistories => GetStandardRepo<EmailMessageHistory>();
+        public IRepository<UserLockReason> UserLockReasons => GetStandardRepo<UserLockReason>();
 
 
         /// <summary>

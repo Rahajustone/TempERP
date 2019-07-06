@@ -22,16 +22,19 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
 
         public UserService(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
+            IEmailSender emailSender,
             IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _emailSender = emailSender;
             _mapper = mapper;
         }
 
@@ -77,6 +80,8 @@ namespace Samr.ERP.Core.Services
             var generatedPass = PasswordGenerator.GenerateNewPassword();
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, generatedPass);
 
+            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}");
+
             if (!resetPasswordResult.Succeeded)
                 return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
                 {
@@ -115,6 +120,30 @@ namespace Samr.ERP.Core.Services
 
             return dataResponse;
         }
-      
+
+        public async Task<BaseResponse> UserLockAsync(LockUserViewModel lockUserViewModel)
+        {
+            var userExists = await _unitOfWork
+                .Users.GetDbSet()
+                .FirstOrDefaultAsync(u => u.Id == lockUserViewModel.Id);
+
+            var userLockReasonExists = await _unitOfWork
+                .UserLockReasons.GetDbSet()
+                .FirstOrDefaultAsync(u => u.Id == lockUserViewModel.UserLockReasonId);
+
+            if (userExists == null 
+                || userLockReasonExists == null
+                || !userExists.IsActive
+                || userExists.UserLockReasonId == null)
+                return BaseResponse.Fail();
+            
+                userExists.UserLockReasonId = lockUserViewModel.UserLockReasonId;
+                userExists.IsActive = false;
+                userExists.LockDate = DateTime.Now;
+
+                await _unitOfWork.CommitAsync();
+
+                return BaseResponse.Success();
+        }
     }
 }

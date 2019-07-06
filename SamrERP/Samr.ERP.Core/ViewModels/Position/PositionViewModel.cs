@@ -9,7 +9,6 @@ namespace Samr.ERP.Core.ViewModels.Position
 
         [Required]
         public string Name { get; set; }
-
         public string CreatedUserName { get; set; }
     }
 }

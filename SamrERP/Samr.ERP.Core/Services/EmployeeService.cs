@@ -50,6 +50,8 @@ namespace Samr.ERP.Core.Services
 
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.CreatedUser)
+                .Include( p => p.Position)
+                .Include( p => p.Position.Department)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (employee == null)
@@ -71,8 +73,8 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.CreatedUser)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
-                .Include(l => l.EmployeeLockReason)
                 .Include(u => u.LockUser)
+                .Where(e => e.EmployeeLockReasonId == null)
                 .ToListAsync();
 
             var vm = _mapper.Map<IEnumerable<AllEmployeeViewModel>>(employee);
@@ -89,12 +91,11 @@ namespace Samr.ERP.Core.Services
             //dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(editEmployeeViewModel);
 
             var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() &&
-                e.PassportNumber.ToLower() == editEmployeeViewModel.PassportNumber.ToLower());
+                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower());
 
             if (employeeExists)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number or Passport already exist"));
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number already exists"));
 
             }
             else
@@ -183,7 +184,7 @@ namespace Samr.ERP.Core.Services
             var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == editUserDetailsView.UserId);
 
             employee.Email = editUserDetailsView.Email;
-            employee.AddressFact = editUserDetailsView.AddressFact;
+            employee.FactualAddress = editUserDetailsView.FactualAddress;
 
             await UpdateAsync(_mapper.Map<EditEmployeeViewModel>(employee));
 
@@ -230,6 +231,39 @@ namespace Samr.ERP.Core.Services
             return BaseResponse.Success();
         }
 
+        public async Task<BaseDataResponse<GetPassportDataEmployeeViewModel>> GetPassportDataAsync(Guid employeeId)
+        {
+            BaseDataResponse<GetPassportDataEmployeeViewModel> dataResponse;
 
+            var passportDataAsync = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.Nationality)
+                .FirstOrDefaultAsync(p => p.Id == employeeId);
+            if (passportDataAsync == null)
+            {
+                dataResponse = BaseDataResponse<GetPassportDataEmployeeViewModel>.NotFound(null, new ErrorModel("Not found employee"));
+            }
+            else
+            {
+                dataResponse = BaseDataResponse<GetPassportDataEmployeeViewModel>.Success(_mapper.Map<GetPassportDataEmployeeViewModel>(passportDataAsync));
+            }
+
+            return dataResponse;
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync()
+        {
+            var employeeLockEmployees = await _unitOfWork.Employees
+                .GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(u => u.LockUser)
+                .Where(e => e.EmployeeLockReasonId != null)
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<AllLockEmployeeViewModel>>(employeeLockEmployees);
+
+            return BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>.Success(vm);
+        }
     }
 }

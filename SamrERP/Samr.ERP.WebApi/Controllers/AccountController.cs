@@ -135,5 +135,17 @@ namespace Samr.ERP.WebApi.Controllers
             }
             return Response(BaseResponse.Fail());
         }
+
+        [HttpPost]
+        public async Task<BaseResponse> LockUser([FromBody] LockUserViewModel lockUserViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _userService.UserLockAsync(lockUserViewModel);
+
+                return Response(response);
+            }
+            return Response(BaseResponse.Fail());
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Interfaces
@@ -17,5 +18,7 @@ namespace Samr.ERP.Core.Interfaces
         IEnumerable<User> GetAllUser();
         Task<BaseDataResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel);
         Task<BaseDataResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel);
+
+        Task<BaseResponse> UserLockAsync(LockUserViewModel userLockReasonViewModel);
     }
 }

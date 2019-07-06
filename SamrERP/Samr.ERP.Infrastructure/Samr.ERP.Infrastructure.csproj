@@ -23,6 +23,7 @@
     <Compile Remove="Migrations\20190629101813_EmployeeLockNUllabe.cs" />
     <Compile Remove="Migrations\20190701105316_NewsCategoriesEntity.cs" />
     <Compile Remove="Migrations\20190701105903_NewsCategoriesEntity.cs" />
+    <Compile Remove="Migrations\20190704144641_EmailSetting_MailPortRange.cs" />
   </ItemGroup>
 
   <ItemGroup>
