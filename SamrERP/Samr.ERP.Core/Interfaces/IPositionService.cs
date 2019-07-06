@@ -13,5 +13,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllAsync();
         Task<BaseDataResponse<EditPositionViewModel>> CreateAsync(EditPositionViewModel positionViewModel);
         Task<BaseDataResponse<EditPositionViewModel>> UpdateAsync(EditPositionViewModel positionViewModel);
+        Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id);
     }
 }

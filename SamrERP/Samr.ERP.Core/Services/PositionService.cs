@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -43,10 +44,29 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
+        private IQueryable<Position> GetAllQuery(bool onlyActives = false)
+        {
+            return _unitOfWork.Positions.All()
+                .Where(p=> !onlyActives || p.IsActive )
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Department);
+        }
+
         public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllAsync()
         {
-            var positions = await _unitOfWork.Positions.GetDbSet().Include(p => p.CreatedUser).ToListAsync();
+            var positions = await GetAllQuery().ToListAsync();
             var vm = _mapper.Map<IEnumerable<PositionViewModel>>(positions);
+
+            var response = BaseDataResponse<IEnumerable<PositionViewModel>>.Success(vm);
+
+            return response;
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id)
+        {
+            var positions = await GetAllQuery(true).Where(p=>p.DepartmentId == id).ToListAsync();
+            var vm = _mapper.Map<IEnumerable<PositionViewModel>>(positions);
+
 
             var response = BaseDataResponse<IEnumerable<PositionViewModel>>.Success(vm);
 
