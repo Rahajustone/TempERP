@@ -117,6 +117,15 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.GenderName,
                     src => src.MapFrom(
                         map => map.Gender.Name))
+                .ForMember( dst => dst.IsLocked,
+                    src => src.MapFrom( 
+                        map => map.EmployeeLockReasonId.HasValue ? true : false ))
+                .ForMember( dst => dst.LockReasonName,
+                    src => src.MapFrom(
+                        map => map.EmployeeLockReason.Name))
+                .ForMember(dst => dst.LockDate,
+                    src => src.MapFrom(
+                        map => map.LockDate.HasValue ? map.LockDate.Value.ToString("dd.MM.yyyy") : null))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
                         map => map.DateOfBirth.ToShortDateString()))
