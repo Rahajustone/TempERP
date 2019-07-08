@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -118,6 +119,8 @@ namespace Samr.ERP.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            SetUpCulture();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -151,6 +154,13 @@ namespace Samr.ERP.WebApi
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
+        }
+
+        private void SetUpCulture()
+        {
+            var ruCulture = new CultureInfo("RU-ru");
+            CultureInfo.CurrentCulture = ruCulture;
+            CultureInfo.CurrentUICulture = ruCulture;
         }
     }
 }

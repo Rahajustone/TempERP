@@ -119,7 +119,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Gender.Name))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
-                        map => map.DateOfBirth.ToString("dd.MM.yyyy")))
+                        map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
                         map => map.HireDate.ToString("dd.MM.yyyy")));
