@@ -65,7 +65,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditEmployeeViewModel>> Update(
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> Edit(
             [FromBody] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)
@@ -96,8 +96,8 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseResponse.Fail());
         }
 
-        [HttpPost]
-        public async Task<BaseResponse> UnLockEmployee([FromBody] Guid id)
+        [HttpPost("{id}")]
+        public async Task<BaseResponse> UnlockEmployee(Guid id)
         {
             if (ModelState.IsValid)
             {
