@@ -94,10 +94,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Gender.Name))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
-                        map => map.DateOfBirth.ToString("dd-MM-yyyy")))
+                        map => map.DateOfBirth.ToString("dd.MM.yyyy")))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
-                        map => map.HireDate.ToString("dd-MM-yyyy")));
+                        map => map.HireDate.ToString("dd.MM.yyyy")));
 
             CreateMap<GetPassportDataEmployeeViewModel, Employee>();
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()
@@ -106,7 +106,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Nationality.Name))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
-                        map => map.DateOfBirth.ToString("dd-MM-yyyy")))
+                        map => map.DateOfBirth.ToString("dd.MM.yyyy")))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
                         map => map.PassportIssueDate.ToShortDateString()));
