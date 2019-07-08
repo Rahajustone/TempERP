@@ -65,7 +65,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditEmployeeViewModel>> Update(
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> Edit(
             [FromBody] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)

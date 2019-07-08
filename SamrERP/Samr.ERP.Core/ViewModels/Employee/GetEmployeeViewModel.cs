@@ -13,5 +13,8 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public string FactualAddress { get; set; }
         public string GenderName { get; set; }
         public  string HireDate { get; set; }
+        public bool IsLocked { get; set; }
+        public string LockReasonName { get; set; }
+        public DateTime LockDate { get; set; }
     }
 }

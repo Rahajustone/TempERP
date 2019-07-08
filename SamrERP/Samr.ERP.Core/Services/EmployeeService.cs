@@ -54,6 +54,7 @@ namespace Samr.ERP.Core.Services
                 .Include( p => p.Position)
                 .Include( p => p.Position.Department)
                 .Include(p => p.Gender)
+                .Include(p => p.EmployeeLockReason)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (employee == null)
