@@ -263,12 +263,15 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
                 .Include(u => u.LockUser)
+                .Include(p => p.EmployeeLockReason)
                 .Where(e => e.EmployeeLockReasonId != null)
                 .ToListAsync();
 
             var vm = _mapper.Map<IEnumerable<AllLockEmployeeViewModel>>(employeeLockEmployees);
 
-            return BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>.Success(vm);
+            var response = BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>.Success(vm);
+
+            return response;
         }
     }
 }

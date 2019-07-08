@@ -12,5 +12,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public string Description { get; set; }
         public string FactualAddress { get; set; }
         public string GenderName { get; set; }
+        public  string HireDate { get; set; }
     }
 }
