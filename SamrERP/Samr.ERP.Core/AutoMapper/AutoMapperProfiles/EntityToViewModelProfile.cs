@@ -78,6 +78,31 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.FullName()));
 
+            CreateMap<AllLockEmployeeViewModel, Employee>();
+            CreateMap<Employee, AllLockEmployeeViewModel>()
+                .ForMember(dst => dst.Position,
+                    src => src.MapFrom(
+                        map => map.Position.Name))
+                .ForMember(dst => dst.Department,
+                    src => src.MapFrom(
+                        map => map.Position.Department.Name))
+                .ForMember(dst => dst.FullName,
+                    src => src.MapFrom(
+                        map => map.FullName()))
+                .ForMember( dst => dst.LockReason, 
+                    src => src.MapFrom( 
+                        map => map.EmployeeLockReason.Name))
+                .ForMember(dst => dst.HireDate,
+                    src => src.MapFrom(
+                        map => map.HireDate.ToString("dd.MM.yyyy")))
+                .ForMember(dst => dst.LockDate,
+                    src => src.MapFrom(
+                        map => map.LockDate.HasValue ? map.LockDate.Value.ToString("dd.MM.yyyy") : null))
+                .ForMember(dst => dst.PhotoPath, opt => opt.Ignore())
+                .ForMember(dst => dst.Phone, opt => opt.Ignore())
+                .ForMember(dst => dst.Email, opt => opt.Ignore())
+                .ForMember(dst => dst.UserId, opt => opt.Ignore());
+
             CreateMap<GetEmployeeViewModel, Employee>();
             CreateMap<Employee, GetEmployeeViewModel>()
                 .ForMember(dst => dst.FullName,
