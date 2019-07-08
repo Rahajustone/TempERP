@@ -59,6 +59,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<INewsCategoriesService, NewsCategoriesService>();
             services.AddScoped<IEmailSettingService, EmailSettingSettingService>();
             services.AddScoped<IUserLockReasonService, UserLockReasonService>();
+            services.AddScoped<IGenderService, GenderService>();
 
 
             #endregion
