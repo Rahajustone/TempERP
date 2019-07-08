@@ -49,6 +49,7 @@ namespace Samr.ERP.Core.Services
             BaseDataResponse<GetEmployeeViewModel> dataResponse;
 
             var employee = await _unitOfWork.Employees.GetDbSet()
+                .Include( p => p.User)
                 .Include(p => p.CreatedUser)
                 .Include( p => p.Position)
                 .Include( p => p.Position.Department)
@@ -74,7 +75,8 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.CreatedUser)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
-                .Include(u => u.LockUser)
+                .Include(p => p.LockUser)
+                .Include( p => p.User)
                 .Where(e => e.EmployeeLockReasonId == null)
                 .ToListAsync();
 
