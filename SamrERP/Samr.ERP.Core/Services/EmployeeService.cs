@@ -94,8 +94,10 @@ namespace Samr.ERP.Core.Services
             //var filePathName = await _file.StorePhoto("wwwroot/employers", filePath);
             //dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(editEmployeeViewModel);
 
-            var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower());
+            var employeeExists = _unitOfWork.Employees.Any(predicate: e => 
+                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() &&
+                e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
+            );
 
             if (employeeExists)
             {
