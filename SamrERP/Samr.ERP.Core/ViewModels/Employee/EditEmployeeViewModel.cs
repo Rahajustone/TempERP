@@ -7,7 +7,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
 {
     public class EditEmployeeViewModel : EmployeeViewModel
     {
-        [StringLength(32, ErrorMessage = "PhotoPath length must be not more 32")]
         public string Photo { get; set; }
 
         [Required]

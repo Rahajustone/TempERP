@@ -212,7 +212,7 @@ namespace Samr.ERP.Core.Services
             employee.LockUserId = _userProvider.CurrentUser.Id;
             employee.EmployeeLockReasonId = employeeLockReason.Id;
             employee.LockDate = DateTime.Now;
-
+            
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
@@ -220,12 +220,14 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId)
         {
+            
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.Id == employeeId);
 
-            if (employee == null || employee.EmployeeLockReasonId != null) return BaseResponse.NotFound();
+            if (employee?.EmployeeLockReasonId == null) return BaseResponse.NotFound();
 
+            //TODO LockUnlockUser
             employee.LockUserId = null;
             employee.EmployeeLockReasonId = null;
             employee.LockDate = null;
