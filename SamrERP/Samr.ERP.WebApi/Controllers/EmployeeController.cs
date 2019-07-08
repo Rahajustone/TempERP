@@ -96,8 +96,8 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseResponse.Fail());
         }
 
-        [HttpPost]
-        public async Task<BaseResponse> UnLockEmployee([FromBody] Guid id)
+        [HttpPost("{id}")]
+        public async Task<BaseResponse> UnlockEmployee(Guid id)
         {
             if (ModelState.IsValid)
             {
