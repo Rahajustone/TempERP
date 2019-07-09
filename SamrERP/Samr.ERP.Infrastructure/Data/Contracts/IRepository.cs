@@ -13,7 +13,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         //IQueryable<T> GetAll();
         T GetById(Guid id);
         Task<T> GetByIdAsync(Guid id);
-        void Add(T entity);
+        void Add(T entity, bool fillCreatedUser = true);
         void AddList(List<T> entity);
         void Update(T entity);
         void Delete(T entity);
