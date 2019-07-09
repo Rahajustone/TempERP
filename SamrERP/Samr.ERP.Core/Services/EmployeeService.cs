@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
@@ -69,21 +70,21 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<AllEmployeeViewModel>>> AllAsync()
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions)
         {
-            var employee = await _unitOfWork.Employees
+            var query = _unitOfWork.Employees
                 .GetDbSet()
                 .Include(p => p.CreatedUser)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
                 .Include(p => p.LockUser)
-                .Include( p => p.User)
-                .Where(e => e.EmployeeLockReasonId == null)
-                .ToListAsync();
+                .Include(p => p.User)
+                .Where(e => e.EmployeeLockReasonId == null);
 
-            var vm = _mapper.Map<IEnumerable<AllEmployeeViewModel>>(employee);
+            var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
 
-            return BaseDataResponse<IEnumerable<AllEmployeeViewModel>>.Success(vm);
+
+            return BaseDataResponse<PagedList<AllEmployeeViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)

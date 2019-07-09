@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
@@ -27,9 +29,10 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public  async  Task<BaseDataResponse<IEnumerable<AllEmployeeViewModel>>> All()
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions)
         {
-            var employee = await _employeeService.AllAsync();
+            
+            var employee = await _employeeService.AllAsync(pagingOptions);
 
             return Response(employee);
         }
