@@ -122,7 +122,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Gender.Name))
                 .ForMember( dst => dst.IsLocked,
                     src => src.MapFrom( 
-                        map => map.EmployeeLockReasonId.HasValue ? true : false ))
+                        map => map.EmployeeLockReasonId.HasValue ))
                 .ForMember( dst => dst.LockReasonName,
                     src => src.MapFrom(
                         map => map.EmployeeLockReason.Name))
@@ -147,7 +147,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
-                        map => map.PassportIssueDate.ToShortDateString()));
+                        map => map.PassportIssueDate.Value.ToShortDateString()));
 
             // TODO
             CreateMap<NewsViewModel, News>();

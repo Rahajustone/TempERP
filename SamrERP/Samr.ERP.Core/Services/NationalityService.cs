@@ -85,12 +85,22 @@ namespace Samr.ERP.Core.Services
             var nationalityExists = await _unitOfWork.Nationalities.ExistsAsync(nationalityViewModel.Id);
             if (nationalityExists)
             {
-                var nationality = _mapper.Map<Nationality>(nationalityViewModel);
+                var checkNameUnique = await _unitOfWork.Nationalities
+                    .GetDbSet()
+                    .AnyAsync(n =>n.Id != nationalityViewModel.Id && n.Name.ToLower() == nationalityViewModel.Name.ToLower());
+                if (checkNameUnique)
+                {
+                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, new ErrorModel("Already we have this nation with this Name"));
+                }
+                else
+                {
+                    var nationality = _mapper.Map<Nationality>(nationalityViewModel);
 
-                _unitOfWork.Nationalities.Update(nationality);
-                await _unitOfWork.CommitAsync();
+                    _unitOfWork.Nationalities.Update(nationality);
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                }
             }
             else
             {

@@ -103,13 +103,23 @@ namespace Samr.ERP.Core.Services
             var positionExists = await _unitOfWork.Positions.ExistsAsync(positionViewModel.Id);
             if (positionExists)
             {
-                var position = _mapper.Map<Position>(positionViewModel);
+                var checkNameUnique = await _unitOfWork.Positions.GetDbSet()
+                    .AnyAsync(p => p.Id != positionViewModel.Id 
+                                   && p.Name.ToLower() == positionViewModel.Name.ToLower());
+                if (checkNameUnique)
+                {
+                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Duplicate position name"));
+                }
+                else
+                {
+                    var position = _mapper.Map<Position>(positionViewModel);
 
-                _unitOfWork.Positions.Update(position);
+                    _unitOfWork.Positions.Update(position);
 
-                await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                    dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                }
             }
             else
             {

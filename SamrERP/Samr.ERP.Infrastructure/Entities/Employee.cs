@@ -77,7 +77,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public string PassportIssuer { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
-        public DateTime PassportIssueDate { get; set; }
+        public DateTime? PassportIssueDate { get; set; }
 
         public Guid? NationalityId { get; set; }
         [ForeignKey(nameof(NationalityId))]
