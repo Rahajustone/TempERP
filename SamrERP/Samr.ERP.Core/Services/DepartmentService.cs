@@ -59,8 +59,7 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
-            var departmentExists =
-                _unitOfWork.Departments.Any(p => p.Name.ToLower() == departmentViewModel.Name.ToLower());
+            var departmentExists = await CheckDepartmentNameUnique(departmentViewModel.Name);
             if (departmentExists)
             {
                 dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(departmentViewModel, new ErrorModel("Already this model in database."));
@@ -78,20 +77,36 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
+        private async Task<bool> CheckDepartmentNameUnique(string name)
+        {
+            return await _unitOfWork.Departments.AnyAsync(p => p.Name.ToLower() == name.ToLower());
+        }
+
         public async Task<BaseDataResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel model)
         {
             BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
-            var departmentExists = await _unitOfWork.Departments.ExistsAsync(model.Id);
+            var departmentExists = await _unitOfWork.Departments.AnyAsync(p => p.Id == model.Id);
+
             if (departmentExists)
             {
-                var department = _mapper.Map<Department>(model);
+                var checkNameUnique = await _unitOfWork.Departments
+                    .GetDbSet()
+                    .AnyAsync(d => d.Id != model.Id && d.Name.ToLower() == model.Name.ToLower());
+                if (checkNameUnique)
+                {
+                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(model, new ErrorModel("We have already this department"));
+                }
+                else
+                {
+                    var department = _mapper.Map<Department>(model);
 
-                _unitOfWork.Departments.Update(department);
+                    _unitOfWork.Departments.Update(department);
 
-                await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
+                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
+                }
             }
             else
             {
