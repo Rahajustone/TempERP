@@ -16,7 +16,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public UserLockReason UserLockReason { get; set; }
 
         //Todo need to complete with employee
-        public string GetToShortName() => $"{Email}";
+        public string ToShortName() => $"{UserName}";
        
         public bool IsActive { get; set; }
 
