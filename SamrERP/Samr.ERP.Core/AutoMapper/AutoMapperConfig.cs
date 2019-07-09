@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Samr.ERP.Core.AutoMapper.AutoMapperProfiles;
 
 namespace Samr.ERP.Core.AutoMapper
@@ -8,10 +9,15 @@ namespace Samr.ERP.Core.AutoMapper
     {
         public static MapperConfiguration RegisterMappings()
         {
-            return new MapperConfiguration(cfg =>
+            Action<IMapperConfigurationExpression> expressionConfig = cfg =>
             {
                 cfg.AddProfile(new EntityToViewModelProfile());
-            });
+            };
+            var mapperConfiguration = new MapperConfiguration(expressionConfig);
+
+            //TODO надо получить instance через service
+            Mapper.Initialize(expressionConfig);
+            return mapperConfiguration;
         }
 
     }

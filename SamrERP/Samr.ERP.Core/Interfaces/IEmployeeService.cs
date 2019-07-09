@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
@@ -16,7 +18,7 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id);
 
-        Task<BaseDataResponse<IEnumerable<AllEmployeeViewModel>>> AllAsync();
+        Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions);
         Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync();
 
         Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel);
