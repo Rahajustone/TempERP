@@ -42,7 +42,7 @@ namespace Samr.ERP.WebApi
 
             services.AddDbContext<SamrDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Scoped);
             services.AddScoped<UserProvider>();
             services.AddScoped<RepositoryFactories, RepositoryFactories>();
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
