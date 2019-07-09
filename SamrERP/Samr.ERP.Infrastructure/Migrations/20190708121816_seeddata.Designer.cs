@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190708121816_seeddata")]
+    partial class seeddata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -321,13 +323,13 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("800ebb18-f2a7-4869-bac7-c9a7161dcccd"),
-                            Name = "Мужской"
+                            Id = new Guid("afa798f7-6980-4187-9353-81f700ed79d9"),
+                            Name = "Male"
                         },
                         new
                         {
-                            Id = new Guid("07c41ef0-6cd2-48bc-a5fa-0fedc9748964"),
-                            Name = "Женский"
+                            Id = new Guid("53b6c3b2-2223-4ee9-a8b9-edac5ca45e20"),
+                            Name = "Female"
                         });
                 });
 

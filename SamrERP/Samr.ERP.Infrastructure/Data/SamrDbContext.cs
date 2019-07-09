@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Entities.BaseObjects;
+using Samr.ERP.Infrastructure.SeedData;
 
 namespace Samr.ERP.Infrastructure.Data
 {
@@ -51,6 +52,8 @@ namespace Samr.ERP.Infrastructure.Data
             }
 
             //EntitiesConfiguration.ConfigureEntities(builder);
+
+            SeedDataEntities.AddSeed(builder);
         }
     }
 }

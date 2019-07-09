@@ -94,10 +94,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
-                        map => map.HireDate.ToString("dd.MM.yyyy")))
+                        map => map.HireDate.ToShortDateString()))
                 .ForMember(dst => dst.LockDate,
                     src => src.MapFrom(
-                        map => map.LockDate.HasValue ? map.LockDate.Value.ToString("dd.MM.yyyy") : null))
+                        map => map.LockDate.HasValue ? map.LockDate.Value.ToShortDateString() : null))
                 .ForMember(dst => dst.PhotoPath, opt => opt.Ignore())
                 .ForMember(dst => dst.Phone, opt => opt.Ignore())
                 .ForMember(dst => dst.Email, opt => opt.Ignore())
@@ -111,6 +111,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
+                .ForMember( dst  => dst.DepartmentId, 
+                    src => src.MapFrom(
+                         map => map.Position.Department.Id))
                 .ForMember(dst => dst.Position,
                     src => src.MapFrom(
                         map => map.Position.Name))
@@ -125,13 +128,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.LockDate,
                     src => src.MapFrom(
-                        map => map.LockDate.HasValue ? map.LockDate.Value.ToString("dd.MM.yyyy") : null))
+                        map => map.LockDate.HasValue ? map.LockDate.Value.ToShortDateString() : null))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
                         map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
-                        map => map.HireDate.ToString("dd.MM.yyyy")));
+                        map => map.HireDate.ToShortDateString()));
 
             CreateMap<GetPassportDataEmployeeViewModel, Employee>();
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()
@@ -140,7 +143,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Nationality.Name))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
-                        map => map.DateOfBirth.ToString("dd.MM.yyyy")))
+                        map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
                         map => map.PassportIssueDate.ToShortDateString()));
