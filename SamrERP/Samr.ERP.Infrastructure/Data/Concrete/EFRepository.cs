@@ -46,7 +46,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         }
 
-        public void Add(T entity)
+        public void Add(T entity,bool fillCreatedUser = true)
         {
             if (entity is IChangeable changeable)
             {
@@ -57,7 +57,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             if (entity is ICreatable creatable)
                 creatable.CreatedAt = DateTime.Now;
 
-            if (entity is ICreatableByUser creatableByUser && _userProvider.CurrentUser != null)
+            if (entity is ICreatableByUser creatableByUser && fillCreatedUser)
                 creatableByUser.CreatedUserId = _userProvider.CurrentUser.Id;
 
             EntityEntry dbEntityEntry = DbContext.Entry(entity);

@@ -5,7 +5,7 @@ namespace Samr.ERP.Core.ViewModels.EmailSetting
 {
     public class EmailSettingViewModel
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         [Required]
         [StringLength(128)]
         public string MailServerName { get; set; }
@@ -22,7 +22,7 @@ namespace Samr.ERP.Core.ViewModels.EmailSetting
         public string Sender { get; set; }
         public string Password { get; set; }
         public bool IsDefault { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public bool IsActive { get; set; }
     }
 }

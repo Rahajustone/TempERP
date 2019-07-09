@@ -42,12 +42,13 @@ namespace Samr.ERP.Core.Services
 
             var emailSetting = _mapper.Map<EmailSetting>(emailSettingView);
 
-            if (emailSetting.IsDefault) SetDefaultAsync(emailSetting);
 
             _unitOfWork.EmailSettings.Add(emailSetting);
 
             await _unitOfWork.CommitAsync();
-            
+
+            if (emailSetting.IsDefault) await UndefaultOthersAsync(emailSetting.Id);
+
 
             return BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting));
         }
@@ -65,7 +66,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            if (emailSettingViewModel.IsDefault) SetDefaultAsync(emailSetting);
+            if (emailSettingViewModel.IsDefault)await UndefaultOthersAsync(emailSetting.Id);
 
             return BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting));
             ;
@@ -81,9 +82,9 @@ namespace Samr.ERP.Core.Services
         }
         
 
-        private async void SetDefaultAsync(EmailSetting emailSetting)
+        private async Task UndefaultOthersAsync(Guid id)
         {
-            var emailSettings = await _unitOfWork.EmailSettings.All().Where(p => p.IsActive && p.IsDefault && p.Id != emailSetting.Id).ToListAsync();
+            var emailSettings = await _unitOfWork.EmailSettings.All().Where(p => p.IsActive && p.IsDefault && p.Id != id).ToListAsync();
             foreach (var setting in emailSettings)
             {
                 setting.IsDefault = false;
@@ -91,8 +92,8 @@ namespace Samr.ERP.Core.Services
                 _unitOfWork.EmailSettings.Update(setting);
             }
 
-            emailSetting.IsDefault = true;
-            _unitOfWork.EmailSettings.Update(emailSetting);
+            //emailSetting.IsDefault = true;
+            //_unitOfWork.EmailSettings.Update(emailSetting);
 
             await _unitOfWork.CommitAsync();
         }

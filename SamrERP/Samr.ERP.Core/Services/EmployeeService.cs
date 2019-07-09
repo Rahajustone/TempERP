@@ -167,13 +167,24 @@ namespace Samr.ERP.Core.Services
                     _unitOfWork.Users.Update(existsUser);
                 }
 
-                var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+                var checkEmailUnique = await _unitOfWork.Employees
+                    .GetDbSet()
+                    .AnyAsync(e => e.Id != editEmployeeViewModel.Id
+                                   && e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower());
+                if (checkEmailUnique)
+                {
+                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Duplicate phone number!"));
+                }
+                else
+                {
+                    var employee = _mapper.Map<Employee>(editEmployeeViewModel);
 
-                _unitOfWork.Employees.Update(employee);
+                    _unitOfWork.Employees.Update(employee);
 
-                await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
+                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
+                }
             }
 
             return dataResponse;

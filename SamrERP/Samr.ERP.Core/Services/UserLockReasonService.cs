@@ -89,13 +89,24 @@ namespace Samr.ERP.Core.Services
             var userLockReasonExists = await _unitOfWork.UserLockReasons.ExistsAsync(userLockReasonViewModel.Id);
             if (userLockReasonExists)
             {
-                var userLockReason = _mapper.Map<UserLockReason>(userLockReasonViewModel);
+                var checkNameUnique = await _unitOfWork.UserLockReasons
+                    .GetDbSet()
+                    .AnyAsync(u => u.Id != userLockReasonViewModel.Id 
+                                   && u.Name.ToLower() == userLockReasonViewModel.Name.ToLower());
+                if (checkNameUnique)
+                {
+                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.NotFound(userLockReasonViewModel, new ErrorModel("Duplicate name of lock reason!"));
+                }
+                else
+                {
+                    var userLockReason = _mapper.Map<UserLockReason>(userLockReasonViewModel);
 
-                _unitOfWork.UserLockReasons.Update(userLockReason);
+                    _unitOfWork.UserLockReasons.Update(userLockReason);
 
-                await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
+                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
+                }
             }
             else
             {

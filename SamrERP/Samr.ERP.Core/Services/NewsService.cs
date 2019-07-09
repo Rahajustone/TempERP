@@ -88,13 +88,25 @@ namespace Samr.ERP.Core.Services
             var newsExists = await _unitOfWork.News.ExistsAsync(newsViewModel.Id);
             if (newsExists)
             {
-                var news = _mapper.Map<News>(newsViewModel);
+                var checkShortDescriptionUnique = await _unitOfWork.News
+                    .GetDbSet()
+                    .AnyAsync(d => d.Id != newsViewModel.Id
+                                   && d.ShortDescription.ToLower() == newsViewModel.ShortDescription.ToLower());
+                if (checkShortDescriptionUnique)
+                {
+                    dataResponse = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel,
+                        new ErrorModel("Duplicate short description field!"));
+                }
+                else
+                {
+                    var news = _mapper.Map<News>(newsViewModel);
 
-                _unitOfWork.News.Update(news);
+                    _unitOfWork.News.Update(news);
 
-                await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditNewsViewModel>.Success(_mapper.Map<EditNewsViewModel>(news));
+                    dataResponse = BaseDataResponse<EditNewsViewModel>.Success(_mapper.Map<EditNewsViewModel>(news));
+                }
             }
             else
             {

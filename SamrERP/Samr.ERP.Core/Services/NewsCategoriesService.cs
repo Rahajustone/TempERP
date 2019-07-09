@@ -85,13 +85,24 @@ namespace Samr.ERP.Core.Services
             var  newsCategoryExists = await _unitOfWork.NewsCategories.ExistsAsync(newsCategoriesViewModel.Id);
             if (newsCategoryExists)
             {
-                var newsCategory = _mapper.Map<NewsCategory>(newsCategoriesViewModel);
+                var checkNameUnique = await _unitOfWork.NewsCategories
+                    .GetDbSet()
+                    .AnyAsync(n => n.Id != newsCategoriesViewModel.Id 
+                                   && n.Name.ToLower() == newsCategoriesViewModel.Name.ToLower());
+                if (checkNameUnique)
+                {
+                    dataResponse = BaseDataResponse<NewsCategoriesViewModel>.Fail(newsCategoriesViewModel, new ErrorModel("We have already this news categories with this name"));
+                }
+                else
+                {
+                    var newsCategory = _mapper.Map<NewsCategory>(newsCategoriesViewModel);
 
-                _unitOfWork.NewsCategories.Update(newsCategory);
+                    _unitOfWork.NewsCategories.Update(newsCategory);
 
-                await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<NewsCategoriesViewModel>.Success(_mapper.Map<NewsCategoriesViewModel>(newsCategory));
+                    dataResponse = BaseDataResponse<NewsCategoriesViewModel>.Success(_mapper.Map<NewsCategoriesViewModel>(newsCategory));
+                }
             }
             else
             {
