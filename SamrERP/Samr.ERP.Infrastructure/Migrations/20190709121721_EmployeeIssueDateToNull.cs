@@ -7,15 +7,15 @@ namespace Samr.ERP.Infrastructure.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Genders",
-                keyColumn: "Id",
-                keyValue: new Guid("07c41ef0-6cd2-48bc-a5fa-0fedc9748964"));
+            //migrationBuilder.DeleteData(
+            //    table: "Genders",
+            //    keyColumn: "Id",
+            //    keyValue: new Guid("07c41ef0-6cd2-48bc-a5fa-0fedc9748964"));
 
-            migrationBuilder.DeleteData(
-                table: "Genders",
-                keyColumn: "Id",
-                keyValue: new Guid("800ebb18-f2a7-4869-bac7-c9a7161dcccd"));
+            //migrationBuilder.DeleteData(
+            //    table: "Genders",
+            //    keyColumn: "Id",
+            //    keyValue: new Guid("800ebb18-f2a7-4869-bac7-c9a7161dcccd"));
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "PassportIssueDate",
@@ -36,15 +36,15 @@ namespace Samr.ERP.Infrastructure.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Genders",
-                keyColumn: "Id",
-                keyValue: new Guid("63bcc86e-c1ad-4804-8881-9d8cc979e7a2"));
+        //    migrationBuilder.DeleteData(
+        //        table: "Genders",
+        //        keyColumn: "Id",
+        //        keyValue: new Guid("63bcc86e-c1ad-4804-8881-9d8cc979e7a2"));
 
-            migrationBuilder.DeleteData(
-                table: "Genders",
-                keyColumn: "Id",
-                keyValue: new Guid("9afda0d8-081b-43ff-ba01-9a0e1659c9cc"));
+        //    migrationBuilder.DeleteData(
+        //        table: "Genders",
+        //        keyColumn: "Id",
+        //        keyValue: new Guid("9afda0d8-081b-43ff-ba01-9a0e1659c9cc"));
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "PassportIssueDate",
