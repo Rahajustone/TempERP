@@ -43,7 +43,6 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public async Task<T> GetByIdAsync(Guid id)
         {
             return await DbSet.FindAsync(id);
-
         }
 
         public void Add(T entity,bool fillCreatedUser = true)

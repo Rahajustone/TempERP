@@ -33,7 +33,6 @@ namespace Samr.ERP.Infrastructure.Entities
         public Gender Gender { get; set; }
 
         [Required]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
@@ -76,7 +75,6 @@ namespace Samr.ERP.Infrastructure.Entities
         [StringLength(64)]
         public string PassportIssuer { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime? PassportIssueDate { get; set; }
 
         public Guid? NationalityId { get; set; }

@@ -141,13 +141,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()
                 .ForMember(dst => dst.Nationality,
                     src => src.MapFrom(
-                        map => map.Nationality.Name))
+                        map => map.Nationality.IfNotNull(p=>p.Name)))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
                         map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
-                        map => map.PassportIssueDate.Value.ToShortDateString()));
+                        map => map.PassportIssueDate !=null ? map.PassportIssueDate.Value.ToShortDateString() : null));
 
             // TODO
             CreateMap<NewsViewModel, News>();
