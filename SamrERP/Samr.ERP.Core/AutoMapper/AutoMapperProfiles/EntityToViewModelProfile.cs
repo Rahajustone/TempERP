@@ -35,7 +35,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Department, EditDepartmentViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
             ;
             CreateMap<EmployeeLockReasonViewModel, EmployeeLockReason>();
             CreateMap<EditEmployeeLockReasonViewModel, EmployeeLockReason>();
@@ -44,7 +44,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<EmployeeLockReason, EditEmployeeLockReasonViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
 
             CreateMap<Nationality, NationalityViewModel>();
             CreateMap<NationalityViewModel, Nationality>();
@@ -52,7 +52,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Nationality, EditNationalityViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                 src => src.MapFrom(map =>
-                    map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+                    map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
 
             CreateMap<Position, PositionViewModel>();
             CreateMap<PositionViewModel, Position>();
@@ -60,7 +60,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Position, EditPositionViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
 
             CreateMap<Employee, EmployeeViewModel>();
             CreateMap<EmployeeViewModel, Employee>();
@@ -134,7 +134,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
-                        map => map.HireDate.ToShortDateString()));
+                        map => map.HireDate.ToShortDateString()))
+                        .ForMember(dst => dst.TestDateTime , src =>src.MapFrom( map=> map.CreatedAt));
 
             CreateMap<GetPassportDataEmployeeViewModel, Employee>();
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()
@@ -165,7 +166,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<NewsCategory, NewsCategoriesViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
 
             CreateMap<EmailSetting, EmailSettingViewModel>();
             CreateMap<EmailSettingViewModel, EmailSetting>();
@@ -174,7 +175,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<UserLockReason, UserLockReasonViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.GetToShortName()));
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
 
             CreateMap<Gender, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, Gender>();

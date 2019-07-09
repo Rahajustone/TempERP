@@ -158,11 +158,11 @@ namespace Samr.ERP.WebApi
 
         private void SetUpCulture()
         {
-            var ruCulture = new CultureInfo("RU-ru");
+            var ruCulture = new CultureInfo("ru-RU");
             CultureInfo.CurrentCulture = ruCulture;
             CultureInfo.CurrentUICulture = ruCulture;
-
-
+            CultureInfo.DefaultThreadCurrentCulture = ruCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = ruCulture;
         }
     }
 }
