@@ -147,7 +147,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
-                        map => map.PassportIssueDate.Value.ToShortDateString()));
+                        map => map.PassportIssueDate !=null ? map.PassportIssueDate.Value.ToShortDateString() : null));
 
             // TODO
             CreateMap<NewsViewModel, News>();
