@@ -111,6 +111,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
+                .ForMember( dst  => dst.DepartmentId, 
+                    src => src.MapFrom(
+                         map => map.Position.Department.Id))
                 .ForMember(dst => dst.Position,
                     src => src.MapFrom(
                         map => map.Position.Name))
