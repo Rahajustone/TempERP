@@ -7,6 +7,9 @@ namespace Samr.ERP.Core.ViewModels.Employee
 {
     public class GetEmployeeViewModel : AllEmployeeViewModel
     {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string MiddleName { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public string DateOfBirth { get; set; }
         public string Description { get; set; }
