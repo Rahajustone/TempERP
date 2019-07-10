@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -45,14 +47,16 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<EmployeeLockReasonViewModel>>> GetAll()
+        public async Task<BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var employeeLockReason = await _unitOfWork.EmployeeLockReasons.GetDbSet().Include(p => p.CreatedUser).ToListAsync();
-            var vm = _mapper.Map<IEnumerable<EmployeeLockReasonViewModel>>(employeeLockReason);
+            var query = _unitOfWork
+                .EmployeeLockReasons
+                .GetDbSet()
+                .Include(p => p.CreatedUser);
 
-            var response = BaseDataResponse<IEnumerable<EmployeeLockReasonViewModel>>.Success(vm);
+            var pageList = await query.ToMappedPagedListAsync<EmployeeLockReason, EmployeeLockReasonViewModel>(pagingOptions);
 
-            return response;
+            return BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>.Success(pageList);
         }
 
         public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)

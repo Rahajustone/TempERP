@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -20,5 +21,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel);
 
         Task<BaseResponse> UserLockAsync(LockUserViewModel userLockReasonViewModel);
+        Task<BaseResponse> UserUnlockAsync(Guid id);
     }
 }

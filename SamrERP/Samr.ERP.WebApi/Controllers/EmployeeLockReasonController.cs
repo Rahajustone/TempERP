@@ -6,7 +6,9 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
 
@@ -25,9 +27,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<EmployeeLockReasonViewModel>>> All()
+        public async Task<BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>> All([FromQuery]PagingOptions pagingOptions)
         {
-            var employeeLockReasons = await _employeeLockReason.GetAll();
+            var employeeLockReasons = await _employeeLockReason.GetAllAsync(pagingOptions);
             return Response(employeeLockReasons);
         }
 

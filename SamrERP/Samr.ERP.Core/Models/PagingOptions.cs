@@ -8,5 +8,11 @@ namespace Samr.ERP.Core.Models
     {
         public int Page { get; set; }
         public int PageSize { get; set; }
+
+        public PagingOptions()
+        {
+            Page = 1;
+            PageSize = 20;
+        }
     }
 }

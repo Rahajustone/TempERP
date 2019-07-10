@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -52,14 +54,11 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.Department);
         }
 
-        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllAsync()
+        public async Task<BaseDataResponse<PagedList<PositionViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var positions = await GetAllQuery().ToListAsync();
-            var vm = _mapper.Map<IEnumerable<PositionViewModel>>(positions);
+            var listItem = await GetAllQuery().ToMappedPagedListAsync<Position, PositionViewModel>(pagingOptions);
 
-            var response = BaseDataResponse<IEnumerable<PositionViewModel>>.Success(vm);
-
-            return response;
+            return BaseDataResponse<PagedList<PositionViewModel>>.Success(listItem);
         }
 
         public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id)
