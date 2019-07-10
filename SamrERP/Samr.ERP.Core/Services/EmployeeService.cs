@@ -70,7 +70,7 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel)
         {
             var query = _unitOfWork.Employees
                 .GetDbSet()
@@ -80,6 +80,17 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.LockUser)
                 .Include(p => p.User)
                 .Where(e => e.EmployeeLockReasonId == null);
+
+            if (filterEmployeeViewModel.FullName != null)
+                query = query.Where(e => filterEmployeeViewModel.FullName.Contains(e.FirstName)
+                                         || filterEmployeeViewModel.FullName.Contains(e.LastName)
+                                         || filterEmployeeViewModel.FullName.Contains(e.MiddleName));
+
+            if (filterEmployeeViewModel.DepartmentId != null)
+                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
+
+            if (filterEmployeeViewModel.HasUser)
+                query = query.Where(e => e.UserId != null);
 
             var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
 
