@@ -133,17 +133,32 @@ namespace Samr.ERP.Core.Services
 
             if (userExists == null 
                 || userLockReasonExists == null
-                || !userExists.IsActive
-                || userExists.UserLockReasonId == null)
+                || userExists.UserLockReasonId != null)
                 return BaseResponse.Fail();
             
                 userExists.UserLockReasonId = lockUserViewModel.UserLockReasonId;
-                userExists.IsActive = false;
                 userExists.LockDate = DateTime.Now;
 
                 await _unitOfWork.CommitAsync();
 
                 return BaseResponse.Success();
+        }
+
+        public async Task<BaseResponse> UserUnlockAsync(Guid id)
+        {
+            var userExists = await _unitOfWork
+                .Users.GetDbSet()
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (userExists?.UserLockReasonId == null)
+                return BaseResponse.Fail();
+
+            userExists.UserLockReasonId = null;
+            userExists.LockDate = null;
+
+            await _unitOfWork.CommitAsync();
+
+            return BaseResponse.Success();
         }
     }
 }

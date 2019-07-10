@@ -20,6 +20,6 @@ namespace Samr.ERP.Infrastructure.Entities
        
         public bool IsActive { get; set; }
 
-        public  DateTime LockDate { get; set; }
+        public  DateTime? LockDate { get; set; }
     }
 }
