@@ -17,8 +17,8 @@ namespace Samr.ERP.Infrastructure.SeedData
         {
             builder.Entity<Gender>()
                 .HasData( 
-                    new Gender { Name = "Мужской" },
-                    new Gender { Name = "Женский" }
+                    new Gender { Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"), Name = "Мужской" },
+                    new Gender { Id = new Guid("0ce7a31f-dfd6-4bdc-ae57-32087c383705"), Name = "Женский" }
                 );
         }
     }
