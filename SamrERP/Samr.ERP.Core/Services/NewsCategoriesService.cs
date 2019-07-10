@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.News.Categories;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -44,14 +46,16 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<NewsCategoriesViewModel>>> GetAllAsync()
+        public async Task<BaseDataResponse<PagedList<NewsCategoriesViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var newsCategories = await _unitOfWork.NewsCategories.GetDbSet().Include(p => p.CreatedUser).ToListAsync();
-            var vm = _mapper.Map<IEnumerable<NewsCategoriesViewModel>>(newsCategories);
+            var query = _unitOfWork
+                .NewsCategories
+                .GetDbSet()
+                .Include(p => p.CreatedUser);
 
-            var response = BaseDataResponse<IEnumerable<NewsCategoriesViewModel>>.Success(vm);
+            var listItem = await query.ToMappedPagedListAsync<NewsCategory, NewsCategoriesViewModel>(pagingOptions);
 
-            return response;
+            return BaseDataResponse<PagedList<NewsCategoriesViewModel>>.Success(listItem);
         }
 
         public async Task<BaseDataResponse<NewsCategoriesViewModel>> CreateAsync(NewsCategoriesViewModel newsCategoriesViewModel)

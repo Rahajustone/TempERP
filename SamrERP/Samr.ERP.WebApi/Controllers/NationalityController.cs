@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -25,9 +27,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> All()
+        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> All([FromQuery]PagingOptions pagingOptions)
         {
-            var nationalities = await _nationalityService.GetAllAsync();
+            var nationalities = await _nationalityService.GetAllAsync(pagingOptions);
             return Response(nationalities);
         }
 

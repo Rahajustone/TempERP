@@ -83,7 +83,6 @@ namespace Samr.ERP.Core.Services
 
             var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
 
-
             return BaseDataResponse<PagedList<AllEmployeeViewModel>>.Success(pagedList);
         }
 
@@ -270,23 +269,20 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync()
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions)
         {
-            var employeeLockEmployees = await _unitOfWork.Employees
+            var query = _unitOfWork.Employees
                 .GetDbSet()
                 .Include(p => p.CreatedUser)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
                 .Include(u => u.LockUser)
                 .Include(p => p.EmployeeLockReason)
-                .Where(e => e.EmployeeLockReasonId != null)
-                .ToListAsync();
+                .Where(e => e.EmployeeLockReasonId != null);
 
-            var vm = _mapper.Map<IEnumerable<AllLockEmployeeViewModel>>(employeeLockEmployees);
+            var itemList = await query.ToMappedPagedListAsync<Employee, AllLockEmployeeViewModel>(pagingOptions);
 
-            var response = BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>.Success(vm);
-
-            return response;
+            return BaseDataResponse<PagedList<AllLockEmployeeViewModel>>.Success(itemList);
         }
     }
 }

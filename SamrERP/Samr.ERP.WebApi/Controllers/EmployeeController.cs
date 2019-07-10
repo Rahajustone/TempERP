@@ -35,12 +35,12 @@ namespace Samr.ERP.WebApi.Controllers
             var employee = await _employeeService.AllAsync(pagingOptions);
 
             return Response(employee);
-        }
+        }   
 
         [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> AllLockedEmployees()
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> AllLockedEmployees([FromQuery]PagingOptions pagingOptions)
         {
-            var employee = await _employeeService.GetAllLockedEmployeeAsync();
+            var employee = await _employeeService.GetAllLockedEmployeeAsync(pagingOptions);
 
             return Response(employee);
         }

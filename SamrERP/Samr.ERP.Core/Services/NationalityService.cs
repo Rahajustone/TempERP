@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -25,14 +27,16 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> GetAllAsync()
+        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var nationalities = await _unitOfWork.Nationalities.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
-            var vm = _mapper.Map<IEnumerable<EditNationalityViewModel>>(nationalities);
+            var query = _unitOfWork
+                .Nationalities
+                .GetDbSet()
+                .Include(u => u.CreatedUser);
 
-            var response = BaseDataResponse<IEnumerable<EditNationalityViewModel>>.Success(vm);
+            var pageList = await query.ToMappedPagedListAsync<Nationality, EditNationalityViewModel>(pagingOptions);
 
-            return response;
+            return BaseDataResponse<PagedList<EditNationalityViewModel>>.Success(pageList);
         }
 
         public async Task<BaseDataResponse<EditNationalityViewModel>> GetByIdAsync(Guid id)
