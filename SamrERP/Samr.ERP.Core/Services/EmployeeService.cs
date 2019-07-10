@@ -70,7 +70,7 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel)
         {
             var query = _unitOfWork.Employees
                 .GetDbSet()
@@ -81,8 +81,18 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.User)
                 .Where(e => e.EmployeeLockReasonId == null);
 
-            var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
+            if (filterEmployeeViewModel.FullName != null)
+                query = query.Where(e => filterEmployeeViewModel.FullName.Contains(e.FirstName)
+                                         || filterEmployeeViewModel.FullName.Contains(e.LastName)
+                                         || filterEmployeeViewModel.FullName.Contains(e.MiddleName));
 
+            if (filterEmployeeViewModel.DepartmentId != null)
+                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
+
+            if (filterEmployeeViewModel.HasUser)
+                query = query.Where(e => e.UserId != null);
+
+            var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<AllEmployeeViewModel>>.Success(pagedList);
         }
@@ -272,21 +282,42 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync()
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions)
         {
-            var employeeLockEmployees = await _unitOfWork.Employees
+            var query = _unitOfWork.Employees
                 .GetDbSet()
                 .Include(p => p.CreatedUser)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
                 .Include(u => u.LockUser)
                 .Include(p => p.EmployeeLockReason)
-                .Where(e => e.EmployeeLockReasonId != null)
-                .ToListAsync();
+                .Where(e => e.EmployeeLockReasonId != null);
 
-            var vm = _mapper.Map<IEnumerable<AllLockEmployeeViewModel>>(employeeLockEmployees);
+            var itemList = await query.ToMappedPagedListAsync<Employee, AllLockEmployeeViewModel>(pagingOptions);
 
-            var response = BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>.Success(vm);
+            return BaseDataResponse<PagedList<AllLockEmployeeViewModel>>.Success(itemList);
+        }
+
+        public async Task<BaseResponse> EditPassportDataAsync(EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
+        {
+            BaseResponse response;
+
+            var existEmployee = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync( e=> e.Id == editPassportDataEmployeeViewModel.EmployeeId);
+
+            if (existEmployee != null)
+            {
+                var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
+
+                _unitOfWork.Employees.Update(passportDataEmployee);
+
+                await _unitOfWork.CommitAsync();
+
+                response = BaseResponse.Success();
+            }
+            else
+            {
+                response = BaseResponse.NotFound();
+            }
 
             return response;
         }

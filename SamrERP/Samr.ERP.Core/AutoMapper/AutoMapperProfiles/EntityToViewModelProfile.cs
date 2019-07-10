@@ -36,6 +36,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+
+            CreateMap<Department, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, Department>();
             ;
             CreateMap<EmployeeLockReasonViewModel, EmployeeLockReason>();
             CreateMap<EditEmployeeLockReasonViewModel, EmployeeLockReason>();
@@ -111,19 +114,19 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
-                .ForMember( dst  => dst.DepartmentId, 
+                .ForMember(dst => dst.DepartmentId,
                     src => src.MapFrom(
-                         map => map.Position.Department.Id))
+                        map => map.Position.Department.Id))
                 .ForMember(dst => dst.Position,
                     src => src.MapFrom(
                         map => map.Position.Name))
                 .ForMember(dst => dst.GenderName,
                     src => src.MapFrom(
                         map => map.Gender.Name))
-                .ForMember( dst => dst.IsLocked,
-                    src => src.MapFrom( 
-                        map => map.EmployeeLockReasonId.HasValue ))
-                .ForMember( dst => dst.LockReasonName,
+                .ForMember(dst => dst.IsLocked,
+                    src => src.MapFrom(
+                        map => map.EmployeeLockReasonId.HasValue))
+                .ForMember(dst => dst.LockReasonName,
                     src => src.MapFrom(
                         map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.LockDate,
@@ -134,20 +137,22 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
-                        map => map.HireDate.ToShortDateString()))
-                        .ForMember(dst => dst.TestDateTime , src =>src.MapFrom( map=> map.CreatedAt));
+                        map => map.HireDate.ToShortDateString()));
 
             CreateMap<GetPassportDataEmployeeViewModel, Employee>();
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()
                 .ForMember(dst => dst.Nationality,
                     src => src.MapFrom(
                         map => map.Nationality.IfNotNull(p=>p.Name)))
-                .ForMember(dst => dst.DateOfBirth,
-                    src => src.MapFrom(
-                        map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
-                        map => map.PassportIssueDate !=null ? map.PassportIssueDate.Value.ToShortDateString() : null));
+                        map => map.PassportIssueDate.HasValue ? map.PassportIssueDate.Value.ToShortDateString() : null))
+                .ForMember(dst => dst.DateOfBirth,
+                    src => src.MapFrom(
+                        map => map.DateOfBirth.ToShortDateString()));
+
+            CreateMap<EditPassportDataEmployeeViewModel, Employee>();
+            CreateMap<Employee, EditPassportDataEmployeeViewModel>();
 
             // TODO
             CreateMap<NewsViewModel, News>();

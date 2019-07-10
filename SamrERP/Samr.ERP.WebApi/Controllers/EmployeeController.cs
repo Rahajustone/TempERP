@@ -29,18 +29,18 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel)
         {
             
-            var employee = await _employeeService.AllAsync(pagingOptions);
+            var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel);
 
             return Response(employee);
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<AllLockEmployeeViewModel>>> AllLockedEmployees()
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> AllLockedEmployees([FromQuery]PagingOptions pagingOptions)
         {
-            var employee = await _employeeService.GetAllLockedEmployeeAsync();
+            var employee = await _employeeService.GetAllLockedEmployeeAsync(pagingOptions);
 
             return Response(employee);
         }
@@ -116,6 +116,20 @@ namespace Samr.ERP.WebApi.Controllers
             var passportData = await _employeeService.GetPassportDataAsync(id);
 
             return Response(passportData);
+        }
+
+        [HttpPost]
+        public async Task<BaseResponse> EditPassportData(
+            EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _employeeService.EditPassportDataAsync(editPassportDataEmployeeViewModel);
+
+                return Response(response);
+            }
+
+            return Response(BaseResponse.Fail());
         }
     }
 }

@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Position;
 
@@ -25,9 +27,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> All()
+        public async Task<BaseDataResponse<PagedList<PositionViewModel>>> All([FromQuery]PagingOptions pagingOptions)
         {
-            var position = await _positionService.GetAllAsync();
+            var position = await _positionService.GetAllAsync(pagingOptions);
             return Response(position);
         }
 

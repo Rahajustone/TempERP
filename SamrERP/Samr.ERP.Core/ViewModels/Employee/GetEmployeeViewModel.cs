@@ -19,8 +19,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public bool IsLocked { get; set; }
         public string LockReasonName { get; set; }
         public DateTime? LockDate { get; set; }
-        public DateTime TestDateTime { get; set; }
-
         public Guid GenderId { get; set; }
         public Guid DepartmentId { get; set; }
         public Guid PositionId { get; set; }

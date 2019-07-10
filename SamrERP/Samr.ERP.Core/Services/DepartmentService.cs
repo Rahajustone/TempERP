@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -45,14 +48,26 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<DepartmentViewModel>>> GetAllAsync()
+        public async Task<BaseDataResponse<PagedList<DepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var departments = await _unitOfWork.Departments.GetDbSet().Include(u => u.CreatedUser).ToListAsync();
-            var vm = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments);
+            var query = _unitOfWork.Departments
+                .GetDbSet()
+                .Include(u => u.CreatedUser);
 
-            var response = BaseDataResponse<IEnumerable<DepartmentViewModel>>.Success(vm);
+            var pagedList = await query.ToMappedPagedListAsync<Department, DepartmentViewModel>(pagingOptions);
 
-            return response;
+            return BaseDataResponse<PagedList<DepartmentViewModel>>.Success(pagedList);
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
+        {
+            var departments = await _unitOfWork.Departments
+                .GetDbSet()
+                .Include(u => u.CreatedUser)
+                .Where(e => e.IsActive)
+                .ToListAsync();
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(departments));
         }
 
         public async Task<BaseDataResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel)

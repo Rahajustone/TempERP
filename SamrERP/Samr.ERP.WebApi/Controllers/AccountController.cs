@@ -147,5 +147,17 @@ namespace Samr.ERP.WebApi.Controllers
             }
             return Response(BaseResponse.Fail());
         }
+
+        [HttpGet("{id}")]
+        public async Task<BaseResponse> UnlockUser(Guid id)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _userService.UserUnlockAsync(id);
+
+                return Response(response);
+            }
+            return Response(BaseResponse.Fail());
+        }
     }
 }
