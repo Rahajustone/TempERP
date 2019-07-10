@@ -10,6 +10,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -56,6 +57,17 @@ namespace Samr.ERP.Core.Services
             var pagedList = await query.ToMappedPagedListAsync<Department, DepartmentViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<DepartmentViewModel>>.Success(pagedList);
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
+        {
+            var departments = await _unitOfWork.Departments
+                .GetDbSet()
+                .Include(u => u.CreatedUser)
+                .Where(e => e.IsActive)
+                .ToListAsync();
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(departments));
         }
 
         public async Task<BaseDataResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel)

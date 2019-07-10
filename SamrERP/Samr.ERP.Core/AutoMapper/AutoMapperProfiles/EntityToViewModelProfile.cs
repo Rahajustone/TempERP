@@ -36,6 +36,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+
+            CreateMap<Department, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, Department>();
             ;
             CreateMap<EmployeeLockReasonViewModel, EmployeeLockReason>();
             CreateMap<EditEmployeeLockReasonViewModel, EmployeeLockReason>();
