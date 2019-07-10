@@ -13,7 +13,7 @@ using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
-    public class EmailSender:IEmailSender
+    public class EmailSender : IEmailSender
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSettingService _emailSettingService;
@@ -32,8 +32,8 @@ namespace Samr.ERP.Core.Services
             _emailSetting = _emailSettingService.GetDefaultEmailSetting();
         }
 
-     
-        public async Task SendEmailToEmployeeAsync(User user,string subject,string message)
+
+        public async Task SendEmailToEmployeeAsync(User user, string subject, string message)
         {
             await AddEmailMessageHistory(user, subject, message);
             await SendEmailAsync(user.Email, subject, message);
@@ -41,7 +41,7 @@ namespace Samr.ERP.Core.Services
 
         private async Task AddEmailMessageHistory(User destUser, string subject, string message)
         {
-          
+
             var emailMessageHistory = new EmailMessageHistory()
             {
                 RecieverUserId = destUser.Id,
@@ -54,10 +54,16 @@ namespace Samr.ERP.Core.Services
             {
                 //TODO need to set admin
                 var firstUser = await _unitOfWork.Users.All().FirstAsync();
-                emailMessageHistory.CreatedUserId =firstUser.Id;
+                emailMessageHistory.CreatedUserId = firstUser.Id;
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
+
+            }
+            else
+            {
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory);
+
             }
 
-            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
 
             await _unitOfWork.CommitAsync();
         }
@@ -80,10 +86,10 @@ namespace Samr.ERP.Core.Services
                 await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, false);
                 await client.AuthenticateAsync(_emailSetting.Sender, _emailSetting.Password);
                 await client.SendAsync(emailMessage);
-               
+
                 await client.DisconnectAsync(true);
             }
         }
-        
+
     }
 }

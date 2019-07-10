@@ -144,7 +144,6 @@ namespace Samr.ERP.Core.Services
 
             var generateNewPassword = PasswordGenerator.GenerateNewPassword();
             var createUserResult = await _userService.CreateAsync(user, generateNewPassword);
-            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generateNewPassword}");
 
             if (!createUserResult.Succeeded)
                 return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
@@ -152,6 +151,7 @@ namespace Samr.ERP.Core.Services
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
+            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generateNewPassword}");
 
             return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
 
