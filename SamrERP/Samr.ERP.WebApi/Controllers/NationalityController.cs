@@ -27,9 +27,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> All()
         {
-            var nationalities = await _nationalityService.GetAllAsync(pagingOptions);
+            var nationalities = await _nationalityService.GetAllAsync();
             return Response(nationalities);
         }
 

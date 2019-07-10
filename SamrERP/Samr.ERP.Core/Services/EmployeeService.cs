@@ -295,5 +295,26 @@ namespace Samr.ERP.Core.Services
 
             return BaseDataResponse<PagedList<AllLockEmployeeViewModel>>.Success(itemList);
         }
+
+        public async Task<BaseResponse> EditPassportDataAsync(EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
+        {
+            BaseResponse response;
+
+            var existEmployee = await _unitOfWork.Employees.AnyAsync(e => e.Id == editPassportDataEmployeeViewModel.EmployeeId);
+
+            if (existEmployee)
+            {
+                _unitOfWork.Employees.Update(_mapper.Map<Employee>(editPassportDataEmployeeViewModel));
+                await _unitOfWork.CommitAsync();
+
+                response = BaseResponse.Success();
+            }
+            else
+            {
+                response = BaseResponse.NotFound();
+            }
+
+            return response;
+        }
     }
 }

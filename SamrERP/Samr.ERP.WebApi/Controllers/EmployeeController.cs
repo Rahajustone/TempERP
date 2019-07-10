@@ -117,5 +117,19 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(passportData);
         }
+
+        [HttpPost]
+        public async Task<BaseResponse> editPassportData(
+            EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _employeeService.EditPassportDataAsync(editPassportDataEmployeeViewModel);
+
+                return Response(response);
+            }
+
+            return Response(BaseResponse.Fail());
+        }
     }
 }

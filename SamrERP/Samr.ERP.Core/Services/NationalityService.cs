@@ -27,16 +27,14 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> GetAllAsync()
         {
-            var query = _unitOfWork
+            var nationalities = _unitOfWork
                 .Nationalities
                 .GetDbSet()
                 .Include(u => u.CreatedUser);
 
-            var pageList = await query.ToMappedPagedListAsync<Nationality, EditNationalityViewModel>(pagingOptions);
-
-            return BaseDataResponse<PagedList<EditNationalityViewModel>>.Success(pageList);
+            return BaseDataResponse<IEnumerable<EditNationalityViewModel>>.Success(_mapper.Map<IEnumerable<EditNationalityViewModel>>(nationalities));
         }
 
         public async Task<BaseDataResponse<EditNationalityViewModel>> GetByIdAsync(Guid id)

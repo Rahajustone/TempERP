@@ -149,6 +149,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.PassportIssueDate !=null ? map.PassportIssueDate.Value.ToShortDateString() : null));
 
+            CreateMap<EditPassportDataEmployeeViewModel, Employee>();
+            CreateMap<Employee, EditPassportDataEmployeeViewModel>();
+
+
             // TODO
             CreateMap<NewsViewModel, News>();
             CreateMap<News, NewsViewModel>();

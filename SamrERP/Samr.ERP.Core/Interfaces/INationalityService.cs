@@ -11,7 +11,7 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface INationalityService
     {
-        Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllAsync(PagingOptions pagingOptions);
+        Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> GetAllAsync();
         Task<BaseDataResponse<EditNationalityViewModel>> GetByIdAsync(Guid id);
         Task<BaseDataResponse<EditNationalityViewModel>> CreateAsync(EditNationalityViewModel nationalityViewModel);
         Task<BaseDataResponse<EditNationalityViewModel>> UpdateAsync(EditNationalityViewModel nationalityViewModel);
