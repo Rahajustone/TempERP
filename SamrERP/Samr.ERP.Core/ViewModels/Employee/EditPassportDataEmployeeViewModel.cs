@@ -13,6 +13,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public DateTime DateOfBirth { get; set; }
         public Guid NationalityId { get; set; }
         public string PassportAddress { get; set; }
-        public string ScanUrl { get; set; }
+        public string PassportScan { get; set; }
     }
 }
