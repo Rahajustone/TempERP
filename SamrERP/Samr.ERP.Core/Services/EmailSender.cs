@@ -55,12 +55,12 @@ namespace Samr.ERP.Core.Services
                 //TODO need to set admin
                 var firstUser = await _unitOfWork.Users.All().FirstAsync();
                 emailMessageHistory.CreatedUserId = firstUser.Id;
-                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory);
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
 
             }
             else
             {
-                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory);
 
             }
 
