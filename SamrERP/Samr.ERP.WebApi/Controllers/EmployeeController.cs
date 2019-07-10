@@ -119,7 +119,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseResponse> editPassportData(
+        public async Task<BaseResponse> EditPassportData(
             EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
         {
             if (ModelState.IsValid)

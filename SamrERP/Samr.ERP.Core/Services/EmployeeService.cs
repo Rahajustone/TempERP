@@ -300,11 +300,14 @@ namespace Samr.ERP.Core.Services
         {
             BaseResponse response;
 
-            var existEmployee = await _unitOfWork.Employees.AnyAsync(e => e.Id == editPassportDataEmployeeViewModel.EmployeeId);
+            var existEmployee = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync( e=> e.Id == editPassportDataEmployeeViewModel.EmployeeId);
 
-            if (existEmployee)
+            if (existEmployee != null)
             {
-                _unitOfWork.Employees.Update(_mapper.Map<Employee>(editPassportDataEmployeeViewModel));
+                var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
+
+                _unitOfWork.Employees.Update(passportDataEmployee);
+
                 await _unitOfWork.CommitAsync();
 
                 response = BaseResponse.Success();
