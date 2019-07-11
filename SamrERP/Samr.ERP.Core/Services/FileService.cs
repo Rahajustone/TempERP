@@ -81,7 +81,7 @@ namespace Samr.ERP.Core.Services
 
             }
 
-            return filePath;
+            return $"{Path.Combine(folderPath, fileName + fileExtension)}";
 
         }
 
@@ -127,7 +127,6 @@ namespace Samr.ERP.Core.Services
             var resizedName = GetResizedName(filePath);
             return $"{Path.Combine(Path.GetDirectoryName(filePath), resizedName)}";
         }
-
 
         private bool ExtensionAllowed(string extension)
         {
