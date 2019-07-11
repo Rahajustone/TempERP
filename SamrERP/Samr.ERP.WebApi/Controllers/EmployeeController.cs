@@ -73,7 +73,7 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var employeeResult = await _employeeService.UpdateAsync(editEmployeeViewModel);
+                var employeeResult = await _employeeService.EditAsync(editEmployeeViewModel);
                 return Response(employeeResult);
             }
 

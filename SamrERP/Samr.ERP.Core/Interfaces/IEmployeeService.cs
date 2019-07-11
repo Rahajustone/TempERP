@@ -24,7 +24,7 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel);
         Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId);
 
-        Task<BaseDataResponse<EditEmployeeViewModel>> UpdateAsync(EditEmployeeViewModel editEmployeeViewModel);
+        Task<BaseDataResponse<EditEmployeeViewModel>> EditAsync(EditEmployeeViewModel editEmployeeViewModel);
 
         Task<BaseResponse> EditUserDetailsAsync(
             EditUserDetailsViewModel editUserDetailsView);

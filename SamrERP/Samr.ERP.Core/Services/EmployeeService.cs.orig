@@ -36,14 +36,21 @@ namespace Samr.ERP.Core.Services
             UserProvider userProvider,
             IMapper mapper,
             IUploadFileService file
+<<<<<<< HEAD
             )
         {
             _unitOfWork = unitOfWork;
             _userService = userService;
             _userProvider = userProvider;
-            
+=======
+>>>>>>> parent of 3a91a86... Merge branch 'dev' of https://bitbucket.org/migdev/samr-erp into dev
+            )
+        {
+            _unitOfWork = unitOfWork;
+            _userService = userService;
+            _userProvider = userProvider;
             _mapper = mapper;
-            _file = file;)
+            _file = file;
         }
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
