@@ -12,7 +12,7 @@ namespace Samr.ERP.WebApi.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class FilesController :ControllerBase
     {
         private readonly IFileService _fileService;

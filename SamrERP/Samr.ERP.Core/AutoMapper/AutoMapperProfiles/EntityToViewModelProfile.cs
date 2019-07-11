@@ -71,13 +71,17 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
 
-            CreateMap<Employee, EmployeeViewModel>();
+            CreateMap<Employee, EmployeeViewModel>()
+                .ForMember(dst => dst.PhotoPath,
+                src => src.MapFrom(
+                    map => FileService.GetDownloadAction(map.PhotoPath)));
             CreateMap<EmployeeViewModel, Employee>();
-            CreateMap<EditEmployeeViewModel, Employee>();
+            CreateMap<EditEmployeeViewModel, Employee>()
+                .ForMember(dst => dst.PhotoPath,src => src.Ignore());
             CreateMap<Employee, EditEmployeeViewModel>()
                 .ForMember(dst => dst.PhotoPath,
                     src => src.MapFrom(
-                        map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))));
+                        map => FileService.GetDownloadAction(map.PhotoPath)));
             CreateMap<AllEmployeeViewModel, Employee>();
             CreateMap<Employee, AllEmployeeViewModel>()
                 .ForMember(dst => dst.Position,
@@ -149,7 +153,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.DateOfBirth.ToShortDateString()))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
-                        map => map.HireDate.ToShortDateString()));
+                        map => map.HireDate.ToShortDateString()))
+                .ForMember(dst => dst.PhotoPath,
+                    src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)));
 
             CreateMap<GetPassportDataEmployeeViewModel, Employee>();
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()

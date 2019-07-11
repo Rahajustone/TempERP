@@ -108,6 +108,7 @@ namespace Samr.ERP.Core.Services
 
         public static string GetDownloadAction(string path)
         {
+            if (string.IsNullOrEmpty(path)) return String.Empty;
             return "https://samr-dev.azurewebsites.net/api/files/getphoto?path=" + path;
         }
         public static string GetFullPath(string path)
