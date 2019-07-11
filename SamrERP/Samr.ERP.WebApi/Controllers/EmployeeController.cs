@@ -54,7 +54,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromBody] EditEmployeeViewModel editEmployeeViewModel)
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromForm] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -69,7 +69,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpPost]
         public async Task<BaseDataResponse<EditEmployeeViewModel>> Edit(
-            [FromBody] EditEmployeeViewModel editEmployeeViewModel)
+            [FromForm] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -119,7 +119,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseResponse> EditPassportData(
+        public async Task<BaseResponse> EditPassportData([FromForm]
             EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
         {
             if (ModelState.IsValid)

@@ -54,7 +54,7 @@ namespace Samr.ERP.Core.Services
             var directoryPath = Path.Combine(_filesPath, folderPath);
             EnsureDirectoryCreated(directoryPath);
 
-            var fileName = Guid.NewGuid().ToString() ;
+            var fileName = Guid.NewGuid().ToString();
 
             var filePath = System.IO.Path.Combine(directoryPath, fileName + fileExtension);
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -81,7 +81,7 @@ namespace Samr.ERP.Core.Services
 
             }
 
-            return filePath;
+            return $"{Path.Combine(folderPath, fileName + fileExtension)}";
 
         }
 
@@ -106,6 +106,14 @@ namespace Samr.ERP.Core.Services
             return filePath;
         }
 
+        public static string GetDownloadAction(string path)
+        {
+            return "https://samr-dev.azurewebsites.net/api/files/getphoto?path=" + path;
+        }
+        public static string GetFullPath(string path)
+        {
+            return Path.Combine(_filesPath, path);
+        }
         private static void EnsureDirectoryCreated(string directoryPath)
         {
             if (!Directory.Exists(directoryPath))
@@ -127,7 +135,6 @@ namespace Samr.ERP.Core.Services
             var resizedName = GetResizedName(filePath);
             return $"{Path.Combine(Path.GetDirectoryName(filePath), resizedName)}";
         }
-
 
         private bool ExtensionAllowed(string extension)
         {
