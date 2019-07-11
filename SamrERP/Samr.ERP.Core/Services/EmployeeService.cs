@@ -28,24 +28,25 @@ namespace Samr.ERP.Core.Services
         private readonly IUserService _userService;
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
+        private readonly IFileService _fileService;
         private readonly IMapper _mapper;
-        private readonly IUploadFileService _file;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
             IUserService userService,
             UserProvider userProvider,
             IEmailSender emailSender,
+            IFileService fileService,
             IMapper mapper
-            //IUploadFileService file
+            
             )
         {
             _unitOfWork = unitOfWork;
             _userService = userService;
             _userProvider = userProvider;
             _emailSender = emailSender;
+            _fileService = fileService;
             _mapper = mapper;
-            //_file = file;
         }
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
@@ -127,8 +128,12 @@ namespace Samr.ERP.Core.Services
             }
             else
             {
-
                 var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+
+                if (editEmployeeViewModel.Photo != null)
+                {
+                    employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
+                }
                 _unitOfWork.Employees.Add(employee);
                 await _unitOfWork.CommitAsync();
 
@@ -204,7 +209,10 @@ namespace Samr.ERP.Core.Services
                 else
                 {
                     var employee = _mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employeExists);
-
+                    if (editEmployeeViewModel.Photo != null)
+                    {
+                        employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
+                    }
                     _unitOfWork.Employees.Update(employee);
 
                     await _unitOfWork.CommitAsync();
@@ -320,7 +328,10 @@ namespace Samr.ERP.Core.Services
             if (existEmployee != null)
             {
                 var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
-
+                if (editPassportDataEmployeeViewModel.PassportScan != null)
+                {
+                    passportDataEmployee.PassportScanPath = await _fileService.UploadPhoto(FileService.EmployeePassportScanFolderPath, editPassportDataEmployeeViewModel.PassportScan, true);
+                }
                 _unitOfWork.Employees.Update(passportDataEmployee);
 
                 await _unitOfWork.CommitAsync();
