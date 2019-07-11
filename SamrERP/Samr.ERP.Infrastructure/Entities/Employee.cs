@@ -90,7 +90,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public Guid? UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
-
+        public string PhotoPath { get; set; }
         public string FullName() => $"{LastName} {FirstName} {MiddleName}";
     }
 }
