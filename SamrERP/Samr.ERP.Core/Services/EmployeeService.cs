@@ -29,13 +29,14 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
+        private readonly IUploadFileService _file;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
             IUserService userService,
             UserProvider userProvider,
-            IEmailSender emailSender,
-            IMapper mapper
+            IMapper mapper,
+            IUploadFileService file
             )
         {
             _unitOfWork = unitOfWork;
@@ -43,6 +44,7 @@ namespace Samr.ERP.Core.Services
             _userProvider = userProvider;
             _emailSender = emailSender;
             _mapper = mapper;
+            _file = file;
         }
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
@@ -142,6 +144,7 @@ namespace Samr.ERP.Core.Services
                 PhoneNumber = employee.Phone
             };
 
+            var createUserResult = await _userService.CreateAsync(user, PasswordGenerator.GenerateNewPassword());
             var generateNewPassword = PasswordGenerator.GenerateNewPassword();
             var createUserResult = await _userService.CreateAsync(user, generateNewPassword);
 
@@ -161,9 +164,9 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-            var employeExists = await _unitOfWork.Employees.ExistsAsync(editEmployeeViewModel.Id);
+            var employeExists = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync( e => e.Id == editEmployeeViewModel.Id);
 
-            if (!employeExists)
+            if (employeExists == null)
             {
                 dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel("Not found employee"));
             }
@@ -193,9 +196,9 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+                    var employee = _mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employeExists);
 
-                    _unitOfWork.Employees.Update(_mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employee));
+                    _unitOfWork.Employees.Update(employee);
 
                     await _unitOfWork.CommitAsync();
 
