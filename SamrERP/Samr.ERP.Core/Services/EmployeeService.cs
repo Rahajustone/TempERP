@@ -29,7 +29,7 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
-        //private readonly IUploadFileService _file;
+        private readonly IUploadFileService _file;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
