@@ -76,7 +76,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 src => src.MapFrom(
                     map => FileService.GetDownloadAction(map.PhotoPath)));
             CreateMap<EmployeeViewModel, Employee>();
-            CreateMap<EditEmployeeViewModel, Employee>();
+            CreateMap<EditEmployeeViewModel, Employee>()
+                .ForMember(dst => dst.PhotoPath,src => src.Ignore());
             CreateMap<Employee, EditEmployeeViewModel>()
                 .ForMember(dst => dst.PhotoPath,
                     src => src.MapFrom(
