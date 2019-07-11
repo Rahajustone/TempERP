@@ -27,6 +27,7 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly UserProvider _userProvider;
+        private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
         private readonly IUploadFileService _file;
 
@@ -34,16 +35,17 @@ namespace Samr.ERP.Core.Services
             IUnitOfWork unitOfWork,
             IUserService userService,
             UserProvider userProvider,
-            IMapper mapper,
-            IUploadFileService file
+            IEmailSender emailSender,
+            IMapper mapper
+            //IUploadFileService file
             )
         {
             _unitOfWork = unitOfWork;
             _userService = userService;
             _userProvider = userProvider;
-            
+            _emailSender = emailSender;
             _mapper = mapper;
-            _file = file;)
+            //_file = file;
         }
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
@@ -143,7 +145,6 @@ namespace Samr.ERP.Core.Services
                 PhoneNumber = employee.Phone
             };
 
-            var createUserResult = await _userService.CreateAsync(user, PasswordGenerator.GenerateNewPassword());
 
             if (!createUserResult.Succeeded)
                 return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
