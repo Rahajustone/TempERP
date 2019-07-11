@@ -21,8 +21,8 @@ namespace Samr.ERP.Core.Services
         private readonly EmailSetting _emailSetting;
         public EmailSender(
             IUnitOfWork unitOfWork,
-            IEmailSettingService emailSettingService,
-            UserProvider userProvider
+            IEmailSettingService emailSettingService
+
             )
         {
             _unitOfWork = unitOfWork;
@@ -41,20 +41,16 @@ namespace Samr.ERP.Core.Services
 
         private async Task AddEmailMessageHistory(User destUser, string subject, string message)
         {
-
+          
             var emailMessageHistory = new EmailMessageHistory()
             {
                 RecieverUserId = destUser.Id,
                 EmailSettingId = _emailSetting.Id,
                 Subject = subject,
                 Message = message,
-                RecieverEMail = destUser.Email,
+                RecieverEMail = destUser.Email
             };
-            if (_userProvider.CurrentUser == null)
-            {
-                //TODO need to set admin
-                var firstUser = await _unitOfWork.Users.All().FirstAsync();
-                emailMessageHistory.CreatedUserId = firstUser.Id;
+                emailMessageHistory.CreatedUserId =firstUser.Id;
                 _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
 
             }
@@ -64,6 +60,7 @@ namespace Samr.ERP.Core.Services
 
             }
 
+            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
 
             await _unitOfWork.CommitAsync();
         }
