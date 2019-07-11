@@ -36,6 +36,14 @@ namespace Samr.ERP.Core.Services
             UserProvider userProvider,
             IMapper mapper,
             IUploadFileService file
+<<<<<<< HEAD
+            )
+        {
+            _unitOfWork = unitOfWork;
+            _userService = userService;
+            _userProvider = userProvider;
+=======
+>>>>>>> parent of 3a91a86... Merge branch 'dev' of https://bitbucket.org/migdev/samr-erp into dev
             )
         {
             _unitOfWork = unitOfWork;
@@ -142,12 +150,7 @@ namespace Samr.ERP.Core.Services
                 PhoneNumber = employee.Phone
             };
 
-<<<<<<< HEAD
-            var generateNewPassword = PasswordGenerator.GenerateNewPassword();
-            var createUserResult = await _userService.CreateAsync(user, generateNewPassword);
-=======
             var createUserResult = await _userService.CreateAsync(user, PasswordGenerator.GenerateNewPassword());
->>>>>>> dev
 
             if (!createUserResult.Succeeded)
                 return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
