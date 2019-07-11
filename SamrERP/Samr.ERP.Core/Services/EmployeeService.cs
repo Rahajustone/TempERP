@@ -145,7 +145,6 @@ namespace Samr.ERP.Core.Services
                 PhoneNumber = employee.Phone
             };
 
-            var createUserResult = await _userService.CreateAsync(user, PasswordGenerator.GenerateNewPassword());
             var generateNewPassword = PasswordGenerator.GenerateNewPassword();
             var createUserResult = await _userService.CreateAsync(user, generateNewPassword);
 
