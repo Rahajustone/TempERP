@@ -27,22 +27,22 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
         private readonly UserProvider _userProvider;
+        private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
-        private readonly IUploadFileService _file;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
             IUserService userService,
             UserProvider userProvider,
-            IMapper mapper,
-            IUploadFileService file
+            IEmailSender emailSender,
+            IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _userService = userService;
             _userProvider = userProvider;
+            _emailSender = emailSender;
             _mapper = mapper;
-            _file = file;
         }
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
@@ -142,7 +142,9 @@ namespace Samr.ERP.Core.Services
                 PhoneNumber = employee.Phone
             };
 
-            var createUserResult = await _userService.CreateAsync(user, PasswordGenerator.GenerateNewPassword());
+            var generateNewPassword = PasswordGenerator.GenerateNewPassword();
+            var createUserResult = await _userService.CreateAsync(user, generateNewPassword);
+            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generateNewPassword}");
 
             if (!createUserResult.Succeeded)
                 return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());

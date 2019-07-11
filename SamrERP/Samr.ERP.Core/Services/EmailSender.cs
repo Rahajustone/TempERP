@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
+using Microsoft.EntityFrameworkCore;
 using MimeKit;
 using MimeKit.Text;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -15,15 +17,17 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSettingService _emailSettingService;
+        private readonly UserProvider _userProvider;
         private readonly EmailSetting _emailSetting;
         public EmailSender(
             IUnitOfWork unitOfWork,
-            IEmailSettingService emailSettingService
-
+            IEmailSettingService emailSettingService,
+            UserProvider userProvider
             )
         {
             _unitOfWork = unitOfWork;
             _emailSettingService = emailSettingService;
+            _userProvider = userProvider;
 
             _emailSetting = _emailSettingService.GetDefaultEmailSetting();
         }
@@ -37,16 +41,23 @@ namespace Samr.ERP.Core.Services
 
         private async Task AddEmailMessageHistory(User destUser, string subject, string message)
         {
+          
             var emailMessageHistory = new EmailMessageHistory()
             {
                 RecieverUserId = destUser.Id,
                 EmailSettingId = _emailSetting.Id,
                 Subject = subject,
                 Message = message,
-                RecieverEMail = destUser.Email
+                RecieverEMail = destUser.Email,
             };
+            if (_userProvider.CurrentUser == null)
+            {
+                //TODO need to set admin
+                var firstUser = await _unitOfWork.Users.All().FirstAsync();
+                emailMessageHistory.CreatedUserId =firstUser.Id;
+            }
 
-            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory);
+            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
 
             await _unitOfWork.CommitAsync();
         }
