@@ -309,7 +309,7 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel)
         {
             var query = _unitOfWork.Employees
                 .GetDbSet()
@@ -319,6 +319,29 @@ namespace Samr.ERP.Core.Services
                 .Include(u => u.LockUser)
                 .Include(p => p.EmployeeLockReason)
                 .Where(e => e.EmployeeLockReasonId != null);
+
+            if (filterEmployeeViewModel.FullName != null)
+            {
+                var filterFullName = filterEmployeeViewModel.FullName.ToLower();
+
+                query = query.Where(e => filterFullName.Contains(e.FirstName.ToLower())
+                                         || filterFullName.Contains(e.LastName.ToLower())
+                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) & filterFullName.Contains(e.MiddleName.ToLower()))
+                );
+            }
+
+            if (filterEmployeeViewModel.DepartmentId != null)
+                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
+
+            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == true)
+            {
+                query = query.Where(e => e.UserId != null);
+            }
+
+            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == false)
+            {
+                query = query.Where(e => e.UserId == null);
+            }
 
             var itemList = await query.ToMappedPagedListAsync<Employee, AllLockEmployeeViewModel>(pagingOptions);
 
