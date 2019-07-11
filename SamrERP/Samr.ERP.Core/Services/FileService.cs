@@ -81,7 +81,7 @@ namespace Samr.ERP.Core.Services
 
             }
 
-            return filePath;
+            return $"{Path.Combine(folderPath, fileName + fileExtension)}";
 
         }
 
