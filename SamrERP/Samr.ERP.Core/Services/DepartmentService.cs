@@ -28,11 +28,14 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
+        private IQueryable<Department> GetAllQuery()
+        {
+            return _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser);
+        }
+
         public async Task<BaseDataResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id)
         {
-            var department = await _unitOfWork.Departments.GetDbSet()
-                .Include(p => p.CreatedUser)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var department = await GetAllQuery().FirstOrDefaultAsync(p => p.Id == id);
 
             BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
@@ -50,20 +53,14 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<DepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var query = _unitOfWork.Departments
-                .GetDbSet()
-                .Include(u => u.CreatedUser);
-
-            var pagedList = await query.ToMappedPagedListAsync<Department, DepartmentViewModel>(pagingOptions);
+            var pagedList = await GetAllQuery().ToMappedPagedListAsync<Department, DepartmentViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<DepartmentViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
         {
-            var departments = await _unitOfWork.Departments
-                .GetDbSet()
-                .Include(u => u.CreatedUser)
+            var departments = await GetAllQuery()
                 .Where(e => e.IsActive)
                 .ToListAsync();
 
