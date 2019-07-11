@@ -202,6 +202,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
 
+            CreateMap<UserLockReason, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, UserLockReason>();
+
             CreateMap<Gender, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, Gender>();
 
