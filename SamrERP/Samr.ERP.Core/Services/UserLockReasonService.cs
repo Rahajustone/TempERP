@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,6 +10,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -27,14 +29,21 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
+        private IQueryable<UserLockReason> GetQuery()
+        {
+            return _unitOfWork.UserLockReasons.GetDbSet();
+        }
+
+        private IQueryable<UserLockReason> GetQueryWithUser()
+        {
+            return GetQuery().Include(u => u.CreatedUser);
+        }
+
         public async Task<BaseDataResponse<UserLockReasonViewModel>> GetByIdAsync(Guid id)
         {
             BaseDataResponse<UserLockReasonViewModel> response;
 
-            var existsUserLockReason = await _unitOfWork.UserLockReasons
-                .GetDbSet()
-                .Include(u => u.CreatedUser)
-                .FirstOrDefaultAsync(u => u.Id == id);
+            var existsUserLockReason = await GetQueryWithUser().FirstOrDefaultAsync(u => u.Id == id);
             if (existsUserLockReason == null)
             {
                 response = BaseDataResponse<UserLockReasonViewModel>.NotFound(null, new ErrorModel("No such record!"));
@@ -49,13 +58,16 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var query = _unitOfWork.UserLockReasons
-                .GetDbSet()
-                .Include(u => u.CreatedUser);
-
-            var listItem = await query.ToMappedPagedListAsync<UserLockReason, UserLockReasonViewModel>(pagingOptions);
+            var listItem = await GetQueryWithUser().ToMappedPagedListAsync<UserLockReason, UserLockReasonViewModel>(pagingOptions);
 
             return  BaseDataResponse<PagedList<UserLockReasonViewModel>>.Success(listItem);
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemsAsync()
+        {
+            var listItem = await GetQueryWithUser().Where(u => u.IsActive).ToListAsync();
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(listItem));
         }
 
         public async Task<BaseDataResponse<UserLockReasonViewModel>> CreateAsync(UserLockReasonViewModel userLockReasonViewModel)
@@ -85,12 +97,10 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<UserLockReasonViewModel> dataResponse;
 
-            var userLockReasonExists = await _unitOfWork.UserLockReasons.ExistsAsync(userLockReasonViewModel.Id);
-            if (userLockReasonExists)
+            var userLockReasonExists = await GetQuery().FirstOrDefaultAsync( u => u.Id == userLockReasonViewModel.Id);
+            if (userLockReasonExists != null)
             {
-                var checkNameUnique = await _unitOfWork.UserLockReasons
-                    .GetDbSet()
-                    .AnyAsync(u => u.Id != userLockReasonViewModel.Id 
+                var checkNameUnique = await GetQuery().AnyAsync(u => u.Id != userLockReasonViewModel.Id 
                                    && u.Name.ToLower() == userLockReasonViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
@@ -98,7 +108,7 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var userLockReason = _mapper.Map<UserLockReason>(userLockReasonViewModel);
+                    var userLockReason = _mapper.Map<UserLockReasonViewModel, UserLockReason>(userLockReasonViewModel, userLockReasonExists);
 
                     _unitOfWork.UserLockReasons.Update(userLockReason);
 
