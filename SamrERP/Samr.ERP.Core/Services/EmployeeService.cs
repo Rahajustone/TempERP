@@ -35,6 +35,7 @@ namespace Samr.ERP.Core.Services
             IUnitOfWork unitOfWork,
             IUserService userService,
             UserProvider userProvider,
+            IEmailSender emailSender,
             IMapper mapper
             //IUploadFileService file
             )
@@ -147,6 +148,7 @@ namespace Samr.ERP.Core.Services
             var createUserResult = await _userService.CreateAsync(user, PasswordGenerator.GenerateNewPassword());
             var generateNewPassword = PasswordGenerator.GenerateNewPassword();
             var createUserResult = await _userService.CreateAsync(user, generateNewPassword);
+            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generateNewPassword}");
 
             if (!createUserResult.Succeeded)
                 return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
