@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
@@ -11,6 +12,7 @@ namespace Samr.ERP.WebApi.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class FilesController :ControllerBase
     {
         private readonly IFileService _fileService;
