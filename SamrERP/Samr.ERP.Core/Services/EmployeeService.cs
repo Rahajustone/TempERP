@@ -85,11 +85,14 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.User)
                 .Where(e => e.EmployeeLockReasonId == null);
 
-            if (filterEmployeeViewModel.FullName != null)
-                query = query.Where(e => filterEmployeeViewModel.FullName.ToLower().Contains(e.FirstName.ToLower())
-                                         || filterEmployeeViewModel.FullName.ToLower().Contains(e.LastName.ToLower())
-                                         || filterEmployeeViewModel.FullName.ToLower().Contains( e.MiddleName ));
+            var filterFullName = filterEmployeeViewModel.FullName.ToLower();
 
+            if (filterFullName != null)
+                query = query.Where(e => filterFullName.Contains(e.FirstName.ToLower())
+                                         || filterFullName.Contains(e.LastName.ToLower()) 
+                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) & filterFullName.Contains(e.MiddleName.ToLower()))
+                                         );
+            
             if (filterEmployeeViewModel.DepartmentId != null)
                 query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
 
