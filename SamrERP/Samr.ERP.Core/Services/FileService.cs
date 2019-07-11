@@ -128,7 +128,6 @@ namespace Samr.ERP.Core.Services
             return $"{Path.Combine(Path.GetDirectoryName(filePath), resizedName)}";
         }
 
-
         private bool ExtensionAllowed(string extension)
         {
             return AllowedExtensions.Any(p => p.Equals(extension));
