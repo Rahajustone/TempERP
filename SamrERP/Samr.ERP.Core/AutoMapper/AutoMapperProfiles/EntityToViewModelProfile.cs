@@ -2,6 +2,7 @@
 using System.IO.Compression;
 using System.Security.AccessControl;
 using AutoMapper;
+using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Common;
@@ -77,6 +78,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
+                .ForMember(dst => dst.PhotoPath,
+                    src => src.MapFrom(
+                        map => FileService.GetResizedPath(map.PhotoPath)))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
                         map => map.FullName()));

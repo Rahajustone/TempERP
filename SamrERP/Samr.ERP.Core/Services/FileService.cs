@@ -20,8 +20,8 @@ namespace Samr.ERP.Core.Services
     public class FileService : IFileService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly string _filesPath;
-        private readonly int _resizeSize = 200;
+        private static string _filesPath;
+        private static readonly int _resizeSize = 150;
         public static readonly string[] AllowedExtensions = {
             ".jpg",
             ".jpeg",
@@ -34,6 +34,9 @@ namespace Samr.ERP.Core.Services
             ".ppt",
             ".pptx"
         };
+
+        public static readonly string EmployeePhotoFolderPath = "Employees\\Photo";
+        public static readonly string EmployeePassportScanFolderPath = "Employees\\PassportScan";
         public FileService(
             IUnitOfWork unitOfWork
             )
@@ -58,10 +61,9 @@ namespace Samr.ERP.Core.Services
             {
                 await file.CopyToAsync(stream);
             }
-
             if (createResizedClone)
             {
-                var resizedFileName = Path.Combine(_filesPath, folderPath, $"{fileName}-{_resizeSize}x{_resizeSize}{fileExtension}");
+                var resizedFileName = Path.Combine(_filesPath, folderPath, GetResizedName(filePath));
 
                 var image = Image.Load(File.OpenRead(filePath));
 
@@ -111,6 +113,21 @@ namespace Samr.ERP.Core.Services
                 Directory.CreateDirectory(directoryPath);
             }
         }
+
+        public static string GetResizedName(string filePath)
+        {
+            var fileExtension = Path.GetExtension(filePath);
+            var fileName = Path.GetFileNameWithoutExtension(filePath);
+            return $"{fileName}-{_resizeSize}x{_resizeSize}{fileExtension}";
+
+        }
+
+        public static string GetResizedPath(string filePath)
+        {
+            var resizedName = GetResizedName(filePath);
+            return $"{Path.Combine(Path.GetDirectoryName(filePath), resizedName)}";
+        }
+
 
         private bool ExtensionAllowed(string extension)
         {

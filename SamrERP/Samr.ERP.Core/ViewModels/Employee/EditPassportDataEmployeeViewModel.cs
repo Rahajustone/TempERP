@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace Samr.ERP.Core.ViewModels.Employee
 {
@@ -13,6 +14,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public DateTime DateOfBirth { get; set; }
         public Guid NationalityId { get; set; }
         public string PassportAddress { get; set; }
-        public string PassportScan { get; set; }
+        public IFormFile PassportScan { get; set; }
     }
 }

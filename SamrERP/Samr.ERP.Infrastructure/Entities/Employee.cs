@@ -91,6 +91,8 @@ namespace Samr.ERP.Infrastructure.Entities
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
         public string PhotoPath { get; set; }
+        public string PassportScanPath { get; set; }
+
         public string FullName() => $"{LastName} {FirstName} {MiddleName}";
     }
 }
