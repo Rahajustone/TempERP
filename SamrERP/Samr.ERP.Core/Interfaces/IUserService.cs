@@ -22,5 +22,6 @@ namespace Samr.ERP.Core.Interfaces
 
         Task<BaseResponse> UserLockAsync(LockUserViewModel userLockReasonViewModel);
         Task<BaseResponse> UserUnlockAsync(Guid id);
+        Task<BaseDataResponse<UserViewModel>> GetByIdAsync(Guid id);
     }
 }
