@@ -29,14 +29,14 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
         private readonly IMapper _mapper;
-        private readonly IUploadFileService _file;
+        //private readonly IUploadFileService _file;
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
             IUserService userService,
             UserProvider userProvider,
-            IMapper mapper,
-            IUploadFileService file
+            IMapper mapper
+            //IUploadFileService file
             )
         {
             _unitOfWork = unitOfWork;
@@ -44,7 +44,7 @@ namespace Samr.ERP.Core.Services
             _userProvider = userProvider;
             _emailSender = emailSender;
             _mapper = mapper;
-            _file = file;
+            //_file = file;
         }
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
