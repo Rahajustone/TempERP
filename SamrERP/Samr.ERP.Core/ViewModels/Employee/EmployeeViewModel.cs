@@ -31,5 +31,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
         [DataType(DataType.EmailAddress)]
         [StringLength(128)]
         public string Email { get; set; }
+        public string PhotoPath { get; set; }
     }
 }
