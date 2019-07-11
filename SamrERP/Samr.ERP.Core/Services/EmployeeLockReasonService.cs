@@ -10,6 +10,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -27,11 +28,27 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
+        private IQueryable<EmployeeLockReason> GetQuery()
+        {
+            return _unitOfWork.EmployeeLockReasons.GetDbSet();
+        }
+
+        private IQueryable<EmployeeLockReason> GetQueryWithUserCreate()
+        {
+            return GetQuery().Include(p => p.CreatedUser);
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemAsync()
+        {
+            var listItem = await GetQuery().Where(e => e.IsActive).ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(listItem);
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
+        }
         public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> GetByIdAsync(Guid id)
         {
-            var employeeLockReason = await _unitOfWork.EmployeeLockReasons.GetDbSet()
-                .Include(p => p.CreatedUser)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var employeeLockReason = await GetQuery().FirstOrDefaultAsync(p => p.Id == id);
 
             BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
 
@@ -49,12 +66,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions)
         {
-            var query = _unitOfWork
-                .EmployeeLockReasons
-                .GetDbSet()
-                .Include(p => p.CreatedUser);
-
-            var pageList = await query.ToMappedPagedListAsync<EmployeeLockReason, EmployeeLockReasonViewModel>(pagingOptions);
+            var pageList = await GetQuery().ToMappedPagedListAsync<EmployeeLockReason, EmployeeLockReasonViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>.Success(pageList);
         }
@@ -63,7 +75,7 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
 
-            var employeeLockReasonExists = _unitOfWork.EmployeeLockReasons.Any(p => p.Name.ToLower() == employeeLockReasonViewModel.Name.ToLower());
+            var employeeLockReasonExists = EmployeeLockReasonExists(employeeLockReasonViewModel);
             if (employeeLockReasonExists)
             {
                 dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Already this model in database."));
@@ -81,12 +93,18 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
+        private bool EmployeeLockReasonExists(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        {
+            return _unitOfWork.EmployeeLockReasons.Any(p => p.Name.ToLower() == employeeLockReasonViewModel.Name.ToLower());
+        }
+
         public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> UpdateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
 
-            var employeeLockReasonExists = await _unitOfWork.EmployeeLockReasons.ExistsAsync(employeeLockReasonViewModel.Id);
-            if (employeeLockReasonExists)
+            var employeeLockReasonExists = await GetQuery()
+                .FirstOrDefaultAsync(e => e.Id == employeeLockReasonViewModel.Id);
+            if (employeeLockReasonExists != null)
             {
                 var checkNameUnique = await _unitOfWork.EmployeeLockReasons
                     .GetDbSet()
@@ -98,7 +116,7 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var employeeLockReason = _mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel);
+                    var employeeLockReason = _mapper.Map<EditEmployeeLockReasonViewModel, EmployeeLockReason>(employeeLockReasonViewModel, employeeLockReasonExists);
 
                     _unitOfWork.EmployeeLockReasons.Update(employeeLockReason);
 

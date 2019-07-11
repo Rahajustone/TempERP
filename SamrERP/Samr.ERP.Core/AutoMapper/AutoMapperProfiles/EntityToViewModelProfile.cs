@@ -44,11 +44,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<EmployeeLockReasonViewModel, EmployeeLockReason>();
             CreateMap<EditEmployeeLockReasonViewModel, EmployeeLockReason>();
             CreateMap<EmployeeLockReason, EmployeeLockReasonViewModel>();
-
+            
             CreateMap<EmployeeLockReason, EditEmployeeLockReasonViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+
+            CreateMap<EmployeeLockReason, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, EmployeeLockReason>();
 
             CreateMap<Nationality, NationalityViewModel>();
             CreateMap<NationalityViewModel, Nationality>();
@@ -57,6 +60,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                 src => src.MapFrom(map =>
                     map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+            CreateMap<Nationality, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, Nationality>();
 
             CreateMap<Position, PositionViewModel>();
             CreateMap<PositionViewModel, Position>();
@@ -69,7 +74,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Employee, EmployeeViewModel>();
             CreateMap<EmployeeViewModel, Employee>();
             CreateMap<EditEmployeeViewModel, Employee>();
-            CreateMap<Employee, EditEmployeeViewModel>();
+            CreateMap<Employee, EditEmployeeViewModel>()
+                .ForMember(dst => dst.PhotoPath,
+                    src => src.MapFrom(
+                        map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))));
             CreateMap<AllEmployeeViewModel, Employee>();
             CreateMap<Employee, AllEmployeeViewModel>()
                 .ForMember(dst => dst.Position,
@@ -80,7 +88,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Position.Department.Name))
                 .ForMember(dst => dst.PhotoPath,
                     src => src.MapFrom(
-                        map => FileService.GetResizedPath(map.PhotoPath)))
+                        map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
                         map => map.FullName()));
@@ -96,8 +104,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
                         map => map.FullName()))
-                .ForMember( dst => dst.LockReason, 
-                    src => src.MapFrom( 
+                .ForMember(dst => dst.LockReason,
+                    src => src.MapFrom(
                         map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.HireDate,
                     src => src.MapFrom(
@@ -147,10 +155,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()
                 .ForMember(dst => dst.Nationality,
                     src => src.MapFrom(
-                        map => map.Nationality.IfNotNull(p=>p.Name)))
+                        map => map.Nationality.IfNotNull(p => p.Name)))
                 .ForMember(dst => dst.PassportIssueDate,
                     src => src.MapFrom(
                         map => map.PassportIssueDate.HasValue ? map.PassportIssueDate.Value.ToShortDateString() : null))
+                .ForMember(dst => dst.PassportScanPath,
+                    src => src.MapFrom(map => FileService.GetDownloadAction(map.PassportScanPath)))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
                         map => map.DateOfBirth.ToShortDateString()));
