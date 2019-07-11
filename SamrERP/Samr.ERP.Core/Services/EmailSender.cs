@@ -21,8 +21,8 @@ namespace Samr.ERP.Core.Services
         private readonly EmailSetting _emailSetting;
         public EmailSender(
             IUnitOfWork unitOfWork,
-            IEmailSettingService emailSettingService
-
+            IEmailSettingService emailSettingService,
+            UserProvider userProvider
             )
         {
             _unitOfWork = unitOfWork;
@@ -41,7 +41,7 @@ namespace Samr.ERP.Core.Services
 
         private async Task AddEmailMessageHistory(User destUser, string subject, string message)
         {
-          
+
             var emailMessageHistory = new EmailMessageHistory()
             {
                 RecieverUserId = destUser.Id,
@@ -50,9 +50,11 @@ namespace Samr.ERP.Core.Services
                 Message = message,
                 RecieverEMail = destUser.Email
             };
-                emailMessageHistory.CreatedUserId =firstUser.Id;
-                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
-
+            if (_userProvider.CurrentUser == null)
+            {
+                var firstUser =await _unitOfWork.Users.All().FirstAsync();
+                emailMessageHistory.CreatedUserId = firstUser.Id;
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false); 
             }
             else
             {
@@ -60,33 +62,33 @@ namespace Samr.ERP.Core.Services
 
             }
 
-            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
+    _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
 
             await _unitOfWork.CommitAsync();
-        }
+}
 
-        public async Task SendEmailAsync(string email, string subject, string message)
-        {
-            var emailMessage = new MimeMessage();
+public async Task SendEmailAsync(string email, string subject, string message)
+{
+    var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress(_emailSetting.SenderName, _emailSetting.Sender));
-            emailMessage.To.Add(new MailboxAddress(email));
+    emailMessage.From.Add(new MailboxAddress(_emailSetting.SenderName, _emailSetting.Sender));
+    emailMessage.To.Add(new MailboxAddress(email));
 
-            emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(TextFormat.Text)
-            {
-                Text = message
-            };
+    emailMessage.Subject = subject;
+    emailMessage.Body = new TextPart(TextFormat.Text)
+    {
+        Text = message
+    };
 
-            using (var client = new SmtpClient())
-            {
-                await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, false);
-                await client.AuthenticateAsync(_emailSetting.Sender, _emailSetting.Password);
-                await client.SendAsync(emailMessage);
+    using (var client = new SmtpClient())
+    {
+        await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, false);
+        await client.AuthenticateAsync(_emailSetting.Sender, _emailSetting.Password);
+        await client.SendAsync(emailMessage);
 
-                await client.DisconnectAsync(true);
-            }
-        }
+        await client.DisconnectAsync(true);
+    }
+}
 
     }
 }
