@@ -92,8 +92,15 @@ namespace Samr.ERP.Core.Services
             if (filterEmployeeViewModel.DepartmentId != null)
                 query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
 
-            if (filterEmployeeViewModel.HasUser)
+            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == true)
+            {
                 query = query.Where(e => e.UserId != null);
+            }
+
+            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == false)
+            {
+                query = query.Where(e => e.UserId == null);
+            }
 
             var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
 
