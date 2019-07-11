@@ -155,7 +155,7 @@ namespace Samr.ERP.Core.Services
 
         }
 
-        public async Task<BaseDataResponse<EditEmployeeViewModel>> UpdateAsync(EditEmployeeViewModel editEmployeeViewModel)
+        public async Task<BaseDataResponse<EditEmployeeViewModel>> EditAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
@@ -167,10 +167,13 @@ namespace Samr.ERP.Core.Services
             }
             else
             {
-                var existsUser = await _unitOfWork.Employees.GetDbSet()
+                var existsUser = await _unitOfWork
+                    .Employees
+                    .GetDbSet()
                     .Where(p => p.Id == editEmployeeViewModel.Id && p.UserId != null)
                     .Select(p => p.User)
                     .FirstOrDefaultAsync();
+
                 if (existsUser != null)
                 {
                     existsUser.Email = editEmployeeViewModel.Email;
@@ -190,7 +193,7 @@ namespace Samr.ERP.Core.Services
                 {
                     var employee = _mapper.Map<Employee>(editEmployeeViewModel);
 
-                    _unitOfWork.Employees.Update(employee);
+                    _unitOfWork.Employees.Update(_mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employee));
 
                     await _unitOfWork.CommitAsync();
 
@@ -214,7 +217,7 @@ namespace Samr.ERP.Core.Services
             employee.Email = editUserDetailsView.Email;
             employee.FactualAddress = editUserDetailsView.FactualAddress;
 
-            await UpdateAsync(_mapper.Map<EditEmployeeViewModel>(employee));
+            await EditAsync(_mapper.Map<EditEmployeeViewModel>(employee));
 
             return BaseResponse.Success();
         }
