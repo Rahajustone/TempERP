@@ -10,6 +10,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -31,6 +32,14 @@ namespace Samr.ERP.WebApi.Controllers
         {
             var nationalities = await _nationalityService.GetAllAsync();
             return Response(nationalities);
+        }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItems()
+        {
+            var listItems = await _nationalityService.GetAllListItemAsync();
+
+            return Response(listItems);
         }
 
         [HttpGet("{id}")]

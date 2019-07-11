@@ -44,11 +44,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<EmployeeLockReasonViewModel, EmployeeLockReason>();
             CreateMap<EditEmployeeLockReasonViewModel, EmployeeLockReason>();
             CreateMap<EmployeeLockReason, EmployeeLockReasonViewModel>();
-
+            
             CreateMap<EmployeeLockReason, EditEmployeeLockReasonViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+
+            CreateMap<EmployeeLockReason, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, EmployeeLockReason>();
 
             CreateMap<Nationality, NationalityViewModel>();
             CreateMap<NationalityViewModel, Nationality>();
@@ -57,6 +60,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                 src => src.MapFrom(map =>
                     map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+            CreateMap<Nationality, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, Nationality>();
 
             CreateMap<Position, PositionViewModel>();
             CreateMap<PositionViewModel, Position>();

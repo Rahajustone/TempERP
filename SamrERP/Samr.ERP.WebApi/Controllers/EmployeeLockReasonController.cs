@@ -9,6 +9,7 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
 
@@ -31,6 +32,14 @@ namespace Samr.ERP.WebApi.Controllers
         {
             var employeeLockReasons = await _employeeLockReason.GetAllAsync(pagingOptions);
             return Response(employeeLockReasons);
+        }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItems()
+        {
+            var listItem = await _employeeLockReason.GetAllListItemAsync();
+
+            return Response(listItem);
         }
 
         [HttpGet("{id}")]

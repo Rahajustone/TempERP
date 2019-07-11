@@ -10,6 +10,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -27,22 +28,35 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
+        private IQueryable<Nationality> GetQuery()
+        {
+            return _unitOfWork.Nationalities.GetDbSet();
+        }
+
+        private IQueryable<Nationality> GetQueryWithUser()
+        {
+            return GetQuery().Include(u => u.CreatedUser);
+        }
+
         public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> GetAllAsync()
         {
-            var nationalities = _unitOfWork
-                .Nationalities
-                .GetDbSet()
-                .Include(u => u.CreatedUser);
+            var nationalities = await GetQueryWithUser().ToListAsync();
 
             return BaseDataResponse<IEnumerable<EditNationalityViewModel>>.Success(_mapper.Map<IEnumerable<EditNationalityViewModel>>(nationalities));
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemAsync()
+        {
+            var listItems = await GetQuery().Where(n => n.IsActive).ToListAsync();
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(listItems));
         }
 
         public async Task<BaseDataResponse<EditNationalityViewModel>> GetByIdAsync(Guid id)
         {
             BaseDataResponse<EditNationalityViewModel> dataResponse;
 
-            var nationality = await _unitOfWork.Nationalities.GetDbSet()
-                .Include(p => p.CreatedUser)
+            var nationality = await GetQuery()
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (nationality == null)
             {
@@ -84,8 +98,8 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditNationalityViewModel> dataResponse;
 
-            var nationalityExists = await _unitOfWork.Nationalities.ExistsAsync(nationalityViewModel.Id);
-            if (nationalityExists)
+            var nationalityExists = await GetQuery().FirstOrDefaultAsync(n => n.Id == nationalityViewModel.Id);
+            if (nationalityExists != null)
             {
                 var checkNameUnique = await _unitOfWork.Nationalities
                     .GetDbSet()
@@ -96,7 +110,7 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var nationality = _mapper.Map<Nationality>(nationalityViewModel);
+                    var nationality = _mapper.Map<EditNationalityViewModel, Nationality>(nationalityViewModel, nationalityExists);
 
                     _unitOfWork.Nationalities.Update(nationality);
                     await _unitOfWork.CommitAsync();

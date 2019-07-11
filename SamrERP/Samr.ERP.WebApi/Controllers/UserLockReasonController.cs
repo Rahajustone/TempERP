@@ -10,6 +10,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -31,6 +32,14 @@ namespace Samr.ERP.WebApi.Controllers
         {
             var userLockReasons = await _userLockReasonService.GetAllAsync(pagingOptions);
             return Response(userLockReasons);
+        }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItems()
+        {
+            var listItems = await _userLockReasonService.GetAllListItemsAsync();
+
+            return Response(listItems);
         }
 
         [HttpGet("{id}")]
