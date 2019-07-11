@@ -8,7 +8,7 @@ namespace Samr.ERP.Core.ViewModels.Employee
 {
     public class EditEmployeeViewModel : EmployeeViewModel
     {
-        public string PhotoPath { get; set; }
+        
 
         [Required]
         public Guid? GenderId { get; set; }
