@@ -18,8 +18,8 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id);
 
-        Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel);
-        Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions);
+        Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
+        Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel);
 
         Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel);
         Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId);

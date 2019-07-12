@@ -23,7 +23,16 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
     {
         public EntityToViewModelProfile()
         {
-            CreateMap<User, UserViewModel>();
+            CreateMap<User, UserViewModel>()
+                .ForMember(dst => dst.IsLocked,
+                    src => src.MapFrom(
+                        map => map.UserLockReasonId.HasValue) )
+                .ForMember(dst => dst.UserLockReasonName,
+                    src => src.MapFrom(
+                        map => map.UserLockReason.IfNotNull(p=>p.Name)))
+                .ForMember(dst => dst.LockDate,
+                    src => src.MapFrom(
+                        map => map.LockDate.HasValue ? map.LockDate.Value.ToShortDateString() : null));
             CreateMap<UserViewModel, User>();
 
             CreateMap<LockUserViewModel, User>();
@@ -90,12 +99,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
-                .ForMember(dst => dst.PhotoPath,
-                    src => src.MapFrom(
-                        map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
+                //.ForMember(dst => dst.PhotoPath
+                    //src => src.MapFrom(
+                        //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.FullName()));
+                        map => map.FirstName + " " + map.LastName  + " "+ map.MiddleName));
+                        //map.FullName()));
+
 
             CreateMap<AllLockEmployeeViewModel, Employee>();
             CreateMap<Employee, AllLockEmployeeViewModel>()

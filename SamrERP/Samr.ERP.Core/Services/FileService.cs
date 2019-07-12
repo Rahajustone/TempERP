@@ -133,6 +133,7 @@ namespace Samr.ERP.Core.Services
 
         public static string GetResizedPath(string filePath)
         {
+            if (string.IsNullOrEmpty(filePath)) return filePath;
             var resizedName = GetResizedName(filePath);
             return $"{Path.Combine(Path.GetDirectoryName(filePath), resizedName)}";
         }

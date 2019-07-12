@@ -145,7 +145,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 }
             }
         }
-
+        
         public virtual void Reload(T entity)
         {
             DbContext.Entry<T>(entity).Reload();
@@ -166,7 +166,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 Update(entity);
             }
         }
-
+        
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await DbSet.AnyAsync(p => ((IBaseObject)p).Id == id);

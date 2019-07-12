@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -18,6 +19,7 @@ using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Data;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Extensions;
 using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
@@ -38,7 +40,7 @@ namespace Samr.ERP.Core.Services
             IEmailSender emailSender,
             IFileService fileService,
             IMapper mapper
-            
+
             )
         {
             _unitOfWork = unitOfWork;
@@ -49,15 +51,39 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
+        private static IQueryable<Employee> FilterEmployeesQuery(FilterEmployeeViewModel filterEmployeeViewModel, IQueryable<Employee> query)
+        {
+            if (filterEmployeeViewModel.FullName != null)
+            {
+                var filterFullName = filterEmployeeViewModel.FullName.ToLower();
+
+                query = query.Where(e => EF.Functions.Like(e.FirstName.ToLower(), "%" + filterFullName + "%")
+                                         || EF.Functions.Like(e.LastName, "%" + filterFullName + "%")
+                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) &
+                                             EF.Functions.Like(e.MiddleName, "%" + filterFullName + "%")
+                                         ));
+            }
+
+            if (filterEmployeeViewModel.DepartmentId != null)
+                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
+
+            if (filterEmployeeViewModel.OnlyUsers)
+            {
+                query = query.Where(e => e.UserId != null);
+            }
+
+            return query;
+        }
+
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
         {
             BaseDataResponse<GetEmployeeViewModel> dataResponse;
 
             var employee = await _unitOfWork.Employees.GetDbSet()
-                .Include( p => p.User)
+                .Include(p => p.User)
                 .Include(p => p.CreatedUser)
-                .Include( p => p.Position)
-                .Include( p => p.Position.Department)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
                 .Include(p => p.Gender)
                 .Include(p => p.EmployeeLockReason)
                 .FirstOrDefaultAsync(p => p.Id == id);
@@ -74,7 +100,7 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel)
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule)
         {
             var query = _unitOfWork.Employees
                 .GetDbSet()
@@ -85,39 +111,35 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.User)
                 .Where(e => e.EmployeeLockReasonId == null);
 
-            if (filterEmployeeViewModel.FullName != null)
-                query = query.Where(e => filterEmployeeViewModel.FullName.ToLower().Contains(e.FirstName.ToLower())
-                                         || filterEmployeeViewModel.FullName.ToLower().Contains(e.LastName.ToLower())
-                                         || filterEmployeeViewModel.FullName.ToLower().Contains( e.MiddleName ));
 
-            if (filterEmployeeViewModel.DepartmentId != null)
-                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
+            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
 
-            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == true)
+            var queryVm = query.ProjectTo<AllEmployeeViewModel>().OrderBy(sortRule, p => p.FullName);
+
+
+            var pagedList = await queryVm.ToPagedListAsync(pagingOptions);
+
+            foreach (var allEmployeeViewModel in pagedList.Items)
             {
-                query = query.Where(e => e.UserId != null);
+                allEmployeeViewModel.PhotoPath =
+                    FileService.GetDownloadAction(FileService.GetResizedPath(allEmployeeViewModel.PhotoPath));
             }
-
-            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == false)
-            {
-                query = query.Where(e => e.UserId == null);
-            }
-
-            var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
+            //var pagedList = await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<AllEmployeeViewModel>>.Success(pagedList);
         }
 
+        //public virtual IQueryable<PersonDto> Get(ODataQueryOptions<Person> query)
+        //{
+        //    var people = query.ApplyTo(uow.Person().GetAll());
+        //    return ConvertToDtos(people);
+        //}
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-            // TODO Raha
-            //var filePathName = await _file.StorePhoto("wwwroot/employers", filePath);
-            //dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(editEmployeeViewModel);
-
-            var employeeExists = _unitOfWork.Employees.Any(predicate: e => 
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() &&
+            var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
+                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() ||
                 e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
             );
 
@@ -166,7 +188,7 @@ namespace Samr.ERP.Core.Services
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
-            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generateNewPassword}");
+            await _emailSender.SendEmailToEmployeeAsync(user, "User created", $"Account was created, your pass {generateNewPassword}");
 
             return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
 
@@ -176,7 +198,7 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-            var employeExists = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync( e => e.Id == editEmployeeViewModel.Id);
+            var employeExists = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync(e => e.Id == editEmployeeViewModel.Id);
 
             if (employeExists == null)
             {
@@ -259,7 +281,7 @@ namespace Samr.ERP.Core.Services
             employee.LockUserId = _userProvider.CurrentUser.Id;
             employee.EmployeeLockReasonId = employeeLockReason.Id;
             employee.LockDate = DateTime.Now;
-            
+
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
@@ -267,7 +289,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId)
         {
-            
+
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.Id == employeeId);
@@ -303,7 +325,7 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel)
         {
             var query = _unitOfWork.Employees
                 .GetDbSet()
@@ -314,6 +336,8 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.EmployeeLockReason)
                 .Where(e => e.EmployeeLockReasonId != null);
 
+            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
+
             var itemList = await query.ToMappedPagedListAsync<Employee, AllLockEmployeeViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<AllLockEmployeeViewModel>>.Success(itemList);
@@ -323,7 +347,7 @@ namespace Samr.ERP.Core.Services
         {
             BaseResponse response;
 
-            var existEmployee = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync( e=> e.Id == editPassportDataEmployeeViewModel.EmployeeId);
+            var existEmployee = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync(e => e.Id == editPassportDataEmployeeViewModel.EmployeeId);
 
             if (existEmployee != null)
             {
