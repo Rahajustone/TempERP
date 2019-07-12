@@ -42,7 +42,7 @@ namespace Samr.ERP.Core.Stuff
             var expr = Expression.MakeMemberAccess(pe, propInfo);
             var orderByExpression = Expression.Lambda(expr, pe);
 
-            MethodCallExpression orderByCallExpression = Expression.Call(typeof(System.Linq.Queryable), rule.SortDir == SortDirection.Ascending ? "OrderBy" : "OrderByDescending",
+            MethodCallExpression orderByCallExpression = Expression.Call(typeof(System.Linq.Queryable), rule.SortDir == SortDirection.Asc ? "OrderBy" : "OrderByDescending",
                 new Type[] { type, propInfo.PropertyType }, query.Expression, orderByExpression);
 
             return query.Provider.CreateQuery<T>(orderByCallExpression);
