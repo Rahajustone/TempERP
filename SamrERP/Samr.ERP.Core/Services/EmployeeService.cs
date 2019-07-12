@@ -18,6 +18,7 @@ using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Data;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Extensions;
 using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
@@ -47,6 +48,30 @@ namespace Samr.ERP.Core.Services
             _emailSender = emailSender;
             _fileService = fileService;
             _mapper = mapper;
+        }
+
+        private static IQueryable<Employee> FilterEmployeesQuery(FilterEmployeeViewModel filterEmployeeViewModel, IQueryable<Employee> query)
+        {
+            if (filterEmployeeViewModel.FullName != null)
+            {
+                var filterFullName = filterEmployeeViewModel.FullName.ToLower();
+
+                query = query.Where(e => EF.Functions.Like(e.FirstName.ToLower(), "%" + filterFullName + "%")
+                                         || EF.Functions.Like(e.LastName, "%" + filterFullName + "%")
+                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) &
+                                             EF.Functions.Like(e.MiddleName, "%" + filterFullName + "%")
+                                         ));
+            }
+
+            if (filterEmployeeViewModel.DepartmentId != null)
+                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
+
+            if (filterEmployeeViewModel.OnlyUsers)
+            {
+                query = query.Where(e => e.UserId != null);
+            }
+
+            return query;
         }
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
@@ -86,27 +111,7 @@ namespace Samr.ERP.Core.Services
                 .Where(e => e.EmployeeLockReasonId == null);
 
 
-            if (filterEmployeeViewModel.FullName != null)
-            {
-                var filterFullName = filterEmployeeViewModel.FullName.ToLower();
-
-                //query = query.Where(e => filterFullName.Contains(e.FirstName.ToLower())
-                //                         || filterFullName.Contains(e.LastName.ToLower())
-                //                         || (!string.IsNullOrWhiteSpace(e.MiddleName) & filterFullName.Contains(e.MiddleName.ToLower()))
-                //                         );
-                query = query.Where(e =>  EF.Functions.Like(e.FirstName.ToLower(), "%" + filterFullName + "%")
-                || EF.Functions.Like(e.LastName, "%" + filterFullName + "%")
-                || (!string.IsNullOrWhiteSpace(e.MiddleName) & EF.Functions.Like(e.MiddleName, "%" + filterFullName + "%")
-                ));
-            }
-            
-            if (filterEmployeeViewModel.DepartmentId != null)
-                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
-
-            if (filterEmployeeViewModel.OnlyUsers)
-            {
-                query = query.Where(e => e.UserId != null);
-            }
+            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
 
             var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
 
@@ -116,10 +121,6 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
-
-            // TODO Raha
-            //var filePathName = await _file.StorePhoto("wwwroot/employers", filePath);
-            //dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(editEmployeeViewModel);
 
             var employeeExists = _unitOfWork.Employees.Any(predicate: e => 
                 e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() &&
@@ -319,23 +320,7 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.EmployeeLockReason)
                 .Where(e => e.EmployeeLockReasonId != null);
 
-            if (filterEmployeeViewModel.FullName != null)
-            {
-                var filterFullName = filterEmployeeViewModel.FullName.ToLower();
-
-                query = query.Where(e => filterFullName.Contains(e.FirstName.ToLower())
-                                         || filterFullName.Contains(e.LastName.ToLower())
-                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) & filterFullName.Contains(e.MiddleName.ToLower()))
-                );
-            }
-
-            if (filterEmployeeViewModel.DepartmentId != null)
-                query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
-
-            if (filterEmployeeViewModel.OnlyUsers)
-            {
-                query = query.Where(e => e.UserId != null);
-            }
+            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
 
             var itemList = await query.ToMappedPagedListAsync<Employee, AllLockEmployeeViewModel>(pagingOptions);
 
