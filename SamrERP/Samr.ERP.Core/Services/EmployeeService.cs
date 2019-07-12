@@ -90,23 +90,22 @@ namespace Samr.ERP.Core.Services
             {
                 var filterFullName = filterEmployeeViewModel.FullName.ToLower();
 
-                query = query.Where(e => filterFullName.Contains(e.FirstName.ToLower())
-                                         || filterFullName.Contains(e.LastName.ToLower()) 
-                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) & filterFullName.Contains(e.MiddleName.ToLower()))
-                                         );
+                //query = query.Where(e => filterFullName.Contains(e.FirstName.ToLower())
+                //                         || filterFullName.Contains(e.LastName.ToLower())
+                //                         || (!string.IsNullOrWhiteSpace(e.MiddleName) & filterFullName.Contains(e.MiddleName.ToLower()))
+                //                         );
+                query = query.Where(e =>  EF.Functions.Like(e.FirstName.ToLower(), "%" + filterFullName + "%")
+                || EF.Functions.Like(e.LastName, "%" + filterFullName + "%")
+                || (!string.IsNullOrWhiteSpace(e.MiddleName) & EF.Functions.Like(e.MiddleName, "%" + filterFullName + "%")
+                ));
             }
             
             if (filterEmployeeViewModel.DepartmentId != null)
                 query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
 
-            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == true)
+            if (filterEmployeeViewModel.OnlyUsers)
             {
                 query = query.Where(e => e.UserId != null);
-            }
-
-            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == false)
-            {
-                query = query.Where(e => e.UserId == null);
             }
 
             var pagedList =  await query.ToMappedPagedListAsync<Employee, AllEmployeeViewModel>(pagingOptions);
@@ -333,14 +332,9 @@ namespace Samr.ERP.Core.Services
             if (filterEmployeeViewModel.DepartmentId != null)
                 query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
 
-            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == true)
+            if (filterEmployeeViewModel.OnlyUsers)
             {
                 query = query.Where(e => e.UserId != null);
-            }
-
-            if (filterEmployeeViewModel.HasUser != null && filterEmployeeViewModel.HasUser.Value == false)
-            {
-                query = query.Where(e => e.UserId == null);
             }
 
             var itemList = await query.ToMappedPagedListAsync<Employee, AllLockEmployeeViewModel>(pagingOptions);

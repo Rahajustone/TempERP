@@ -8,6 +8,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
     {
         public string FullName { get; set; }
         public Guid? DepartmentId { get; set; }
-        public bool? HasUser { get; set; }
+        public bool OnlyUsers { get; set; }
     }
 }
