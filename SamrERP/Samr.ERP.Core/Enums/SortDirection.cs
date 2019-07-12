@@ -9,7 +9,7 @@ namespace Samr.ERP.Core.Enums
     [JsonConverter(typeof(SortDirectionTypeEnumConverter))]
     public enum SortDirection
     {
-        Ascending,
-        Descending
+        Asc,
+        Desc
     }
 }
