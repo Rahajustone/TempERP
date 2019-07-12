@@ -16,6 +16,7 @@ namespace Samr.ERP.WebApi.Configurations.Swagger
             {
                 c.SwaggerDoc("v1", new Info { Title = "Samr.ERP API", Version = "v1" });
 
+                c.DescribeAllEnumsAsStrings();
                 var security = new Dictionary<string, IEnumerable<string>>
                 {
                     {"Bearer", new string[] { }},

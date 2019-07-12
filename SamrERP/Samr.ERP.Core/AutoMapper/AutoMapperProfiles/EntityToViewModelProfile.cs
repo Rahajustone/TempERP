@@ -99,12 +99,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
-                .ForMember(dst => dst.PhotoPath,
-                    src => src.MapFrom(
-                        map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
+                //.ForMember(dst => dst.PhotoPath
+                    //src => src.MapFrom(
+                        //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.FullName()));
+                        map => map.FirstName + " " + map.LastName  + " "+ map.MiddleName));
+                        //map.FullName()));
+
 
             CreateMap<AllLockEmployeeViewModel, Employee>();
             CreateMap<Employee, AllLockEmployeeViewModel>()
