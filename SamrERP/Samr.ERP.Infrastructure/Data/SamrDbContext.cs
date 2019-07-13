@@ -31,6 +31,8 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<EmailSetting> EmailSettings { get; set; }
         public DbSet<EmailMessageHistory> EmailMessageHistories { get; set; }
         public DbSet<UserLockReason> UserLockReasons { get; set; }
+        public DbSet<UsefulLinkCategory> UsefulLinkCategories { get; set; }
+        public DbSet<UsefulLink> UsefulLinks { get; set; }
 
 
 

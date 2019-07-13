@@ -18,7 +18,6 @@ using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Data;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
-using Samr.ERP.Infrastructure.Extensions;
 using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
@@ -62,6 +61,8 @@ namespace Samr.ERP.Core.Services
                                              EF.Functions.Like(e.MiddleName, "%" + filterFullName + "%")
                                          ));
             }
+
+
 
             if (filterEmployeeViewModel.DepartmentId != null)
                 query = query.Where(e => e.Position.DepartmentId == filterEmployeeViewModel.DepartmentId);
@@ -123,7 +124,7 @@ namespace Samr.ERP.Core.Services
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
             var employeeExists = _unitOfWork.Employees.Any(predicate: e => 
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() &&
+                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() ||
                 e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
             );
 

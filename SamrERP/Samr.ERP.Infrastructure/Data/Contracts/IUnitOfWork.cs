@@ -26,6 +26,9 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<EmailSetting> EmailSettings{ get; }
         IRepository<EmailMessageHistory> EmailMessageHistories { get; }
         IRepository<UserLockReason> UserLockReasons { get; }
+        IRepository<UsefulLinkCategory> UsefulLinkCategories { get; }
+        IRepository<UsefulLink> UsefulLinks { get; }
+
 
 
     }

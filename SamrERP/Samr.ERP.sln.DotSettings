@@ -1,0 +1,327 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=0002A83634E0794BA811830D05A778A1/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=0002A83634E0794BA811830D05A778A1/EntryName/@EntryValue">SampleService.cs</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=0002A83634E0794BA811830D05A778A1/Position/@EntryValue">5</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=2C3184759622774E8D02B7A816076860/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=2C3184759622774E8D02B7A816076860/EntryName/@EntryValue">ISampleService.cs</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=2C3184759622774E8D02B7A816076860/Position/@EntryValue">3</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=2ED8D2E0C628D949AD37CE38B1E0812A/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=2ED8D2E0C628D949AD37CE38B1E0812A/EntryName/@EntryValue">interface</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=2ED8D2E0C628D949AD37CE38B1E0812A/Position/@EntryValue">7</s:Int64>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=40C163D436D8ED48A6D01A0AFEFC5556/EntryName/@EntryValue">Test Fixture</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=40C163D436D8ED48A6D01A0AFEFC5556/Position/@EntryValue">6</s:Int64>
+	
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=6FAA6736247D464489DF536819A6D103/@KeyIndexDefined">False</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=7B10AC30B0320A4F95A3763001E1DBF6/Position/@EntryValue">2</s:Int64>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=9BB83ED0FF792E47BAAB217C25589C77/Position/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=F80AB2C6CC24BF4396E30CD49A5D660E/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=F80AB2C6CC24BF4396E30CD49A5D660E/EntryName/@EntryValue">SampleController.cs</s:String>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/QuickList/=F0CA621CDF5AB24282D8CDC11C520997/Entry/=F80AB2C6CC24BF4396E30CD49A5D660E/Position/@EntryValue">4</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/CustomProperties/=Extension/@EntryIndexedValue">cs</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/CustomProperties/=FileName/@EntryIndexedValue">SampleService</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/CustomProperties/=ValidateFileName/@EntryIndexedValue">True</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Description/@EntryValue">SampleService.cs</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=CLASSNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=CLASSNAME/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITIES/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITIES/Order/@EntryValue">3</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITY/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITY/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITYV/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITYV/Order/@EntryValue">5</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITYVAR/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=ENTITYVAR/Order/@EntryValue">4</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=VARENTITY/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=VARENTITY/Order/@EntryValue">6</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=VIEWMODEL/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Field/=VIEWMODEL/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=0002A83634E0794BA811830D05A778A1/Text/@EntryValue">using System;&#xD;
+using System.Collections.Generic;&#xD;
+using System.Linq;&#xD;
+using System.Text;&#xD;
+using System.Threading.Tasks;&#xD;
+using AutoMapper;&#xD;
+using Microsoft.EntityFrameworkCore;&#xD;
+using Samr.ERP.Core.Interfaces;&#xD;
+using Samr.ERP.Core.Models;&#xD;
+using Samr.ERP.Core.Models.ErrorModels;&#xD;
+using Samr.ERP.Core.Models.ResponseModels;&#xD;
+using Samr.ERP.Core.Stuff;&#xD;
+using Samr.ERP.Infrastructure.Data.Contracts;&#xD;
+using Samr.ERP.Infrastructure.Entities;&#xD;
+&#xD;
+namespace Samr.ERP.Core.Services&#xD;
+{&#xD;
+    public class $CLASSNAME$Service : I$CLASSNAME$Service&#xD;
+    {&#xD;
+        private readonly IUnitOfWork _unitOfWork;&#xD;
+        private readonly IMapper _mapper;&#xD;
+&#xD;
+        public $CLASSNAME$(IUnitOfWork unitOfWork, IMapper mapper)&#xD;
+        {&#xD;
+            _unitOfWork = unitOfWork;&#xD;
+            _mapper = mapper;&#xD;
+        }&#xD;
+        private DbSet&lt;$CLASSNAME$&gt; GetQuery()&#xD;
+        {&#xD;
+            return _unitOfWork.$CLASSNAME$.GetDbSet();&#xD;
+        }&#xD;
+&#xD;
+        public async Task&lt;BaseDataResponse&lt;$VIEWMODEL$&gt;&gt; GetByIdAsync(Guid id)&#xD;
+        {&#xD;
+            var exists$CLASSNAME$ = await GetQuery().FirstOrDefaultAsync(u =&gt; u.Id == id);&#xD;
+            if (exists$CLASSNAME$ == null )&#xD;
+            {&#xD;
+                return BaseDataResponse&lt;$VIEWMODEL$&gt;.NotFound(null);&#xD;
+            }&#xD;
+&#xD;
+            return BaseDataResponse&lt;$VIEWMODEL$&gt;.Success(_mapper.Map&lt;$VIEWMODEL$&gt;(exists$CLASSNAME$));&#xD;
+        }&#xD;
+&#xD;
+        public async Task&lt;BaseDataResponse&lt;PagedList&lt;$VIEWMODEL$&gt;&gt;&gt; GetAllAsync(PagingOptions pagingOptions)&#xD;
+        {&#xD;
+            var pagedList = await GetQuery().ToMappedPagedListAsync&lt;$ENTITY$, $VIEWMODEL$&gt;(pagingOptions);&#xD;
+            &#xD;
+            return BaseDataResponse&lt;PagedList&lt;$VIEWMODEL$&gt;&gt;.Success(pagedList);&#xD;
+        }&#xD;
+&#xD;
+        public async Task&lt;BaseDataResponse&lt;IEnumerable&lt;SelectListItemViewModel&gt;&gt;&gt; GetAllSelectListItemAsync()&#xD;
+        {&#xD;
+             var listItem = await GetQuery().Where(p =&gt; p.IsActive).ToListAsync();&#xD;
+&#xD;
+             return BaseDataResponse&lt;IEnumerable&lt;SelectListItemViewModel&gt;&gt;.Success(_mapper.Map&lt;IEnumerable&lt;SelectListItemViewModel&gt;&gt;(listItem));&#xD;
+        }&#xD;
+&#xD;
+        public async Task&lt;BaseDataResponse&lt;$VIEWMODEL$&gt;&gt; CreateAsync($VIEWMODEL$ edit$VIEWMODEL$)&#xD;
+        {&#xD;
+            BaseDataResponse&lt;$VIEWMODEL$&gt; response;&#xD;
+&#xD;
+            var exists$ENTITIES$ = await GetQuery().FirstOrDefaultAsync(p =&gt; p.Name.ToLower() == editUsefulLinkCategoryViewModel.Name.ToLower());&#xD;
+            if (exists$ENTITIES$  != null)&#xD;
+            {&#xD;
+                response = BaseDataResponse&lt;$VIEWMODEL$&gt;.Fail(edit$VIEWMODEL$, new ErrorModel("Entity  was found with the same name!"));&#xD;
+            }&#xD;
+            else&#xD;
+            {&#xD;
+                var $ENTITYVAR$ = _mapper.Map&lt;$ENTITYV$&gt;(editUsefulLinkCategoryViewModel);&#xD;
+&#xD;
+                _unitOfWork.UsefulLinkCategories.Add($ENTITYVAR$);&#xD;
+&#xD;
+                await _unitOfWork.CommitAsync();&#xD;
+&#xD;
+                response = BaseDataResponse&lt;$VIEWMODEL$&gt;.Success( _mapper.Map&lt;$VIEWMODEL$&gt;($ENTITYVAR$));&#xD;
+            }&#xD;
+&#xD;
+            return response;&#xD;
+        }&#xD;
+&#xD;
+        public async Task&lt;BaseDataResponse&lt;$VIEWMODEL$&gt;&gt; EditAsync($VIEWMODEL$ edit$VIEWMODEL$)&#xD;
+        {&#xD;
+            BaseDataResponse&lt;$VIEWMODEL$&gt; response;&#xD;
+&#xD;
+            var exist$ENTITY$ = await GetQuery().FirstOrDefaultAsync(p =&gt; p.Id == edit$VIEWMODEL$.Id);&#xD;
+            if (exist$ENTITY$ == null)&#xD;
+            {&#xD;
+                 response = BaseDataResponse&lt;$VIEWMODEL$&gt;.NotFound(edit$VIEWMODEL$);&#xD;
+            }&#xD;
+            else&#xD;
+            {&#xD;
+                var checkNameUnique = await GetQuery()&#xD;
+                    .AnyAsync(d =&gt; d.Id != edit$VIEWMODEL$.Id &amp;&amp; d.Name.ToLower() == edit$VIEWMODEL$.Name.ToLower());&#xD;
+                if (checkNameUnique)&#xD;
+                {&#xD;
+                    response = BaseDataResponse&lt;$VIEWMODEL$&gt;.Fail(edit$VIEWMODEL$, new ErrorModel("We have already this useful link category"));&#xD;
+                }&#xD;
+                else&#xD;
+                {&#xD;
+                    var $VARENTITY$ = _mapper.Map&lt;$VIEWMODEL$, $ENTITY$&gt;(edit$VIEWMODEL$, exist$ENTITY$);&#xD;
+&#xD;
+                    _unitOfWork.$ENTITY$.Update($VARENTITY$);&#xD;
+&#xD;
+                    await _unitOfWork.CommitAsync();&#xD;
+&#xD;
+                    response = BaseDataResponse&lt;$VIEWMODEL$&gt;.Success(_mapper.Map&lt;$VIEWMODEL$&gt;($VARENTITY$));&#xD;
+                }&#xD;
+            }&#xD;
+&#xD;
+            return response;&#xD;
+        }&#xD;
+    }&#xD;
+}&#xD;
+</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/CustomProperties/=Extension/@EntryIndexedValue">cs</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/CustomProperties/=FileName/@EntryIndexedValue">ISampleService</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/CustomProperties/=ValidateFileName/@EntryIndexedValue">True</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Description/@EntryValue">ISampleService.cs</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Field/=ENTITY/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Field/=ENTITY/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Field/=VIEWMODEL/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Field/=VIEWMODEL/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2C3184759622774E8D02B7A816076860/Text/@EntryValue">using System;&#xD;
+using System.Collections.Generic;&#xD;
+using System.Text;&#xD;
+using System.Threading.Tasks;&#xD;
+using Samr.ERP.Core.Models;&#xD;
+using Samr.ERP.Core.Models.ResponseModels;&#xD;
+using Samr.ERP.Core.Stuff;&#xD;
+using Samr.ERP.Core.ViewModels.Common;&#xD;
+using Samr.ERP.Core.ViewModels.Department;&#xD;
+using Samr.ERP.Infrastructure.Entities;&#xD;
+&#xD;
+namespace Samr.ERP.Core.Interfaces&#xD;
+{&#xD;
+    public interface I$ENTITY$Service&#xD;
+    {&#xD;
+        Task&lt;BaseDataResponse&lt;$VIEWMODEL$&gt;&gt; GetByIdAsync(Guid id);&#xD;
+        Task&lt;BaseDataResponse&lt;PagedList&lt;$VIEWMODEL$&gt;&gt;&gt; GetAllAsync(PagingOptions pagingOptions);&#xD;
+        Task&lt;BaseDataResponse&lt;IEnumerable&lt;SelectListItemViewModel&gt;&gt;&gt; GetAllSelectListItemAsync();&#xD;
+        Task&lt;BaseDataResponse&lt;$VIEWMODEL$&gt;&gt; CreateAsync($VIEWMODEL$ model);&#xD;
+        Task&lt;BaseDataResponse&lt;$VIEWMODEL$&gt;&gt; UpdateAsync($VIEWMODEL$ model);&#xD;
+    }</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/@KeyIndexDefined">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/CustomProperties/=Extension/@EntryIndexedValue">txt</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/CustomProperties/=FileName/@EntryIndexedValue">NewFile</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/CustomProperties/=ValidateFileName/@EntryIndexedValue">False</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Description/@EntryValue">interface</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Field/=CLASS/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Field/=CLASS/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Field/=HEADER/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Field/=HEADER/Order/@EntryValue">0</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Field/=NAMESPACE/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Field/=NAMESPACE/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=2ED8D2E0C628D949AD37CE38B1E0812A/Text/@EntryValue">$HEADER$namespace $NAMESPACE$&#xD;
+{&#xD;
+  public interface $CLASS$ {$END$}&#xD;
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=6FAA6736247D464489DF536819A6D103/@KeyIndexDefined">False</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Description/@EntryValue">&amp;SampleController.cs</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=ALLVIEWMODEL/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=ALLVIEWMODEL/Order/@EntryValue">3</s:Int64>
+	
+	
+	
+	
+	
+	
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=CONTROLLERNAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=CONTROLLERNAME/Order/@EntryValue">0</s:Int64>
+	
+	
+	
+	
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=ISERVICEINTERFACE/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=ISERVICEINTERFACE/Order/@EntryValue">1</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=MODEL/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=MODEL/Order/@EntryValue">6</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=RESULT/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=RESULT/Order/@EntryValue">5</s:Int64>
+	
+	
+	
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=SERVICE/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=SERVICE/Order/@EntryValue">2</s:Int64>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=SERVICENAME/@KeyIndexDefined">True</s:Boolean>
+	<s:Int64 x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Field/=SERVICENAME/Order/@EntryValue">4</s:Int64>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Text/@EntryValue">using System;&#xD;
+using System.Collections.Generic;&#xD;
+using System.Linq;&#xD;
+using System.Threading.Tasks;&#xD;
+using AutoMapper;&#xD;
+using Microsoft.AspNetCore.Authorization;&#xD;
+using Microsoft.AspNetCore.Http;&#xD;
+using Microsoft.AspNetCore.Mvc;&#xD;
+using Samr.ERP.Core.Interfaces;&#xD;
+using Samr.ERP.Core.Models;&#xD;
+using Samr.ERP.Core.Models.ResponseModels;&#xD;
+using Samr.ERP.Core.Services;&#xD;
+using Samr.ERP.Core.Stuff;&#xD;
+using Samr.ERP.Infrastructure.Entities;&#xD;
+&#xD;
+namespace Samr.ERP.WebApi.Controllers&#xD;
+{&#xD;
+    [Route("api/[controller]/[action]")&#xD;
+    [Authorize]&#xD;
+    [ApiController]&#xD;
+    public class $CONTROLLERNAME$Controller : ApiController&#xD;
+    {&#xD;
+        private readonly $ISERVICEINTERFACE$ _$SERVICENAME$;&#xD;
+&#xD;
+        public $CONTROLLERNAME$Controller($ISERVICEINTERFACE$ $SERVICE$)&#xD;
+        {&#xD;
+            _$SERVICE$ = $SERVICE$;&#xD;
+        }&#xD;
+&#xD;
+        [HttpGet]&#xD;
+        public async Task&lt;BaseDataResponse&lt;PagedList&lt;$ALLVIEWMODEL$&gt;&gt;&gt; All([FromQuery]PagingOptions pagingOptions)&#xD;
+        {&#xD;
+            var $CONTROLLERNAME$s = await _$SERVICE$.GetAllAsync(pagingOptions);&#xD;
+            return Response(departments);&#xD;
+        }&#xD;
+&#xD;
+        [HttpGet]&#xD;
+        public async Task&lt;BaseDataResponse&lt;IEnumerable&lt;SelectListItemViewModel&gt;&gt;&gt; SelectListItem()&#xD;
+        {&#xD;
+            var $CONTROLLERNAME$s = await _$SERVICE$.GetAllSelectListItemAsync();&#xD;
+            return Response($CONTROLLERNAME$s);&#xD;
+        }&#xD;
+&#xD;
+        [HttpGet("{id}")]&#xD;
+        public async Task&lt;BaseDataResponse&lt;$ALLVIEWMODEL$&gt;&gt; Get(Guid id)&#xD;
+        {&#xD;
+            var $CONTROLLERNAME$s = await _$SERVICE$.GetByIdAsync(id);&#xD;
+&#xD;
+            return Response($CONTROLLERNAME$s);&#xD;
+        }&#xD;
+        &#xD;
+        [HttpPost]&#xD;
+        public async Task&lt;BaseDataResponse&lt;$ALLVIEWMODEL$&gt;&gt; Create([FromBody]$ALLVIEWMODEL$ $MODEL$)&#xD;
+        {&#xD;
+            if (ModelState.IsValid)&#xD;
+            {&#xD;
+                var $RESULT$ = await _$SERVICE$.CreateAsync($ALLVIEWMODEL$);&#xD;
+                return Response($RESULT$);&#xD;
+            }&#xD;
+&#xD;
+            return Response(BaseDataResponse&lt;$ALLVIEWMODEL$&gt;.Fail($ALLVIEWMODEL$, null));&#xD;
+        }&#xD;
+&#xD;
+        [HttpPost]&#xD;
+        public async Task&lt;BaseDataResponse&lt;$ALLVIEWMODEL$&gt;&gt; Edit([FromBody] $ALLVIEWMODEL$ $MODEL$)&#xD;
+        {&#xD;
+            if (ModelState.IsValid)&#xD;
+            {&#xD;
+                var $RESULT$ = await _$SERVICE$.UpdateAsync($MODEL$);&#xD;
+                return Response($RESULT$);&#xD;
+            }&#xD;
+&#xD;
+            return Response(BaseDataResponse&lt;$ALLVIEWMODEL$&gt;.Fail(null, null));&#xD;
+        }&#xD;
+     &#xD;
+    }&#xD;
+}</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Reformat/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/ShortenQualifiedReferences/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/CustomProperties/=FileName/@EntryIndexedValue">SampleController</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/CustomProperties/=Extension/@EntryIndexedValue">cs</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/CustomProperties/=ValidateFileName/@EntryIndexedValue">True</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Applicability/=File/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Scope/=E8F0594528C33E45BBFEC6CFE851095D/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/LiveTemplates/Template/=F80AB2C6CC24BF4396E30CD49A5D660E/Scope/=E8F0594528C33E45BBFEC6CFE851095D/Type/@EntryValue">InCSharpProjectFile</s:String></wpf:ResourceDictionary>

@@ -15,6 +15,8 @@ using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Core.ViewModels.News;
 using Samr.ERP.Core.ViewModels.News.Categories;
 using Samr.ERP.Core.ViewModels.Position;
+using Samr.ERP.Core.ViewModels.UsefulLink;
+using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
@@ -217,6 +219,23 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Gender, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, Gender>();
 
+
+
+            CreateMap<UsefulLinkCategory, UsefulLinkCategoryViewModel>();
+            CreateMap<UsefulLinkCategoryViewModel, UsefulLinkCategory>();
+            CreateMap<EditUsefulLinkCategoryViewModel, UsefulLinkCategory>();
+            CreateMap<UsefulLinkCategory, EditUsefulLinkCategoryViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+            CreateMap<UsefulLinkCategory, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, UsefulLinkCategory>();
+
+            CreateMap<UsefulLink, UsefulLinkViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
+                .ReverseMap();
         }
     }
 }
