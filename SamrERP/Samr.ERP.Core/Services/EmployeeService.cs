@@ -114,10 +114,12 @@ namespace Samr.ERP.Core.Services
 
             query = FilterEmployeesQuery(filterEmployeeViewModel, query);
 
-            var queryVm = query.ProjectTo<AllEmployeeViewModel>().OrderBy(sortRule, p => p.FullName);
+            var queryVm = query.ProjectTo<AllEmployeeViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
 
 
-            var pagedList = await queryVm.ToPagedListAsync(pagingOptions);
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
             foreach (var allEmployeeViewModel in pagedList.Items)
             {

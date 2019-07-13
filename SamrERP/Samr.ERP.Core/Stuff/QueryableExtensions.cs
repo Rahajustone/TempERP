@@ -36,6 +36,12 @@ namespace Samr.ERP.Core.Stuff
             ParameterExpression pe = Expression.Parameter(type, "obj");
 
             System.Reflection.PropertyInfo propInfo = type.GetProperty(rule.SortProperty);
+            if (propInfo == null)
+            {
+                var fixedPropertyName = rule.SortProperty[0].ToString().ToUpper() +
+                                 rule.SortProperty.Substring(1, rule.SortProperty.Length - 1);
+                propInfo = type.GetProperty(fixedPropertyName);
+            }
 
             //var expr = Expression.Property(pe, propInfo);
 
