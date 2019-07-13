@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -29,11 +30,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel)
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel,[FromQuery] SortRule sortRule)
         {
-            
-            var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel);
-
+            var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel,sortRule);
             return Response(employee);
         }
 
@@ -48,8 +47,9 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<GetEmployeeViewModel>> Get(Guid id)
         {
+          
             var employee = await _employeeService.GetByIdAsync(id);
-
+       
             return Response(employee);
         }
 
@@ -58,8 +58,9 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 var employeeResult =  await _employeeService.CreateAsync(editEmployeeViewModel);
-
+            
                 return Response(employeeResult);
             }
 
