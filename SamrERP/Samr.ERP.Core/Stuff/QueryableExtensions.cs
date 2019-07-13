@@ -40,7 +40,7 @@ namespace Samr.ERP.Core.Stuff
             {
                 var fixedPropertyName = rule.SortProperty[0].ToString().ToUpper() +
                                  rule.SortProperty.Substring(1, rule.SortProperty.Length - 1);
-                propInfo = type.GetProperty(fixedPropertyName)
+                propInfo = type.GetProperty(fixedPropertyName);
             }
 
             //var expr = Expression.Property(pe, propInfo);
