@@ -373,5 +373,14 @@ namespace Samr.ERP.Core.Services
 
             return response;
         }
+
+        public async Task<EmployeeInfoTokenViewModel> GetEmployeeInfo(Guid id)
+        {
+            var emp = await _unitOfWork.Employees.GetDbSet().Include( p => p.Position).FirstOrDefaultAsync(
+                e => e.UserId == id);
+            var vm = _mapper.Map<EmployeeInfoTokenViewModel>(emp);
+
+            return vm;
+        }
     }
 }

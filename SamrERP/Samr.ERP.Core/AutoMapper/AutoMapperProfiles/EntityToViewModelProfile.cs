@@ -102,11 +102,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
                 //.ForMember(dst => dst.PhotoPath
-                    //src => src.MapFrom(
-                        //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
+                //src => src.MapFrom(
+                //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.FirstName + " " + map.LastName  + " "+ map.MiddleName));
+                        map => map.FirstName + " " + map.LastName + " " + map.MiddleName))
+                .ForMember(dst => dst.HasAccount, src => src.MapFrom(
+                    map => map.UserId.HasValue));
                         //map.FullName()));
 
 
@@ -186,6 +188,16 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 
             CreateMap<EditPassportDataEmployeeViewModel, Employee>();
             CreateMap<Employee, EditPassportDataEmployeeViewModel>();
+
+            CreateMap<Employee, EmployeeInfoTokenViewModel>()
+                .ForMember( dst => dst.FullName, 
+                    src => src.MapFrom(
+                        map => map.FullName()))
+                .ForMember( dst => dst.Photo, src => src.MapFrom(
+                    map => map.PhotoPath))
+                .ForMember( dst => dst.PositionName,
+                    src => src.MapFrom(
+                        map => map.Position.Name )).ReverseMap();
 
             // TODO
             CreateMap<NewsViewModel, News>();
