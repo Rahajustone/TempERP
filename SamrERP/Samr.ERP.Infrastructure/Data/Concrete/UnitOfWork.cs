@@ -53,6 +53,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<UserLockReason> UserLockReasons => GetStandardRepo<UserLockReason>();
         public IRepository<UsefulLinkCategory> UsefulLinkCategories => GetStandardRepo<UsefulLinkCategory>();
         public IRepository<UsefulLink> UsefulLinks => GetStandardRepo<UsefulLink>();
+        public IRepository<Handbook> Handbooks => GetStandardRepo<Handbook>();
 
         /// <summary>
         /// Save pending changes to the database

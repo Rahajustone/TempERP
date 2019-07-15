@@ -250,6 +250,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
                 .ReverseMap();
+
+            CreateMap<Handbook, HandbookViewModel>().ReverseMap();
         }
     }
 }
