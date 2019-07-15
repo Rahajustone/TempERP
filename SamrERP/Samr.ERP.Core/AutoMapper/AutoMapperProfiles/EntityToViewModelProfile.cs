@@ -194,7 +194,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.FullName()))
                 .ForMember( dst => dst.Photo, src => src.MapFrom(
-                    map => map.PhotoPath))
+                    map => FileService.GetDownloadAction(map.PhotoPath)))
                 .ForMember( dst => dst.PositionName,
                     src => src.MapFrom(
                         map => map.Position.Name )).ReverseMap();
