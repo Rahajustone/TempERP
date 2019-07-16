@@ -168,7 +168,7 @@ namespace Samr.ERP.Core.Services
             }
             else
             {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(model);
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(editDepartmentViewModel);
             }
 
             return dataResponse;
