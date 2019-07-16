@@ -252,7 +252,11 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
                 .ReverseMap();
 
-            CreateMap<Handbook, HandbookViewModel>().ReverseMap();
+            CreateMap<Handbook, HandbookViewModel>()
+                .ForMember(dst => dst.LastEditedAt,
+                    src => src.MapFrom(
+                        map => map.LastEditedAt.ToShortDateString()))
+                .ReverseMap();
         }
     }
 }
