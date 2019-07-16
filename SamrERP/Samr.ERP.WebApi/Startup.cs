@@ -141,7 +141,7 @@ namespace Samr.ERP.WebApi
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 //.SetIsOriginAllowed((host) => true)
-                .AllowCredentials()
+                //.AllowCredentials()
             );
 
             app.UseStaticFiles();
