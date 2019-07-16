@@ -54,7 +54,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<UserViewModel>> GetByIdAsync(Guid id)
         {
-            var userResult = await _unitOfWork.Users.GetByIdAsync(id);
+            var userResult = await _unitOfWork.Users.GetDbSet().Include(p=>p.UserLockReason).FirstOrDefaultAsync(p=>p.Id == id);
             if (userResult == null) return BaseDataResponse<UserViewModel>.NotFound(null);
             return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(userResult));;
         }
