@@ -13,6 +13,7 @@ using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -30,9 +31,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<DepartmentViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<DepartmentViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
-            var departments = await _departmentService.GetAllAsync(pagingOptions);
+            var departments = await _departmentService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(departments);
         }
 
