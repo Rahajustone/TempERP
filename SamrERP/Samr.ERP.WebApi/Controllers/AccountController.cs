@@ -98,7 +98,7 @@ namespace Samr.ERP.WebApi.Controllers
             var currentUser = await _userService.GetUserAsync(User);
             return _mapper.Map<UserViewModel>(currentUser);
         }
-        [HttpGet]
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<BaseDataResponse<UserViewModel>> GetById(Guid id)
         {
