@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190712132824_UsefulLink")]
+    partial class UsefulLink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,39 +334,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                         {
                             Id = new Guid("0ce7a31f-dfd6-4bdc-ae57-32087c383705"),
                             Name = "Женский"
-                        });
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Handbook", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ActionName")
-                        .IsRequired();
-
-                    b.Property<string>("CreatedUserName");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired();
-
-                    b.Property<DateTime>("LastEditedAt");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Handbooks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"),
-                            ActionName = "Nationality/All",
-                            DisplayName = "Test",
-                            LastEditedAt = new DateTime(2019, 7, 16, 11, 56, 8, 778, DateTimeKind.Local).AddTicks(4488),
-                            Name = "Nationality"
                         });
                 });
 

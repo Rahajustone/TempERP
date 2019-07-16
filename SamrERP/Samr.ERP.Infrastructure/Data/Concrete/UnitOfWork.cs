@@ -51,7 +51,9 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<EmailSetting> EmailSettings => GetStandardRepo<EmailSetting>();
         public IRepository<EmailMessageHistory> EmailMessageHistories => GetStandardRepo<EmailMessageHistory>();
         public IRepository<UserLockReason> UserLockReasons => GetStandardRepo<UserLockReason>();
-
+        public IRepository<UsefulLinkCategory> UsefulLinkCategories => GetStandardRepo<UsefulLinkCategory>();
+        public IRepository<UsefulLink> UsefulLinks => GetStandardRepo<UsefulLink>();
+        public IRepository<Handbook> Handbooks => GetStandardRepo<Handbook>();
 
         /// <summary>
         /// Save pending changes to the database

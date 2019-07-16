@@ -8,6 +8,7 @@ using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
+using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
 
 namespace Samr.ERP.Core.Interfaces
 {

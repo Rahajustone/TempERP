@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Samr.ERP.Core.ViewModels.News.Categories
+namespace Samr.ERP.Core.ViewModels.Handbook.NewCategories
 {
     public class NewsCategoriesViewModel
     {

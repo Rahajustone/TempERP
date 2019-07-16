@@ -10,11 +10,14 @@ using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.Handbook;
+using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
+using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Core.ViewModels.News;
-using Samr.ERP.Core.ViewModels.News.Categories;
 using Samr.ERP.Core.ViewModels.Position;
+using Samr.ERP.Core.ViewModels.UsefulLink;
+using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
@@ -103,11 +106,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.User != null))
                 //.ForMember(dst => dst.PhotoPath
-                    //src => src.MapFrom(
-                        //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
+                //src => src.MapFrom(
+                //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.FirstName + " " + map.LastName  + " "+ map.MiddleName));
+                        map => map.LastName + " " + map.FirstName + " " + map.MiddleName))
+                .ForMember(dst => dst.HasAccount, src => src.MapFrom(
+                    map => map.UserId.HasValue));
                         //map.FullName()));
 
 
@@ -188,6 +193,16 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<EditPassportDataEmployeeViewModel, Employee>();
             CreateMap<Employee, EditPassportDataEmployeeViewModel>();
 
+            CreateMap<Employee, EmployeeInfoTokenViewModel>()
+                .ForMember( dst => dst.FullName, 
+                    src => src.MapFrom(
+                        map => map.FullName()))
+                .ForMember( dst => dst.Photo, src => src.MapFrom(
+                    map => FileService.GetDownloadAction(map.PhotoPath)))
+                .ForMember( dst => dst.PositionName,
+                    src => src.MapFrom(
+                        map => map.Position.Name )).ReverseMap();
+
             // TODO
             CreateMap<NewsViewModel, News>();
             CreateMap<News, NewsViewModel>();
@@ -222,6 +237,29 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Gender, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, Gender>();
 
+
+
+            CreateMap<UsefulLinkCategory, UsefulLinkCategoryViewModel>();
+            CreateMap<UsefulLinkCategoryViewModel, UsefulLinkCategory>();
+            CreateMap<EditUsefulLinkCategoryViewModel, UsefulLinkCategory>();
+            CreateMap<UsefulLinkCategory, EditUsefulLinkCategoryViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()));
+            CreateMap<UsefulLinkCategory, SelectListItemViewModel>();
+            CreateMap<SelectListItemViewModel, UsefulLinkCategory>();
+
+            CreateMap<UsefulLink, UsefulLinkViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
+                .ReverseMap();
+
+            CreateMap<Handbook, HandbookViewModel>()
+                .ForMember(dst => dst.LastEditedAt,
+                    src => src.MapFrom(
+                        map => map.LastEditedAt.ToShortDateString()))
+                .ReverseMap();
         }
     }
 }

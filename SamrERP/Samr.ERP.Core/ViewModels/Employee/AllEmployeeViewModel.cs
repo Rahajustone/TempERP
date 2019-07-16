@@ -14,6 +14,7 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public string Position { get; set; }
         public bool HasUser { get; set; }
         public Guid? UserId { get; set; }
+        public bool? HasAccount { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
     }
