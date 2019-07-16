@@ -136,9 +136,10 @@ namespace Samr.ERP.WebApi
             //app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
             //app.UseCors(options => options.WithOrigins("https://localhost:4200"));
             app.UseCors(builder => builder
+                .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .SetIsOriginAllowed((host) => true)
+                //.SetIsOriginAllowed((host) => true)
                 .AllowCredentials()
             );
 
