@@ -153,11 +153,12 @@ namespace Samr.ERP.Core.Services
                     var nationality = _mapper.Map<EditNationalityViewModel, Nationality>(nationalityViewModel, nationalityExists);
 
                     _unitOfWork.Nationalities.Update(nationality);
-                    await _unitOfWork.CommitAsync();
 
                     var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUser.ToShortName());
                     if (handbookExists)
                     {
+                        await _unitOfWork.CommitAsync();
+
                         dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
                     }
                     else

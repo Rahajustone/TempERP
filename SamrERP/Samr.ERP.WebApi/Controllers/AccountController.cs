@@ -86,6 +86,8 @@ namespace Samr.ERP.WebApi.Controllers
             {
 
                 var authenticateResponse = await _authenticateService.RefreshTokenAsync(model);
+
+                return Response(authenticateResponse);
             }
 
             return Response(BaseDataResponse<AuthenticateResult>.Fail(null));
@@ -168,6 +170,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<BaseResponse> UnlockUser(Guid id)
         {
             if (ModelState.IsValid)
