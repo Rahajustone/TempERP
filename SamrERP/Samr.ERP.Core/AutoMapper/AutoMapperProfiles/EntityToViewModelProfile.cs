@@ -158,7 +158,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.IsLocked,
                     src => src.MapFrom(
                         map => map.EmployeeLockReasonId.HasValue))
-                .ForMember(dst => dst.LockReasonName,
+                .ForMember(dst => dst.EmployeeLockReasonName,
                     src => src.MapFrom(
                         map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.LockDate,
