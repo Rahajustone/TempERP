@@ -92,7 +92,7 @@ namespace Samr.ERP.WebApi
             {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                var tokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
@@ -101,6 +101,7 @@ namespace Samr.ERP.WebApi
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+                x.TokenValidationParameters = tokenValidationParameters;
 
             });
 

@@ -31,6 +31,8 @@ namespace Samr.ERP.WebApi.Infrastructure
         private readonly SignInManager<User> _signInManager;
         private readonly IOptions<AppSettings> _tokenSettings;
         private readonly IEmployeeService _employeeService;
+        private readonly SigningCredentials _signingCredentials;
+        private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
 
 
         public TokenAuthenticationService(
@@ -44,6 +46,11 @@ namespace Samr.ERP.WebApi.Infrastructure
             _signInManager = signInManager;
             _tokenSettings = tokenSettings;
             _employeeService = employeeService;
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Value.Secret));
+            _signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+            _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         }
         public async Task<BaseDataResponse<AuthenticateResult>> AuthenticateAsync(LoginViewModel loginModel)
         {
@@ -67,6 +74,18 @@ namespace Samr.ERP.WebApi.Infrastructure
             throw new NotImplementedException();
         }
 
+        //private ClaimsPrincipal GetPrincipalFromToken(string token)
+        //{
+        //    return _jwtSecurityTokenHandler.ValidateToken(token, new TokenValidationParameters
+        //    {
+        //        ValidateAudience = _tokenSettings.Value.Audience,
+        //        ValidateIssuer = _tokenSettings.Value.Issuer,
+        //        ValidateIssuerSigningKey = true,
+        //        IssuerSigningKey = _signingCredentials,
+        //        ValidateLifetime = _tokenSettings.Value.AccessExpiration // we check expired tokens here
+        //    });
+        //}
+
         private string GetJwtTokenForUser(User user)
         {
             var employee = _employeeService.GetEmployeeInfo(user.Id);
@@ -81,9 +100,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                 new Claim("position", employee.Result.PositionName),
                 new Claim("photo", employee.Result.Photo),
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Value.Secret));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+          
 
             //IdentityModelEventSource.ShowPII = true;
             var jwtToken = new JwtSecurityToken(
@@ -91,10 +108,10 @@ namespace Samr.ERP.WebApi.Infrastructure
                 _tokenSettings.Value.Audience,
                 claim,
                 expires: DateTime.Now.AddMinutes(_tokenSettings.Value.AccessExpiration),
-                signingCredentials: credentials
+                signingCredentials: _signingCredentials
             );
             
-            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            return _jwtSecurityTokenHandler.WriteToken(jwtToken);
         }
     }
 }
