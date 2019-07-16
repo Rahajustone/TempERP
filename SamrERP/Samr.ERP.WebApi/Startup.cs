@@ -56,7 +56,6 @@ namespace Samr.ERP.WebApi
             services.AddScoped<INationalityService, NationalityService>();
             services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<IFileService, FileService>();
-            services.AddScoped<IUploadFileService, UploadFileService>();
             services.AddScoped<INewsService, NewsService>();
             services.AddScoped<INewsCategoriesService, NewsCategoriesService>();
             services.AddScoped<IEmailSettingService, EmailSettingSettingService>();
@@ -137,9 +136,10 @@ namespace Samr.ERP.WebApi
             //app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
             //app.UseCors(options => options.WithOrigins("https://localhost:4200"));
             app.UseCors(builder => builder
+                .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .SetIsOriginAllowed((host) => true)
+                //.SetIsOriginAllowed((host) => true)
                 .AllowCredentials()
             );
 

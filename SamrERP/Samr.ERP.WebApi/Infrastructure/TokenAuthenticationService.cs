@@ -23,6 +23,7 @@ namespace Samr.ERP.WebApi.Infrastructure
     {
         Task<BaseDataResponse<AuthenticateResult>> AuthenticateAsync(LoginViewModel loginModel);
         //Task<AuthenticateResult> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel);
+        Task<BaseDataResponse<AuthenticateResult>> RefreshTokenAsync(ExchangeRefreshToken model);
     }
     public class TokenAuthenticationService:IAuthenticateService
     {
@@ -59,6 +60,11 @@ namespace Samr.ERP.WebApi.Infrastructure
             var token = GetJwtTokenForUser(user);
 
             return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(token));
+        }
+
+        public Task<BaseDataResponse<AuthenticateResult>> RefreshTokenAsync(ExchangeRefreshToken model)
+        {
+            throw new NotImplementedException();
         }
 
         private string GetJwtTokenForUser(User user)

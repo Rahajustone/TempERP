@@ -33,6 +33,7 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<UserLockReason> UserLockReasons { get; set; }
         public DbSet<UsefulLinkCategory> UsefulLinkCategories { get; set; }
         public DbSet<UsefulLink> UsefulLinks { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Handbook> Handbooks { get; set; }
 
 

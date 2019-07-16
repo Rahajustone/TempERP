@@ -102,6 +102,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
+                .ForMember(dst => dst.HasUser,
+                    src => src.MapFrom(
+                        map => map.User != null))
                 //.ForMember(dst => dst.PhotoPath
                 //src => src.MapFrom(
                 //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
@@ -158,7 +161,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.IsLocked,
                     src => src.MapFrom(
                         map => map.EmployeeLockReasonId.HasValue))
-                .ForMember(dst => dst.LockReasonName,
+                .ForMember(dst => dst.EmployeeLockReasonName,
                     src => src.MapFrom(
                         map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.LockDate,
