@@ -79,6 +79,18 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<AuthenticateResult>.Fail(null, null));
         }
 
+        [HttpPost("refreshtoken")]
+        public async Task<BaseDataResponse<AuthenticateResult>> RefreshToken([FromBody] ExchangeRefreshToken model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                var authenticateResponse = await _authenticateService.RefreshTokenAsync(model);
+            }
+
+            return Response(BaseDataResponse<AuthenticateResult>.Fail(null));
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<UserViewModel> UserInfo()
