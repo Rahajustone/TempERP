@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -11,6 +11,7 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -38,16 +39,41 @@ namespace Samr.ERP.Core.Services
             return _unitOfWork.Nationalities.GetDbSet();
         }
 
+        //private static IQueryable<Nationality> 
+
         private IQueryable<Nationality> GetQueryWithUser()
         {
             return GetQuery().Include(u => u.CreatedUser);
         }
 
-        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> GetAllAsync()
+        private IQueryable<Nationality> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Nationality> query)
         {
-            var nationalities = await GetQueryWithUser().ToListAsync();
+            if (filterHandbook.Name != null)
+            {
+                query = query.Where(n => n.Name == filterHandbook.Name);
+            }
 
-            return BaseDataResponse<IEnumerable<EditNationalityViewModel>>.Success(_mapper.Map<IEnumerable<EditNationalityViewModel>>(nationalities));
+            if (filterHandbook.IsActive)
+            {
+                query = query.Where(n => n.IsActive);
+            }
+
+            return query;
+        }
+
+        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        {
+            var query = GetQueryWithUser();
+
+            query = FilterQuery(filterHandbook, query);
+
+            var queryVm = query.ProjectTo<EditNationalityViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<EditNationalityViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemAsync()

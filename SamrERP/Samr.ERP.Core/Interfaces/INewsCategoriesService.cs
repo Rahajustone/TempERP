@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
-using Samr.ERP.Core.ViewModels.News.Categories;
+using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 
 namespace Samr.ERP.Core.Interfaces
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Samr.ERP.Core.ViewModels.Handbook
+namespace Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason
 {
     public class EmployeeLockReasonViewModel
     {
