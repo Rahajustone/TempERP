@@ -23,5 +23,8 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseResponse> UserLockAsync(LockUserViewModel userLockReasonViewModel);
         Task<BaseResponse> UserUnlockAsync(Guid id);
         Task<BaseDataResponse<UserViewModel>> GetByIdAsync(Guid id);
+        bool HasUserValidRefreshToken(Guid userId,string refreshToken, string ipAddress);
+        Task AddRefreshToken(string token, Guid userId, string remoteIpAddress, double daysToExpire = 5);
+        Task RemoveRefreshToken(Guid userId, string refreshToken);
     }
 }
