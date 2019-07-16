@@ -11,6 +11,8 @@ namespace Samr.ERP.Core.ViewModels.Handbook
         [Required]
         public string Name { get; set; }
         [Required]
+        public string DisplayName { get; set; }
+        [Required]
         public string ActionName { get; set; }
         public string CreatedUserName { get; set; }
         public string LastEditedAt { get; set; }
