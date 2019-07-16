@@ -54,6 +54,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<UsefulLinkCategory> UsefulLinkCategories => GetStandardRepo<UsefulLinkCategory>();
         public IRepository<UsefulLink> UsefulLinks => GetStandardRepo<UsefulLink>();
         public IRepository<Handbook> Handbooks => GetStandardRepo<Handbook>();
+        public IRepository<RefreshToken> RefreshTokens => GetStandardRepo<RefreshToken>();
 
         /// <summary>
         /// Save pending changes to the database
