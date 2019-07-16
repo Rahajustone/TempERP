@@ -11,10 +11,10 @@ namespace Samr.ERP.Core.Models
             SortDirection enumValue = (SortDirection) value;
             switch (enumValue )
             {
-                case SortDirection.Ascending:
+                case SortDirection.Asc:
                     writer.WriteValue("ASC");
                     break;
-                case SortDirection.Descending:
+                case SortDirection.Desc:
                     writer.WriteValue("DESC");
                     break;
             }
@@ -26,11 +26,11 @@ namespace Samr.ERP.Core.Models
 
             if (enumString == "ASC")
             {
-                return SortDirection.Ascending;
+                return SortDirection.Asc;
             }
             else if (enumString == "DESC")
             {
-                return SortDirection.Descending;
+                return SortDirection.Desc;
             }
             throw new NotSupportedException("Неизвестное значение: " + enumString);
         }

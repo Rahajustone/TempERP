@@ -102,6 +102,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
+                .ForMember(dst => dst.HasUser,
+                    src => src.MapFrom(
+                        map => map.User != null))
                 //.ForMember(dst => dst.PhotoPath
                 //src => src.MapFrom(
                 //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
