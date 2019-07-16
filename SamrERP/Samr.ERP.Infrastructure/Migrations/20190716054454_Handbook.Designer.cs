@@ -10,8 +10,8 @@ using Samr.ERP.Infrastructure.Data;
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    [Migration("20190715141532_handbook")]
-    partial class handbook
+    [Migration("20190716054454_Handbook")]
+    partial class Handbook
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -345,6 +345,10 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<string>("ActionName")
                         .IsRequired();
 
+                    b.Property<string>("CreatedUserName");
+
+                    b.Property<DateTime>("LastEditedAt");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -357,6 +361,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         {
                             Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"),
                             ActionName = "Nationality/All",
+                            LastEditedAt = new DateTime(2019, 7, 16, 8, 44, 53, 782, DateTimeKind.Local).AddTicks(6556),
                             Name = "Nationality"
                         });
                 });

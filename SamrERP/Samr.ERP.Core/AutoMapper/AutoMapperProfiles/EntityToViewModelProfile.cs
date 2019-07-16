@@ -106,7 +106,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.FirstName + " " + map.LastName + " " + map.MiddleName))
+                        map => map.LastName + " " + map.FirstName + " " + map.MiddleName))
                 .ForMember(dst => dst.HasAccount, src => src.MapFrom(
                     map => map.UserId.HasValue));
                         //map.FullName()));

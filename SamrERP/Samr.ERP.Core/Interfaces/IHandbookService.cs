@@ -15,5 +15,6 @@ namespace Samr.ERP.Core.Interfaces
     public interface IHandbookService
     {
         Task<BaseDataResponse<IEnumerable<HandbookViewModel>>> GetAllAsync();
+        Task<bool> ChangeStatus(string name, string username);
     }
 }

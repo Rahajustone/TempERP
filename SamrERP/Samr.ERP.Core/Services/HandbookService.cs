@@ -34,11 +34,27 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<HandbookViewModel>>> GetAllAsync()
         {
-            var handbooks = await _unitOfWork.Handbooks.GetDbSet().ToListAsync();
+            var handbooks = await GetQuery().ToListAsync();
 
             var vm = _mapper.Map<IEnumerable<HandbookViewModel>>(handbooks);
 
             return BaseDataResponse<IEnumerable<HandbookViewModel>>.Success(vm);
+        }
+
+        public async  Task<bool> ChangeStatus(string name, string username)
+        {
+            var existsHandbook = await GetQuery().FirstOrDefaultAsync( p => p.Name.ToLower() == name.ToLower());
+            if (existsHandbook == null)
+            {
+                return false;
+            }
+
+            existsHandbook.LastEditedAt = DateTime.Now;
+            existsHandbook.CreatedUserName = username;
+
+            await _unitOfWork.CommitAsync();
+
+            return true;
         }
     }
 }

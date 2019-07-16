@@ -18,7 +18,9 @@ namespace Samr.ERP.Infrastructure.SeedData
         {
             builder.Entity<Handbook>()
                 .HasData(
-                    new Handbook { Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d") , Name = "Nationality", ActionName = "Nationality/All" }
+                    new Handbook { Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d") , Name = "Nationality", ActionName = "Nationality/All", LastEditedAt = DateTime.Now}
+
+
                 );
         }
 

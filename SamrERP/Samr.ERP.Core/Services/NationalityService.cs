@@ -21,11 +21,16 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHandbookService _handbookService;
 
-        public NationalityService(IUnitOfWork unitOfWork, IMapper mapper)
+        public NationalityService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IHandbookService handbookService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _handbookService = handbookService;
         }
 
         private IQueryable<Nationality> GetQuery()
@@ -77,6 +82,7 @@ namespace Samr.ERP.Core.Services
             var nationalityExists =
                 _unitOfWork.Nationalities
                     .Any(p => p.Name.ToLower() == editNationalityViewModel.Name.ToLower());
+
             if (nationalityExists)
             {
                 dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel("Already this model is in Database"));
@@ -88,7 +94,16 @@ namespace Samr.ERP.Core.Services
 
                 await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+
+                var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUser.ToShortName());
+                if (handbookExists)
+                {
+                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                }
+                else
+                {
+                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel("Not found handbook"));
+                }
             }
 
             return dataResponse;
@@ -115,7 +130,15 @@ namespace Samr.ERP.Core.Services
                     _unitOfWork.Nationalities.Update(nationality);
                     await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                    var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUser.ToShortName());
+                    if (handbookExists)
+                    {
+                        dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                    }
+                    else
+                    {
+                        dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, new ErrorModel("Not found handbook"));
+                    }
                 }
             }
             else
