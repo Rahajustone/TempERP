@@ -11,6 +11,8 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
+using Samr.ERP.Core.ViewModels.Employee;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -28,9 +30,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<EditNationalityViewModel>>> All()
+        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
-            var nationalities = await _nationalityService.GetAllAsync();
+            var nationalities = await _nationalityService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(nationalities);
         }
 

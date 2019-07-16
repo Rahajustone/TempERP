@@ -11,6 +11,17 @@ namespace Samr.ERP.Infrastructure.SeedData
         public static void AddSeed(ModelBuilder builder)
         {
             AddGenders(builder);
+            AddHandbook(builder);
+        }
+
+        private static void AddHandbook(ModelBuilder builder)
+        {
+            builder.Entity<Handbook>()
+                .HasData(
+                    new Handbook { Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d") , Name = "Nationality", DisplayName = "Test", ActionName = "Nationality/All", LastEditedAt = DateTime.Now}
+
+
+                );
         }
 
         private static void AddGenders(ModelBuilder builder)

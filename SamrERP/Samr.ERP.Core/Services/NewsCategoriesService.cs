@@ -9,8 +9,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
-using Samr.ERP.Core.ViewModels.News.Categories;
-using Samr.ERP.Core.ViewModels.Position;
+using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 

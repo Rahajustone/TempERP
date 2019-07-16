@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190716054454_Handbook")]
+    partial class Handbook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -345,9 +347,6 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<string>("CreatedUserName");
 
-                    b.Property<string>("DisplayName")
-                        .IsRequired();
-
                     b.Property<DateTime>("LastEditedAt");
 
                     b.Property<string>("Name")
@@ -362,8 +361,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         {
                             Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"),
                             ActionName = "Nationality/All",
-                            DisplayName = "Test",
-                            LastEditedAt = new DateTime(2019, 7, 16, 11, 56, 8, 778, DateTimeKind.Local).AddTicks(4488),
+                            LastEditedAt = new DateTime(2019, 7, 16, 8, 44, 53, 782, DateTimeKind.Local).AddTicks(6556),
                             Name = "Nationality"
                         });
                 });

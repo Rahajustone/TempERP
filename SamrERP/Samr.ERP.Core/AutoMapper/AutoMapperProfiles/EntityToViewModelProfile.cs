@@ -10,10 +10,11 @@ using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.Handbook;
+using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
+using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Core.ViewModels.News;
-using Samr.ERP.Core.ViewModels.News.Categories;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
@@ -106,7 +107,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.FirstName + " " + map.LastName + " " + map.MiddleName))
+                        map => map.LastName + " " + map.FirstName + " " + map.MiddleName))
                 .ForMember(dst => dst.HasAccount, src => src.MapFrom(
                     map => map.UserId.HasValue));
                         //map.FullName()));
@@ -249,6 +250,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
+                .ReverseMap();
+
+            CreateMap<Handbook, HandbookViewModel>()
+                .ForMember(dst => dst.LastEditedAt,
+                    src => src.MapFrom(
+                        map => map.LastEditedAt.ToShortDateString()))
                 .ReverseMap();
         }
     }

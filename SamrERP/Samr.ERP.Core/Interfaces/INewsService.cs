@@ -6,7 +6,6 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.News;
-using Samr.ERP.Core.ViewModels.News.Categories;
 
 namespace Samr.ERP.Core.Interfaces
 {

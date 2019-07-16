@@ -26,6 +26,9 @@
     <Compile Remove="Migrations\20190704144641_EmailSetting_MailPortRange.cs" />
     <Compile Remove="Migrations\20190709050421_SeedDataToRussion.cs" />
     <Compile Remove="Migrations\20190712065434_UsefulLinkCategory.cs" />
+    <Compile Remove="Migrations\20190715135043_handbook.cs" />
+    <Compile Remove="Migrations\20190715141532_handbook.cs" />
+    <Compile Remove="Migrations\20190716050609_AddSomeFieldsToHandbook.cs" />
   </ItemGroup>
 
   <ItemGroup>
