@@ -169,7 +169,7 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseResponse.Fail());
         }
 
-        [HttpPost]
+        [HttpPost("{id}")]
         [Authorize]
         public async Task<BaseResponse> UnlockUser(Guid id)
         {
