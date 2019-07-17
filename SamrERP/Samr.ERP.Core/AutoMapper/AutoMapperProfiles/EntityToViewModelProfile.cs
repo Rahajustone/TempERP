@@ -9,6 +9,7 @@ using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.Employee;
+using Samr.ERP.Core.ViewModels.FileArchive;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
 using Samr.ERP.Core.ViewModels.Handbook.FileCategory;
@@ -73,18 +74,25 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                 src => src.MapFrom(map =>
                     map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
-                .ForMember( dst => dst.CreatedAt, src => src.MapFrom(
-                    map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dst => dst.CreatedAt, src => src.MapFrom(
+                   map => map.CreatedAt.ToShortDateString()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+
             CreateMap<Nationality, SelectListItemViewModel>()
                 .ReverseMap();
-            
-            CreateMap<Position, EditPositionViewModel>()
+
+            CreateMap<Position, PositionViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
                 .ReverseMap();
+            CreateMap<Position, EditPositionViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
+                .ReverseMap()
+                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
 
             CreateMap<Employee, EmployeeViewModel>()
                 .ForMember(dst => dst.PhotoPath,
@@ -279,6 +287,11 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap()
                 .ForMember( dst => dst.CreatedAt, opt => opt.Ignore());
             CreateMap<FileCategory, SelectListItemViewModel>();
+
+            CreateMap<FileArchive, EditFileArchiveViewModel>()
+                .ReverseMap();
+            CreateMap<FileCategory, FileArchiveViewModel>()
+                .ReverseMap();
         }
     }
 }
