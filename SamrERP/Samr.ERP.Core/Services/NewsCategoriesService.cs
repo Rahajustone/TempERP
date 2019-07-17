@@ -102,7 +102,7 @@ namespace Samr.ERP.Core.Services
                 var newsCategory = _mapper.Map<NewsCategory>(newsCategoriesViewModel);
                 _unitOfWork.NewsCategories.Add(newsCategory);
 
-                var handbookExists = await _handbookService.ChangeStatus("Department", newsCategory.CreatedUser.ToShortName());
+                var handbookExists = await _handbookService.ChangeStatus("Department", newsCategory.CreatedUserId );
                 if (handbookExists)
                 {
                     await _unitOfWork.CommitAsync();
@@ -139,7 +139,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.NewsCategories.Update(newsCategory);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Department", newsCategory.CreatedUser.ToShortName());
+                    var handbookExists = await _handbookService.ChangeStatus("Department", newsCategory.CreatedUserId );
                     if (handbookExists)
                     {
                         await _unitOfWork.CommitAsync();

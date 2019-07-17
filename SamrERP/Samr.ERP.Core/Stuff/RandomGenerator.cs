@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Samr.ERP.Core.Stuff
 {
-    public class PasswordGenerator
+    public class RandomGenerator
     {
         public static string GenerateNewPassword(int length=6)
         {
@@ -23,6 +23,17 @@ namespace Samr.ERP.Core.Stuff
                 result.Append(chars[b % (chars.Length)]);
             }
             return result.ToString();
+        }
+
+        public static int GenerateRandomNumber(int length = 4)
+        {
+            byte[] data = new byte[length];
+            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
+            {
+                crypto.GetBytes(data);
+                return BitConverter.ToInt32(data);
+            }
+
         }
     }
 }

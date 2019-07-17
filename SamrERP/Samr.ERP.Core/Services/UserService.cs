@@ -118,7 +118,7 @@ namespace Samr.ERP.Core.Services
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            var generatedPass = PasswordGenerator.GenerateNewPassword();
+            var generatedPass = RandomGenerator.GenerateNewPassword();
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, generatedPass);
 
             await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}");
