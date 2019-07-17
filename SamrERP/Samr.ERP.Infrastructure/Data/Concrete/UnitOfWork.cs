@@ -56,6 +56,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<Handbook> Handbooks => GetStandardRepo<Handbook>();
         public IRepository<RefreshToken> RefreshTokens => GetStandardRepo<RefreshToken>();
         public IRepository<FileCategory> FileCategories => GetStandardRepo<FileCategory>();
+        public IRepository<FileArchive> FileArchives => GetStandardRepo<FileArchive>();
 
         /// <summary>
         /// Save pending changes to the database
