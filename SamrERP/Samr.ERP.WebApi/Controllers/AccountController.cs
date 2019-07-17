@@ -131,7 +131,6 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<string>.Fail(null));
         }
         [HttpPost]
-        [AllowAnonymous]
         public async Task<BaseDataResponse<string>> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
         {
             if (ModelState.IsValid)
