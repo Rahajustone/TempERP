@@ -35,6 +35,7 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<UsefulLink> UsefulLinks { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Handbook> Handbooks { get; set; }
+        public DbSet<FileCategory> FileCategories { get; set; }
 
 
 

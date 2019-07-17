@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190717094401_FileCategory")]
+    partial class FileCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -428,13 +430,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                             ActionName = "UsefulLinkCategory/All",
                             DisplayName = "Полезная ссылка",
                             Name = "UsefulLinkCategory"
-                        },
-                        new
-                        {
-                            Id = new Guid("92ddaaaf-fd9f-4f99-8443-2bed011e9d78"),
-                            ActionName = "FileCategory/All",
-                            DisplayName = "Категория файла",
-                            Name = "FileCategory"
                         });
                 });
 

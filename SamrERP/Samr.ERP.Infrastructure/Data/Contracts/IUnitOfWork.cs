@@ -30,5 +30,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<UsefulLink> UsefulLinks { get; }
         IRepository<Handbook> Handbooks { get; }
         IRepository<RefreshToken> RefreshTokens { get; }
+        IRepository<FileCategory> FileCategories { get; }
+
     }
 }
