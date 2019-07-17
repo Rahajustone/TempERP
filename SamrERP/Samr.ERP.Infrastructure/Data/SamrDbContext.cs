@@ -36,6 +36,8 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Handbook> Handbooks { get; set; }
         public DbSet<FileCategory> FileCategories { get; set; }
+        public DbSet<FileArchive> FileArchives { get; set; }
+
 
 
 

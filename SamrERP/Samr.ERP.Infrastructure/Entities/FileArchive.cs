@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Samr.ERP.Infrastructure.Entities.BaseObjects;
+using Samr.ERP.Infrastructure.Interfaces;
+
+namespace Samr.ERP.Infrastructure.Entities
+{
+    public class FileArchive : CreatableByUserBaseObject, IActivable, ICreatable
+    {
+        public Guid FileCategoryId { get; set; }
+        [ForeignKey(nameof(FileCategoryId))]
+        public FileCategory FileCategory { get; set; }
+
+        [Required]
+        [StringLength(1)]
+        public string FileName { get; set; }
+
+        [Required]
+        [StringLength(128)]
+        public string ShortDescription { get; set; }
+
+        [Required]
+        [StringLength(512)]
+        public string Description { get; set; }
+
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+}

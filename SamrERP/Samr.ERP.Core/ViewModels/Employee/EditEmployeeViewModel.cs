@@ -8,8 +8,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
 {
     public class EditEmployeeViewModel : EmployeeViewModel
     {
-        
-
         [Required]
         public Guid? GenderId { get; set; }
 
