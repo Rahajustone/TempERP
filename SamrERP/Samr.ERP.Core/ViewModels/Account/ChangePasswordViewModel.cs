@@ -7,7 +7,6 @@ namespace Samr.ERP.Core.ViewModels.Account
 {
     public class ChangePasswordViewModel:NewPasswordViewModel
     {
-        public Guid Id { get; set; }
 
         [Required]
         [Range(1000,9999)]

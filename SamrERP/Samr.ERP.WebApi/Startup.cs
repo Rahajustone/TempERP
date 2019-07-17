@@ -67,6 +67,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IUsefulLinkService, UsefulLinkService>();
             services.AddScoped<IHandbookService, HandbookService>();
             services.AddScoped<IFileCategoryService, FileCategoryService>();
+            services.AddScoped<IFileArchiveService, FileArchiveService>();
 
             #endregion
 

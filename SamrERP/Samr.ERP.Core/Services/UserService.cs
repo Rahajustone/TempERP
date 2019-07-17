@@ -95,7 +95,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse> GenerateChangePasswordConfirmationCodeToCurrentUser()
         {
-            var confirmCode = RandomGenerator.GenerateRandomNumber();
+            var confirmCode = RandomGenerator.GenerateRandomNumber(1000,9999);
             var user = _userProvider.CurrentUser;
             if (user == null)
             {
@@ -161,12 +161,12 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<string> dataResponse;
 
-            var user = await _unitOfWork.Users.GetByIdAsync(viewModel.Id);
+            var user = _userProvider.CurrentUser;
             if (user == null) return BaseDataResponse<string>.NotFound("");
             
             //
             if (viewModel.SmsConfirmationCode == user.ChangePasswordConfirmationCode
-                && user.ChangePasswordConfirmationCodeExpires <= DateTime.Now)
+                && user.ChangePasswordConfirmationCodeExpires >= DateTime.Now)
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, viewModel.Password);
@@ -180,7 +180,7 @@ namespace Samr.ERP.Core.Services
                         Description = p.Description
                     }).ToArray());
             }
-            else dataResponse = BaseDataResponse<string>.Fail(string.Empty);
+            else dataResponse = BaseDataResponse<string>.Fail(string.Empty,new ErrorModel("invalid confirmation code"));
 
             return dataResponse;
         }
