@@ -144,6 +144,14 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<string>.Fail(null));
         }
 
+        
+        [HttpPost("{id}")]
+        public async Task<BaseResponse> SendChangePasswordConfirmationCode(Guid id)
+        {
+            return Response(await _userService.GenerateChangePasswordConfirmationCodeToCurrentUser());
+        }
+
+
         [HttpPost]
         public async Task<BaseResponse> EditUserDetails([FromBody] EditUserDetailsViewModel editUserDetailsView)
         {
