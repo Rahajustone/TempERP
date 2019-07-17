@@ -15,7 +15,8 @@ namespace Samr.ERP.Infrastructure.Entities
         public string DisplayName { get; set; }
         [Required]
         public string ActionName { get; set; }
-        public string CreatedUserName { get; set; }
-        public DateTime LastEditedAt { get; set; }
+        public DateTime? LastModifiedAt { get; set; }
+        public Guid? LastModifiedUserId { get; set; }
+        public string LastModifiedUserFullName { get; set; }
     }
 }

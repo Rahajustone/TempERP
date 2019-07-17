@@ -256,9 +256,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap();
 
             CreateMap<Handbook, HandbookViewModel>()
-                .ForMember(dst => dst.LastEditedAt,
-                    src => src.MapFrom(
-                        map => map.LastEditedAt.ToShortDateString()))
+                .ForMember(dst => dst.LastModifiedAt, src => src.MapFrom(
+                   map => map.LastModifiedAt.HasValue ? map.LastModifiedAt.Value.ToString("dd.MM.yyyy H:mm") : null))
                 .ReverseMap();
         }
     }

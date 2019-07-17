@@ -118,7 +118,7 @@ namespace Samr.ERP.Core.Services
                 var position = _mapper.Map<Position>(positionViewModel);
                 _unitOfWork.Positions.Add(position);
 
-                var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUser.ToShortName());
+                var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUserId );
                 if (handbookExists)
                 {
                     await _unitOfWork.CommitAsync();
@@ -154,7 +154,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.Positions.Update(position);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUser.ToShortName());
+                    var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUserId );
                     if (handbookExists)
                     {
                         await _unitOfWork.CommitAsync();

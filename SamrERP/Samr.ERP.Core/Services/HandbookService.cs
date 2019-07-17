@@ -37,11 +37,11 @@ namespace Samr.ERP.Core.Services
             var handbooks = await GetQuery().ToListAsync();
 
             var vm = _mapper.Map<IEnumerable<HandbookViewModel>>(handbooks);
-
+            
             return BaseDataResponse<IEnumerable<HandbookViewModel>>.Success(vm);
         }
 
-        public async  Task<bool> ChangeStatus(string name, string username)
+        public async  Task<bool> ChangeStatus(string name, Guid userId)
         {
             var existsHandbook = await GetQuery().FirstOrDefaultAsync( p => p.Name.ToLower() == name.ToLower());
             if (existsHandbook == null)
@@ -49,12 +49,22 @@ namespace Samr.ERP.Core.Services
                 return false;
             }
 
-            existsHandbook.LastEditedAt = DateTime.Now;
-            existsHandbook.CreatedUserName = username;
+            existsHandbook.LastModifiedAt = DateTime.Now;
+            existsHandbook.LastModifiedUserId = userId;
+            existsHandbook.LastModifiedUserFullName = await GetLastModifiedUserFullName(userId);
 
             await _unitOfWork.CommitAsync();
 
             return true;
         }
+
+        public async Task<string> GetLastModifiedUserFullName(Guid Id)
+        {
+            var employeeExists = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync(e => e.UserId == Id);
+
+            return employeeExists.FullName();
+        }
+
+
     }
 }

@@ -121,7 +121,7 @@ namespace Samr.ERP.Core.Services
                 var employeeLockReason = _mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel);
                 _unitOfWork.EmployeeLockReasons.Add(employeeLockReason);
 
-                var handbookExists = await _handbookService.ChangeStatus("Nationality", employeeLockReason.CreatedUser.ToShortName());
+                var handbookExists = await _handbookService.ChangeStatus("Nationality", employeeLockReason.CreatedUserId);
                 if (handbookExists)
                 {
                     await _unitOfWork.CommitAsync();
@@ -161,7 +161,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.EmployeeLockReasons.Update(employeeLockReason);
 
-                    var handbookExists = await _handbookService.ChangeStatus("EmployeeLockReason", employeeLockReason.CreatedUser.ToShortName());
+                    var handbookExists = await _handbookService.ChangeStatus("EmployeeLockReason", employeeLockReason.CreatedUserId);
                     if (handbookExists)
                     {
                         await _unitOfWork.CommitAsync();

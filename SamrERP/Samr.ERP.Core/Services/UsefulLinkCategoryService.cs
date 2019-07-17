@@ -107,7 +107,7 @@ namespace Samr.ERP.Core.Services
 
                 _unitOfWork.UsefulLinkCategories.Add(usefulLinkCategory);
 
-                var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUser.ToShortName());
+                var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUserId);
                 if (handbookExists)
                 {
                     await _unitOfWork.CommitAsync();
@@ -146,7 +146,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.UsefulLinkCategories.Update(usefulLinkCategory);
 
-                    var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUser.ToShortName());
+                    var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUserId);
                     if (handbookExists)
                     {
                         await _unitOfWork.CommitAsync();

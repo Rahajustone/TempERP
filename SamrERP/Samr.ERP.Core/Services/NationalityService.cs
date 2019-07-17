@@ -118,7 +118,7 @@ namespace Samr.ERP.Core.Services
                 var nationality = _mapper.Map<Nationality>(editNationalityViewModel);
                 _unitOfWork.Nationalities.Add(nationality);
 
-                var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUser.ToShortName());
+                var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUserId);
                 if (handbookExists)
                 {
                     await _unitOfWork.CommitAsync();
@@ -154,7 +154,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.Nationalities.Update(nationality);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUser.ToShortName());
+                    var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUserId );
                     if (handbookExists)
                     {
                         await _unitOfWork.CommitAsync();

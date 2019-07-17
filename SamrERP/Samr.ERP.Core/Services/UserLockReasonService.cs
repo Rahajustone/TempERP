@@ -113,7 +113,7 @@ namespace Samr.ERP.Core.Services
 
                 _unitOfWork.UserLockReasons.Add(userLockReason);
 
-                var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUser.ToShortName());
+                var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUserId );
                 if (handbookExists)
                 {
                     await _unitOfWork.CommitAsync();
@@ -148,7 +148,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.UserLockReasons.Update(userLockReason);
 
-                    var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUser.ToShortName());
+                    var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUserId);
                     if (handbookExists)
                     {
                         await _unitOfWork.CommitAsync();

@@ -116,7 +116,7 @@ namespace Samr.ERP.Core.Services
                 var department = _mapper.Map<Department>(editDepartmentViewModel);
                 _unitOfWork.Departments.Add(department);
 
-                var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUser.ToShortName());
+                var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUserId);
                 if (handbookExists)
                 {
                     await _unitOfWork.CommitAsync();
@@ -154,7 +154,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.Departments.Update(department);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUser.ToShortName());
+                    var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUserId);
                     if (handbookExists)
                     {
                         await _unitOfWork.CommitAsync();
