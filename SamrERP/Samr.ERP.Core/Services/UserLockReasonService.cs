@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -22,11 +23,15 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHandbookService _handbookService;
 
-        public UserLockReasonService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserLockReasonService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IHandbookService handbookService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _handbookService = handbookService;
         }
 
         private IQueryable<UserLockReason> GetQuery()
@@ -37,6 +42,21 @@ namespace Samr.ERP.Core.Services
         private IQueryable<UserLockReason> GetQueryWithUser()
         {
             return GetQuery().Include(u => u.CreatedUser);
+        }
+
+        private IQueryable<UserLockReason> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<UserLockReason> query)
+        {
+            if (filterHandbook.Name != null)
+            {
+                query = query.Where(n => n.Name == filterHandbook.Name);
+            }
+
+            if (filterHandbook.IsActive)
+            {
+                query = query.Where(n => n.IsActive);
+            }
+
+            return query;
         }
 
         public async Task<BaseDataResponse<UserLockReasonViewModel>> GetByIdAsync(Guid id)
@@ -56,11 +76,19 @@ namespace Samr.ERP.Core.Services
             return response;
         }
 
-        public async Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
-            var listItem = await GetQueryWithUser().ToMappedPagedListAsync<UserLockReason, UserLockReasonViewModel>(pagingOptions);
+            var query = GetQueryWithUser();
 
-            return  BaseDataResponse<PagedList<UserLockReasonViewModel>>.Success(listItem);
+            query = FilterQuery(filterHandbook, query);
+
+            var queryVm = query.ProjectTo<UserLockReasonViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<UserLockReasonViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemsAsync()
@@ -85,15 +113,23 @@ namespace Samr.ERP.Core.Services
 
                 _unitOfWork.UserLockReasons.Add(userLockReason);
 
-                await _unitOfWork.CommitAsync();
+                var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUser.ToShortName());
+                if (handbookExists)
+                {
+                    await _unitOfWork.CommitAsync();
 
-                response = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
+                    response = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
+                }
+                else
+                {
+                    response = BaseDataResponse<UserLockReasonViewModel>.Fail(userLockReasonViewModel, new ErrorModel("Not found handbook."));
+                }
             }
 
             return response;
         }
 
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> UpdateAsync(UserLockReasonViewModel userLockReasonViewModel)
+        public async Task<BaseDataResponse<UserLockReasonViewModel>> EditAsync(UserLockReasonViewModel userLockReasonViewModel)
         {
             BaseDataResponse<UserLockReasonViewModel> dataResponse;
 
@@ -112,9 +148,17 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.UserLockReasons.Update(userLockReason);
 
-                    await _unitOfWork.CommitAsync();
+                    var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUser.ToShortName());
+                    if (handbookExists)
+                    {
+                        await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
+                        dataResponse = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
+                    }
+                    else
+                    {
+                        dataResponse = BaseDataResponse<UserLockReasonViewModel>.Fail(userLockReasonViewModel, new ErrorModel("Not found handbook."));
+                    }
                 }
             }
             else

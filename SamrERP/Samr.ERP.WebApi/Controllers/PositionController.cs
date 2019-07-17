@@ -27,9 +27,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<PositionViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<PositionViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
-            var position = await _positionService.GetAllAsync(pagingOptions);
+            var position = await _positionService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(position);
         }
 
@@ -65,7 +65,7 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var positionResult = await _positionService.UpdateAsync(positionViewModel);
+                var positionResult = await _positionService.EditAsync(positionViewModel);
                 return Response(positionResult);
             }
 

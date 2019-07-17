@@ -11,6 +11,7 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -28,9 +29,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
-            var usefulLinCategories = await _usefulLinkCategoryService.GetAllAsync(pagingOptions);
+            var usefulLinCategories = await _usefulLinkCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(usefulLinCategories);
         }
 

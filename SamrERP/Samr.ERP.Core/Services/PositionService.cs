@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -20,17 +22,39 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHandbookService _handbookService;
 
-        public PositionService(IMapper mapper, IUnitOfWork unitOfWork)
+        public PositionService(IMapper mapper,
+            IUnitOfWork unitOfWork,
+            IHandbookService handbookService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _handbookService = handbookService;
         }
+        private IQueryable<Position> GetQueryWithUser()
+        {
+            return _unitOfWork.Positions.GetDbSet().Include(p => p.CreatedUser);
+        }
+
+        private IQueryable<Position> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Position> query)
+        {
+            if (filterHandbook.Name != null)
+            {
+                query = query.Where(n => n.Name == filterHandbook.Name);
+            }
+
+            if (filterHandbook.IsActive)
+            {
+                query = query.Where(n => n.IsActive);
+            }
+
+            return query;
+        }
+
         public async Task<BaseDataResponse<EditPositionViewModel>> GetByIdAsync(Guid id)
         {
-            var position = await _unitOfWork.Positions.GetDbSet()
-                .Include(p => p.CreatedUser)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var position = await GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
 
             BaseDataResponse<EditPositionViewModel> dataResponse;
 
@@ -54,18 +78,25 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.Department);
         }
 
-        public async Task<BaseDataResponse<PagedList<PositionViewModel>>> GetAllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<PositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
-            var listItem = await GetAllQuery().ToMappedPagedListAsync<Position, PositionViewModel>(pagingOptions);
+            var query = GetAllQuery();
 
-            return BaseDataResponse<PagedList<PositionViewModel>>.Success(listItem);
+            query = FilterQuery(filterHandbook, query);
+
+            var queryVm = query.ProjectTo<PositionViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<PositionViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id)
         {
             var positions = await GetAllQuery(true).Where(p=>p.DepartmentId == id).ToListAsync();
             var vm = _mapper.Map<IEnumerable<PositionViewModel>>(positions);
-
 
             var response = BaseDataResponse<IEnumerable<PositionViewModel>>.Success(vm);
 
@@ -87,20 +118,28 @@ namespace Samr.ERP.Core.Services
                 var position = _mapper.Map<Position>(positionViewModel);
                 _unitOfWork.Positions.Add(position);
 
-                await _unitOfWork.CommitAsync();
+                var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUser.ToShortName());
+                if (handbookExists)
+                {
+                    await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                    dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                }
+                else
+                {
+                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Not found handbook."));
+                }
             }
 
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<EditPositionViewModel>> UpdateAsync(EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<EditPositionViewModel>> EditAsync(EditPositionViewModel positionViewModel)
         {
             BaseDataResponse<EditPositionViewModel> dataResponse;
 
-            var positionExists = await _unitOfWork.Positions.ExistsAsync(positionViewModel.Id);
-            if (positionExists)
+            var positionExists = await _unitOfWork.Positions.GetDbSet().FirstOrDefaultAsync( p => p.Id == positionViewModel.Id);
+            if (positionExists != null)
             {
                 var checkNameUnique = await _unitOfWork.Positions.GetDbSet()
                     .AnyAsync(p => p.Id != positionViewModel.Id 
@@ -111,13 +150,21 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var position = _mapper.Map<Position>(positionViewModel);
+                    var position = _mapper.Map<EditPositionViewModel, Position>(positionViewModel, positionExists);
 
                     _unitOfWork.Positions.Update(position);
 
-                    await _unitOfWork.CommitAsync();
+                    var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUser.ToShortName());
+                    if (handbookExists)
+                    {
+                        await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                        dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                    }
+                    else
+                    {
+                        dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Not found handbook."));
+                    }
                 }
             }
             else

@@ -14,9 +14,9 @@ namespace Samr.ERP.Core.Interfaces
     public interface IUserLockReasonService
     {
         Task<BaseDataResponse<UserLockReasonViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemsAsync();
-        Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions);
         Task<BaseDataResponse<UserLockReasonViewModel>> CreateAsync(UserLockReasonViewModel userLockReasonViewModel);
-        Task<BaseDataResponse<UserLockReasonViewModel>> UpdateAsync(UserLockReasonViewModel userLockReasonViewModel);
+        Task<BaseDataResponse<UserLockReasonViewModel>> EditAsync(UserLockReasonViewModel userLockReasonViewModel);
     }
 }

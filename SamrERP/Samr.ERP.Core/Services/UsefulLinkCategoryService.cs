@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -12,6 +13,7 @@ using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -22,15 +24,39 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHandbookService _handbookService;
 
-        public UsefulLinkCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UsefulLinkCategoryService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IHandbookService handbookService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _handbookService = handbookService;
         }
         private DbSet<UsefulLinkCategory> GetQuery()
         {
             return _unitOfWork.UsefulLinkCategories.GetDbSet();
+        }
+
+        private IQueryable<UsefulLinkCategory> GetQueryWithUser()
+        {
+            return GetQuery().Include(p => p.CreatedUser);
+        }
+
+        private IQueryable<UsefulLinkCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<UsefulLinkCategory> query)
+        {
+            if (filterHandbook.Name != null)
+            {
+                query = query.Where(n => n.Name == filterHandbook.Name);
+            }
+
+            if (filterHandbook.IsActive)
+            {
+                query = query.Where(n => n.IsActive);
+            }
+
+            return query;
         }
 
         public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> GetByIdAsync(Guid id)
@@ -44,10 +70,18 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(existUsefulLinkCategory));
         }
 
-        public async Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
-            var pagedList = await GetQuery().ToMappedPagedListAsync<UsefulLinkCategory, EditUsefulLinkCategoryViewModel>(pagingOptions);
-            
+            var query = GetQueryWithUser();
+
+            query = FilterQuery(filterHandbook, query);
+
+            var queryVm = query.ProjectTo<EditUsefulLinkCategoryViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
             return BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>.Success(pagedList);
         }
 
@@ -73,9 +107,17 @@ namespace Samr.ERP.Core.Services
 
                 _unitOfWork.UsefulLinkCategories.Add(usefulLinkCategory);
 
-                await _unitOfWork.CommitAsync();
+                var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUser.ToShortName());
+                if (handbookExists)
+                {
+                    await _unitOfWork.CommitAsync();
 
-                response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success( _mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
+                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
+                }
+                else
+                {
+                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Fail(editUsefulLinkCategoryViewModel, new ErrorModel("Not found handbook."));
+                }
             }
 
             return response;
@@ -104,9 +146,17 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.UsefulLinkCategories.Update(usefulLinkCategory);
 
-                    await _unitOfWork.CommitAsync();
+                    var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUser.ToShortName());
+                    if (handbookExists)
+                    {
+                        await _unitOfWork.CommitAsync();
 
-                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
+                        response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
+                    }
+                    else
+                    {
+                        response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Fail(editUsefulLinkCategoryViewModel, new ErrorModel("Not found handbook."));
+                    }
                 }
             }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -22,11 +23,17 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHandbookService _handbookService;
 
-        public EmployeeLockReasonService(IUnitOfWork unitOfWork, IMapper mapper)
+        public EmployeeLockReasonService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IHandbookService handbookService
+            )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _handbookService = handbookService;
         }
 
         private IQueryable<EmployeeLockReason> GetQuery()
@@ -34,9 +41,29 @@ namespace Samr.ERP.Core.Services
             return _unitOfWork.EmployeeLockReasons.GetDbSet();
         }
 
-        private IQueryable<EmployeeLockReason> GetQueryWithUserCreate()
+        private IQueryable<EmployeeLockReason> GetQueryWithUser()
         {
             return GetQuery().Include(p => p.CreatedUser);
+        }
+
+        private bool EmployeeLockReasonExists(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        {
+            return _unitOfWork.EmployeeLockReasons.Any(p => p.Name.ToLower() == employeeLockReasonViewModel.Name.ToLower());
+        }
+
+        private IQueryable<EmployeeLockReason> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<EmployeeLockReason> query)
+        {
+            if (filterHandbook.Name != null)
+            {
+                query = query.Where(n => n.Name == filterHandbook.Name);
+            }
+
+            if (filterHandbook.IsActive)
+            {
+                query = query.Where(n => n.IsActive);
+            }
+
+            return query;
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemAsync()
@@ -65,11 +92,19 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
-            var pageList = await GetQuery().ToMappedPagedListAsync<EmployeeLockReason, EmployeeLockReasonViewModel>(pagingOptions);
+            var query = GetQueryWithUser();
 
-            return BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>.Success(pageList);
+            query = FilterQuery(filterHandbook, query);
+
+            var queryVm = query.ProjectTo<EmployeeLockReasonViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
@@ -86,7 +121,17 @@ namespace Samr.ERP.Core.Services
                 var employeeLockReason = _mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel);
                 _unitOfWork.EmployeeLockReasons.Add(employeeLockReason);
 
-                await _unitOfWork.CommitAsync();
+                var handbookExists = await _handbookService.ChangeStatus("Nationality", employeeLockReason.CreatedUser.ToShortName());
+                if (handbookExists)
+                {
+                    await _unitOfWork.CommitAsync();
+
+                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                }
+                else
+                {
+                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Not found handbook"));
+                }
 
                 dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
             }
@@ -94,12 +139,7 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        private bool EmployeeLockReasonExists(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
-        {
-            return _unitOfWork.EmployeeLockReasons.Any(p => p.Name.ToLower() == employeeLockReasonViewModel.Name.ToLower());
-        }
-
-        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> UpdateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> EditAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
 
@@ -121,9 +161,17 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.EmployeeLockReasons.Update(employeeLockReason);
 
-                    await _unitOfWork.CommitAsync();
+                    var handbookExists = await _handbookService.ChangeStatus("EmployeeLockReason", employeeLockReason.CreatedUser.ToShortName());
+                    if (handbookExists)
+                    {
+                        await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                        dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                    }
+                    else
+                    {
+                        dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Not found handbook"));
+                    }
                 }
             }
             else

@@ -136,9 +136,10 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
-            var departmentExists = await _unitOfWork.Departments.AnyAsync(p => p.Id == editDepartmentViewModel.Id);
+            var departmentExists = await _unitOfWork.Departments.GetDbSet()
+                .FirstOrDefaultAsync(p => p.Id == editDepartmentViewModel.Id);
 
-            if (departmentExists)
+            if (departmentExists != null)
             {
                 var checkNameUnique = await _unitOfWork.Departments
                     .GetDbSet()
@@ -149,7 +150,7 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var department = _mapper.Map<Department>(editDepartmentViewModel);
+                    var department = _mapper.Map<EditDepartmentViewModel, Department>(editDepartmentViewModel, departmentExists);
 
                     _unitOfWork.Departments.Update(department);
 
@@ -168,7 +169,7 @@ namespace Samr.ERP.Core.Services
             }
             else
             {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(model);
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(editDepartmentViewModel);
             }
 
             return dataResponse;

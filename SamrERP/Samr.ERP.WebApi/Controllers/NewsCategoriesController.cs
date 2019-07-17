@@ -9,6 +9,7 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -26,9 +27,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<NewsCategoriesViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<NewsCategoriesViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
-            var newsCategories = await _newsCategoriesService.GetAllAsync(pagingOptions);
+            var newsCategories = await _newsCategoriesService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(newsCategories);
         }
 
@@ -57,7 +58,7 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _newsCategoriesService.UpdateAsync(newsCategoriesViewModel);
+                var response = await _newsCategoriesService.Editsync(newsCategoriesViewModel);
 
                 return response;
             }
