@@ -24,5 +24,8 @@ namespace Samr.ERP.Infrastructure.Entities
         public  DateTime? LockDate { get; set; }
         public ICollection<RefreshToken> RefreshTokens { get; set; }
 
+        [MaxLength(4),MinLength(4)]
+        public int? ChangePasswordConfirmationCode { get; set; }
+        public DateTime? ChangePasswordConfirmationCodeExpires { get; set; }
     }
 }
