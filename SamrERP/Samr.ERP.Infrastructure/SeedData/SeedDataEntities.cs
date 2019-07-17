@@ -24,8 +24,9 @@ namespace Samr.ERP.Infrastructure.SeedData
                     new Handbook { Id = new Guid("7a54980c-296e-4dee-b7cf-68a495c80ee0"), Name = "EmployeeLockReason", DisplayName = "Причина блокировки сотрудника", ActionName = "EmployeeLockReason/All" },
                     new Handbook { Id = new Guid("5a1b9eac-d4a4-4d92-aa77-53c0fe1bead0"), Name = "Position", DisplayName = "Позиция", ActionName = "Position/All" },
                     new Handbook { Id = new Guid("90fdba24-d34f-4347-896e-3bc652328c1f"), Name = "UserLockReason", DisplayName = "Причина блокировки пользователя", ActionName = "UserLockReason/All" },
-                    new Handbook { Id = new Guid("3e11f7c3-ee41-4bea-aaf1-1fda2d4cb001"), Name = "UsefulLinkCategory", DisplayName = "Полезная ссылка", ActionName = "UsefulLinkCategory/All" }
-                   
+                    new Handbook { Id = new Guid("3e11f7c3-ee41-4bea-aaf1-1fda2d4cb001"), Name = "UsefulLinkCategory", DisplayName = "Полезная ссылка", ActionName = "UsefulLinkCategory/All" },
+                    new Handbook { Id = new Guid("92ddaaaf-fd9f-4f99-8443-2bed011e9d78"), Name = "FileCategory", DisplayName = "Категория файла", ActionName = "FileCategory/All"}
+
 
                 );
         }

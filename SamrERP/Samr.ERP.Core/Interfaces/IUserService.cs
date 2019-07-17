@@ -26,5 +26,6 @@ namespace Samr.ERP.Core.Interfaces
         bool HasUserValidRefreshToken(Guid userId,string refreshToken, string ipAddress);
         Task AddRefreshToken(string token, Guid userId, string remoteIpAddress, double daysToExpire = 5);
         Task RemoveRefreshToken(Guid userId, string refreshToken);
+        Task<BaseResponse> GenerateChangePasswordConfirmationCodeToCurrentUser();
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190717094401_FileCategory")]
+    partial class FileCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,40 +312,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.ToTable("EmployeeLockReasons");
                 });
 
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.FileArchive", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<Guid>("CreatedUserId");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(512);
-
-                    b.Property<Guid>("FileCategoryId");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(1);
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<string>("ShortDescription")
-                        .IsRequired()
-                        .HasMaxLength(128);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("FileCategoryId");
-
-                    b.ToTable("FileArchives");
-                });
-
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.FileCategory", b =>
                 {
                     b.Property<Guid>("Id")
@@ -355,8 +323,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<bool>("IsActive");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(64);
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
@@ -463,13 +430,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                             ActionName = "UsefulLinkCategory/All",
                             DisplayName = "Полезная ссылка",
                             Name = "UsefulLinkCategory"
-                        },
-                        new
-                        {
-                            Id = new Guid("92ddaaaf-fd9f-4f99-8443-2bed011e9d78"),
-                            ActionName = "FileCategory/All",
-                            DisplayName = "Категория файла",
-                            Name = "FileCategory"
                         });
                 });
 
@@ -683,11 +643,6 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
-                    b.Property<int?>("ChangePasswordConfirmationCode")
-                        .HasMaxLength(4);
-
-                    b.Property<DateTime?>("ChangePasswordConfirmationCodeExpires");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -879,19 +834,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
                         .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.FileArchive", b =>
-                {
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.FileCategory", "FileCategory")
-                        .WithMany()
-                        .HasForeignKey("FileCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

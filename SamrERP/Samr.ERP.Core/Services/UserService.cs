@@ -23,18 +23,21 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly UserProvider _userProvider;
         private readonly IMapper _mapper;
 
         public UserService(
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             IEmailSender emailSender,
+            UserProvider userProvider,
             IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _emailSender = emailSender;
+            _userProvider = userProvider;
             _mapper = mapper;
         }
 
@@ -90,6 +93,26 @@ namespace Samr.ERP.Core.Services
             }
         }
 
+        public async Task<BaseResponse> GenerateChangePasswordConfirmationCodeToCurrentUser()
+        {
+            var confirmCode = RandomGenerator.GenerateRandomNumber();
+            var user = _userProvider.CurrentUser;
+            if (user == null)
+            {
+                return BaseResponse.Unauthorized(null);
+            }
+
+            user.ChangePasswordConfirmationCode = confirmCode;
+            user.ChangePasswordConfirmationCodeExpires = DateTime.Now.AddMinutes(2);
+
+            await _emailSender.SendEmailToEmployeeAsync(user, "Confirmation code",
+                $"Change password confirmation code {confirmCode}");
+
+            await _unitOfWork.CommitAsync();
+
+            return BaseResponse.Success();
+        }
+
         public async Task<User> GetByPhoneNumber(string phoneNumber)
         {
             var userResult = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.PhoneNumber == phoneNumber);
@@ -140,10 +163,10 @@ namespace Samr.ERP.Core.Services
 
             var user = await _unitOfWork.Users.GetByIdAsync(viewModel.Id);
             if (user == null) return BaseDataResponse<string>.NotFound("");
-
-            //TODO send smscode confirmation and check
-
-            if (viewModel.SmsConfirmationCode == 1234)
+            
+            //
+            if (viewModel.SmsConfirmationCode == user.ChangePasswordConfirmationCode
+                && user.ChangePasswordConfirmationCodeExpires <= DateTime.Now)
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, viewModel.Password);
