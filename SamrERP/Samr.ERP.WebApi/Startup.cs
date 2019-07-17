@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,7 @@ namespace Samr.ERP.WebApi
             services.AddDbContext<SamrDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Scoped);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<UserProvider>();
             services.AddScoped<RepositoryFactories, RepositoryFactories>();
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
@@ -92,15 +94,7 @@ namespace Samr.ERP.WebApi
             {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Secret)),
-                    ValidIssuer = token.Issuer,
-                    ValidAudience = token.Audience,
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
+                x.TokenValidationParameters = TokenAuthenticationService.GetTokenValidationParameters(token);
 
             });
 
@@ -140,7 +134,7 @@ namespace Samr.ERP.WebApi
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 //.SetIsOriginAllowed((host) => true)
-                .AllowCredentials()
+                //.AllowCredentials()
             );
 
             app.UseStaticFiles();

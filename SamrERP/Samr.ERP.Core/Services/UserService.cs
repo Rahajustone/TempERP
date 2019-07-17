@@ -54,9 +54,40 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<UserViewModel>> GetByIdAsync(Guid id)
         {
-            var userResult = await _unitOfWork.Users.GetDbSet().Include(p=>p.UserLockReason).FirstOrDefaultAsync(p=>p.Id == id);
+            var userResult = await _unitOfWork.Users.GetDbSet().Include(p => p.UserLockReason).FirstOrDefaultAsync(p => p.Id == id);
             if (userResult == null) return BaseDataResponse<UserViewModel>.NotFound(null);
-            return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(userResult));;
+            return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(userResult)); ;
+        }
+
+        public bool HasUserValidRefreshToken(Guid userId, string refreshToken, string ipAddress)
+        {
+            return _unitOfWork.RefreshTokens.Any(p => p.UserId == userId && p.Active && p.RemoteIpAddress == ipAddress);
+        }
+
+        public async Task AddRefreshToken(string token, Guid userId, string remoteIpAddress, double daysToExpire = 5)
+        {
+            var refreshToken = new RefreshToken()
+            {
+                Token = token,
+                Expires = DateTime.Now.AddDays(daysToExpire),
+                UserId = userId,
+                RemoteIpAddress = remoteIpAddress
+            };
+
+            _unitOfWork.RefreshTokens.Add(refreshToken);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task RemoveRefreshToken(Guid userId, string token)
+        {
+            var refreshToken = await _unitOfWork.RefreshTokens.All()
+                .FirstOrDefaultAsync(p => p.UserId == userId && p.Token == token);
+
+            if (refreshToken != null)
+            {
+                _unitOfWork.RefreshTokens.Delete(refreshToken);
+                await _unitOfWork.CommitAsync(); 
+            }
         }
 
         public async Task<User> GetByPhoneNumber(string phoneNumber)
@@ -67,7 +98,10 @@ namespace Samr.ERP.Core.Services
 
         public async Task<User> GetUserAsync(ClaimsPrincipal userPrincipal)
         {
-            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.PhoneNumber == userPrincipal.Identity.Name); // await _userManager.GetUserAsync(userPrincipal);
+            if (userPrincipal == null) return null;
+            Guid.TryParse(userPrincipal.Claims.FirstOrDefault(c => c.Type == "id")?.Value, out Guid id);
+
+            var user = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.Id == id); // await _userManager.GetUserAsync(userPrincipal);
             return user;
         }
 
@@ -138,17 +172,17 @@ namespace Samr.ERP.Core.Services
                 .UserLockReasons.GetDbSet()
                 .FirstOrDefaultAsync(u => u.Id == lockUserViewModel.UserLockReasonId);
 
-            if (userExists == null 
+            if (userExists == null
                 || userLockReasonExists == null
                 || userExists.UserLockReasonId != null)
                 return BaseResponse.Fail();
-            
-                userExists.UserLockReasonId = lockUserViewModel.UserLockReasonId;
-                userExists.LockDate = DateTime.Now;
 
-                await _unitOfWork.CommitAsync();
+            userExists.UserLockReasonId = lockUserViewModel.UserLockReasonId;
+            userExists.LockDate = DateTime.Now;
 
-                return BaseResponse.Success();
+            await _unitOfWork.CommitAsync();
+
+            return BaseResponse.Success();
         }
 
         public async Task<BaseResponse> UserUnlockAsync(Guid id)

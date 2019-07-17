@@ -79,13 +79,15 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<AuthenticateResult>.Fail(null, null));
         }
 
-        [HttpPost("refreshtoken")]
+        [HttpPost()]
         public async Task<BaseDataResponse<AuthenticateResult>> RefreshToken([FromBody] ExchangeRefreshToken model)
         {
             if (ModelState.IsValid)
             {
 
                 var authenticateResponse = await _authenticateService.RefreshTokenAsync(model);
+
+                return Response(authenticateResponse);
             }
 
             return Response(BaseDataResponse<AuthenticateResult>.Fail(null));
@@ -98,7 +100,7 @@ namespace Samr.ERP.WebApi.Controllers
             var currentUser = await _userService.GetUserAsync(User);
             return _mapper.Map<UserViewModel>(currentUser);
         }
-        [HttpGet]
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<BaseDataResponse<UserViewModel>> GetById(Guid id)
         {
@@ -168,6 +170,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<BaseResponse> UnlockUser(Guid id)
         {
             if (ModelState.IsValid)
