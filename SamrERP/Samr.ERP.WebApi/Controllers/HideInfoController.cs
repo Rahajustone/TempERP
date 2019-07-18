@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,18 +24,24 @@ namespace Samr.ERP.WebApi.Controllers
             return Ok(Enumerable.Range(1, 5).Select(p => $"secret info {p}"));
         }
 
-        [HttpPost]
-        public ActionResult UploadFile(IFormFile formFile)
+        //[HttpPost]
+        //public ActionResult UploadFile(IFormFile formFile)
+        //{
+        //    _fileService.SaveFile("test\\test", formFile);
+        //    return Ok();
+        //}
+        //[HttpPost]
+        //public ActionResult UploadPhoto(IFormFile formFile)
+        //{
+        //    _fileService.UploadPhoto("Files\\Test", formFile,true);
+        //    return Ok();
+        //}
+        [HttpGet]
+        public ActionResult DateTimeNow()
         {
-            _fileService.SaveFile("test\\test", formFile);
-            return Ok();
+            return Ok(DateTime.Now.ToString("F"));
         }
-        [HttpPost]
-        public ActionResult UploadPhoto(IFormFile formFile)
-        {
-            _fileService.UploadPhoto("Files\\Test", formFile,true);
-            return Ok();
-        }
+
     }
     
     

@@ -133,7 +133,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                 _tokenSettings.Value.Issuer,
                 _tokenSettings.Value.Audience,
                 claim,
-                expires: DateTime.Now.AddMinutes(_tokenSettings.Value.AccessExpiration),
+                expires: DateTime.UtcNow.AddMinutes(_tokenSettings.Value.AccessExpiration),
                 signingCredentials: _signingCredentials
             );
 
@@ -149,7 +149,10 @@ namespace Samr.ERP.WebApi.Infrastructure
                 ValidIssuer = appSettings.Issuer,
                 ValidAudience = appSettings.Audience,
                 ValidateIssuer = false,
-                ValidateAudience = false
+                ValidateAudience = false,
+                ValidateLifetime =  true,
+                ClockSkew = TimeSpan.Zero
+
             };
         }
 
