@@ -244,12 +244,12 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseResponse> EditUserDetailsAsync(
             EditUserDetailsViewModel editUserDetailsView)
         {
-            var userExists = await _unitOfWork.Users.ExistsAsync(editUserDetailsView.UserId);
+            var userExists = await _unitOfWork.Users.ExistsAsync(_userProvider.CurrentUser.Id);
 
             if (!userExists)
                 return BaseResponse.NotFound();
 
-            var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == editUserDetailsView.UserId);
+            var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == _userProvider.CurrentUser.Id);
 
             employee.Email = editUserDetailsView.Email;
             employee.FactualAddress = editUserDetailsView.FactualAddress;

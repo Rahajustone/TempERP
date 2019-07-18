@@ -48,7 +48,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditFileArchiveViewModel>> Create([FromBody] EditFileArchiveViewModel editFileArchiveViewModel)
+        public async Task<BaseDataResponse<EditFileArchiveViewModel>> Create([FromForm] EditFileArchiveViewModel editFileArchiveViewModel)
         {
             if (ModelState.IsValid)
             {
