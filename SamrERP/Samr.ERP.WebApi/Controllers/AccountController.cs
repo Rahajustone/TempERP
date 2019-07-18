@@ -146,8 +146,8 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         
-        [HttpPost("{id}")]
-        public async Task<BaseResponse> SendChangePasswordConfirmationCode(Guid id)
+        [HttpPost()]
+        public async Task<BaseResponse> SendChangePasswordConfirmationCodeToCurrentUser()
         {
             return Response(await _userService.GenerateChangePasswordConfirmationCodeToCurrentUser());
         }
