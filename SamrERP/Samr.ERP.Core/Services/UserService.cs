@@ -12,6 +12,7 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
@@ -223,6 +224,31 @@ namespace Samr.ERP.Core.Services
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
+        }
+
+        public async Task<BaseDataResponse<GetEmployeeDataViewModel>> GetEmployeeDataAsync()
+        {
+            BaseDataResponse<GetEmployeeDataViewModel> dataResponse;
+
+            var employee = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.User)
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(p => p.Gender)
+                .Include(p => p.EmployeeLockReason)
+                .FirstOrDefaultAsync(p => p.UserId == _userProvider.CurrentUser.Id);
+
+            if (employee == null)
+            {
+                dataResponse = BaseDataResponse<GetEmployeeDataViewModel>.NotFound(null);
+            }
+            else
+            {
+                dataResponse = BaseDataResponse<GetEmployeeDataViewModel>.Success(_mapper.Map<GetEmployeeDataViewModel>(employee));
+            }
+
+            return dataResponse;
         }
     }
 }

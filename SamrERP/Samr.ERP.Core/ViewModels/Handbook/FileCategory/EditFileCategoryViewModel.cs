@@ -10,6 +10,6 @@ namespace Samr.ERP.Core.ViewModels.Handbook.FileCategory
 
         public string CreatedUserName { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
     }
 }

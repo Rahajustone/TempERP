@@ -8,6 +8,7 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Infrastructure;
 using AuthenticateResult = Samr.ERP.WebApi.Models.AuthenticateResult;
@@ -151,7 +152,6 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(await _userService.GenerateChangePasswordConfirmationCodeToCurrentUser());
         }
 
-
         [HttpPost]
         public async Task<BaseResponse> EditUserDetails([FromBody] EditUserDetailsViewModel editUserDetailsView)
         {
@@ -187,6 +187,15 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(response);
             }
             return Response(BaseResponse.Fail());
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<BaseDataResponse<GetEmployeeDataViewModel>> GetEmployeeData()
+        {
+            var getEmployeeData = await _userService.GetEmployeeDataAsync();
+
+            return Response(getEmployeeData);
         }
     }
 }
