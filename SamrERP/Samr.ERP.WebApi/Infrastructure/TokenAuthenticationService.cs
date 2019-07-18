@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Services;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -122,7 +123,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                 new Claim("id", user.Id.ToString()),
                 new Claim("name", employee.Result.FullName),
                 new Claim("position", employee.Result.PositionName),
-                new Claim("photo", employee.Result.Photo),
+                new Claim("photo", FileService.GetDownloadAction(FileService.GetResizedPath(employee.Result.Photo))),
             };
 
 
@@ -132,7 +133,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                 _tokenSettings.Value.Issuer,
                 _tokenSettings.Value.Audience,
                 claim,
-                expires: DateTime.Now.AddMinutes(_tokenSettings.Value.AccessExpiration),
+                expires: DateTime.UtcNow.AddMinutes(_tokenSettings.Value.AccessExpiration),
                 signingCredentials: _signingCredentials
             );
 
@@ -148,7 +149,10 @@ namespace Samr.ERP.WebApi.Infrastructure
                 ValidIssuer = appSettings.Issuer,
                 ValidAudience = appSettings.Audience,
                 ValidateIssuer = false,
-                ValidateAudience = false
+                ValidateAudience = false,
+                ValidateLifetime =  true,
+                ClockSkew = TimeSpan.Zero
+
             };
         }
 
