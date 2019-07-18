@@ -43,6 +43,29 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<LockUserViewModel, User>()
                 .ReverseMap();
 
+            CreateMap<Employee, GetEmployeeDataViewModel>()
+                .ForMember(dst => dst.FullName,
+                    src => src.MapFrom(
+                        map => map.FullName()))
+                .ForMember(dst => dst.DepartmentName,
+                    src => src.MapFrom(
+                        map => map.Position.Department.Name))
+                .ForMember(dst => dst.PositionName,
+                    src => src.MapFrom(
+                        map => map.Position.Name))
+                .ForMember(dst => dst.GenderName,
+                    src => src.MapFrom(
+                        map => map.Gender.Name))
+                .ForMember(dst => dst.DateOfBirth,
+                    src => src.MapFrom(
+                        map => map.DateOfBirth.ToShortDateString()))
+                .ForMember(dst => dst.HireDate,
+                    src => src.MapFrom(
+                        map => map.HireDate.ToShortDateString()))
+                .ForMember(dst => dst.PhotoPath,
+                    src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)))
+                .ReverseMap();
+
             CreateMap<Department, DepartmentViewModel>()
                 .ReverseMap();
 
@@ -252,8 +275,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Gender, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, Gender>();
 
-
-
             CreateMap<UsefulLinkCategory, UsefulLinkCategoryViewModel>();
             CreateMap<UsefulLinkCategoryViewModel, UsefulLinkCategory>();
             CreateMap<UsefulLinkCategory, EditUsefulLinkCategoryViewModel>()
@@ -291,6 +312,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<FileArchive, EditFileArchiveViewModel>()
                 .ReverseMap();
             CreateMap<FileCategory, FileArchiveViewModel>()
+                .ForMember(dst => dst.FileName,
+                    src => src.MapFrom(map => FileService.GetDownloadAction(map.Name)))
                 .ReverseMap();
         }
     }
