@@ -186,7 +186,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.HireDate.ToShortDateString()))
                 .ForMember(dst => dst.PhotoPath,
-                    src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)));
+                    src => src.MapFrom(map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))));
 
             CreateMap<Employee, GetPassportDataEmployeeViewModel>()
                 .ForMember(dst => dst.Nationality,
