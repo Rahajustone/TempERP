@@ -150,7 +150,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                 ValidAudience = appSettings.Audience,
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                ValidateLifetime =  true,
+                //ValidateLifetime =  true,
                 ClockSkew = TimeSpan.Zero
 
             };
