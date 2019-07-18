@@ -16,11 +16,11 @@ namespace Samr.ERP.Infrastructure.Entities
         public FileCategory FileCategory { get; set; }
 
         [Required]
-        [StringLength(1)]
-        public string FileName { get; set; }
+        [StringLength(64)]
+        public string FilePath { get; set; }
 
         [Required]
-        [StringLength(128)]
+        [StringLength(256)]
         public string ShortDescription { get; set; }
 
         [Required]

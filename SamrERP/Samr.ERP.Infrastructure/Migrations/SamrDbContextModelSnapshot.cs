@@ -325,15 +325,15 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<Guid>("FileCategoryId");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasMaxLength(1);
+                        .HasMaxLength(64);
 
                     b.Property<bool>("IsActive");
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()
-                        .HasMaxLength(128);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 

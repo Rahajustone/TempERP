@@ -6,9 +6,10 @@ namespace Samr.ERP.Core.ViewModels.FileArchive
 {
     public class FileArchiveViewModel
     {
+        public Guid Id { get; set; }
         public Guid FileCategoryId { get; set; }
         
-        public string FileName { get; set; }
+        public string FilePath { get; set; }
 
         public string ShortDescription { get; set; }
 
