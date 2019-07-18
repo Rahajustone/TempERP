@@ -104,7 +104,9 @@ namespace Samr.ERP.WebApi.Infrastructure
 
         public ClaimsPrincipal GetPrincipalFromToken(string token)
         {
-            var principal = _jwtSecurityTokenHandler.ValidateToken(token, GetTokenValidationParameters(_tokenSettings.Value), out var securityToken);
+            var tokenValidationParameters = GetTokenValidationParameters(_tokenSettings.Value);
+            tokenValidationParameters.ValidateLifetime = false;
+            var principal = _jwtSecurityTokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
             if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
@@ -150,8 +152,9 @@ namespace Samr.ERP.WebApi.Infrastructure
                 ValidAudience = appSettings.Audience,
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                ValidateLifetime =  true,
-                ClockSkew = TimeSpan.Zero
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+
 
             };
         }
