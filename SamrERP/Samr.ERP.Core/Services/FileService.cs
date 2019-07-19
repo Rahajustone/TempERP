@@ -24,20 +24,7 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private static string _filesPath;
         private static readonly int _resizeSize = 150;
-        public static readonly string[] AllowedExtensions = {
-            ".jpg",
-            ".jpeg",
-            ".doc",
-            ".docx",
-            ".xls",
-            ".xlsx",
-            ".pdf",
-            ".csv",
-            ".ppt",
-            ".pptx"
-        };
-
-        public static readonly Dictionary<string, string> AllowedExtensionsMiMeType = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> AllowedExtensionsWithMiMeType = new Dictionary<string, string>()
         {
             {".jpeg", "image/jpeg"},
             {".jpg", "image/jpeg"},
@@ -188,12 +175,12 @@ namespace Samr.ERP.Core.Services
 
         private bool ExtensionAllowed(string extension)
         {
-            return AllowedExtensions.Any(p => p.Equals(extension));
+            return AllowedExtensionsWithMiMeType.Keys.Any(p => p.Equals(extension));
         }
 
         public static string GetMimeType(string fileExtension)
         {
-            return AllowedExtensionsMiMeType[fileExtension];
+            return AllowedExtensionsWithMiMeType[fileExtension];
         }
     }
 }
