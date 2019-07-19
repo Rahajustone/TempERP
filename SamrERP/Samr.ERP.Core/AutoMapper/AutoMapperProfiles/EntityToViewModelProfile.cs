@@ -117,6 +117,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
 
+
+            #region Employee
+
             CreateMap<Employee, EmployeeViewModel>()
                 .ForMember(dst => dst.PhotoPath,
                 src => src.MapFrom(
@@ -233,13 +236,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.FullName()))
                 .ForMember( dst => dst.Photo, src => src.MapFrom(
-                    map => FileService.GetDownloadAction(map.PhotoPath)))
+                    map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember( dst => dst.PositionName,
                     src => src.MapFrom(
                         map => map.Position.Name ))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
-            
+            #endregion
+
             CreateMap<NewsViewModel, News>()
                 .ReverseMap();
             CreateMap<News, EditNewsViewModel>()
@@ -310,11 +314,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<FileCategory, SelectListItemViewModel>();
 
             CreateMap<FileArchive, EditFileArchiveViewModel>()
+                //.ForMember(dst => dst.FilePath,
+                //    src => src.MapFrom(map => FileService.GetFileArchivePath(map.ShortDescription)))
                 .ReverseMap();
             CreateMap<FileCategory, FileArchiveViewModel>()
-                .ForMember(dst => dst.FileName,
-                    src => src.MapFrom(map => FileService.GetDownloadAction(map.Name)))
                 .ReverseMap();
+            CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
         }
     }
 }

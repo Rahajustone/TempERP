@@ -6,8 +6,10 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Infrastructure.Data.Contracts;
+using Samr.ERP.Infrastructure.Entities;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
@@ -106,7 +108,7 @@ namespace Samr.ERP.Core.Services
                 await file.CopyToAsync(stream);
             }
 
-            return filePath;
+            return $"{Path.Combine(folderPath, fileName)}";
         }
 
         public static string GetDownloadAction(string path)
@@ -114,6 +116,26 @@ namespace Samr.ERP.Core.Services
             if (string.IsNullOrEmpty(path)) return String.Empty;
             return "https://samr-dev.azurewebsites.net/api/files/getphoto?path=" + path;
         }
+
+        public static string GetFileArchivePath(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return String.Empty;
+
+            //return "https://samr-dev.azurewebsites.net/api/files/getarchive?path=" + path;
+            return "https://localhost:5001/api/files/getarchive?path=" + path;
+        }
+
+        public async Task<string> GetFileArchiveFullPath(string path)
+        {
+            var fileArchive = await _unitOfWork.FileArchives.GetDbSet()
+                    .FirstOrDefaultAsync(p => p.ShortDescription.ToLower().Trim() == Path.GetFileNameWithoutExtension(path).ToLower().Trim());
+
+            var realPath = fileArchive.FilePath;
+
+            return Path.Combine(_filesPath, realPath);
+        }
+
+
         public static string GetFullPath(string path)
         {
             return Path.Combine(_filesPath, path);

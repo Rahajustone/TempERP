@@ -49,7 +49,6 @@ namespace Samr.ERP.Core.Services
             return identityResult;
         }
 
-
         public async Task<User> GetByUserName(string userName)
         {
             var userResult = await _unitOfWork.Users.GetDbSet().FirstOrDefaultAsync(p => p.UserName == userName);
@@ -250,5 +249,27 @@ namespace Samr.ERP.Core.Services
 
             return dataResponse;
         }
+
+        #region Roles
+
+        public async Task<BaseResponse> SetUserRoles(SetUserRolesViewModel model)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(model.UserId);
+            if (user == null)
+            {
+                return BaseResponse.NotFound(new ErrorModel("user not found"));
+            }
+
+            var roles = await _unitOfWork.Roles.All().Select(p => p.Id).ToListAsync();
+
+            var correctRoles = roles.Intersect(model.RolesId);
+
+            var userRoles = _userManager.GetRolesAsync(user);
+            //TODO: need to handle roles by role name
+
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

@@ -8,7 +8,6 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
-using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.FileArchive;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -26,21 +25,14 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        //public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterFileArchiveViewModel filterFileArchiveViewModel, [FromQuery] SortRule sortRule)
-        //{
-        //    var fileArchives = await _fileArchiveService.GetAllAsync(pagingOptions, filterFileArchiveViewModel, sortRule);
-        //    return Response(fileArchives);
-        //}
-
-        [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListItem()
+        public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterFileArchiveViewModel filterFileArchiveViewModel, [FromQuery] SortRule sortRule)
         {
-            var selectedItems = await _fileArchiveService.GetAllSelectListItemAsync();
-            return Response(selectedItems);
+            var fileArchives = await _fileArchiveService.GetAllAsync(pagingOptions, filterFileArchiveViewModel, sortRule);
+            return Response(fileArchives);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<FileArchiveViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<EditFileArchiveViewModel>> Get(Guid id)
         {
             var fileArchives = await _fileArchiveService.GetByIdAsync(id);
 
@@ -59,17 +51,16 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel, null));
         }
 
-        //[HttpPost]
-        //public async Task<BaseDataResponse<ALLVIEWMODEL>> Edit([FromBody] ALLVIEWMODEL MODEL)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var RESULT = await _SERVICE.UpdateAsync(MODEL);
-        //        return Response(RESULT);
-        //    }
+        [HttpPost]
+        public async Task<BaseDataResponse<EditFileArchiveViewModel>> Edit([FromForm] EditFileArchiveViewModel editFileArchiveViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _fileArchiveService.EditAsync(editFileArchiveViewModel);
+                return Response(result);
+            }
 
-        //    return Response(BaseDataResponse<ALLVIEWMODEL>.Fail(null, null));
-        //}
-
+            return Response(BaseDataResponse<EditFileArchiveViewModel>.Fail(null, null));
+        }
     }
 }
