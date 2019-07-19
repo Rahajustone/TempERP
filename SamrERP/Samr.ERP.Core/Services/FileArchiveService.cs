@@ -51,7 +51,8 @@ namespace Samr.ERP.Core.Services
         {
             if (filterFileArchiveViewModel.ShortDescription != null)
             {
-                query = query.Where(f => EF.Functions.Like( filterFileArchiveViewModel.ShortDescription.ToLower(), f.ShortDescription.ToLower()));
+                var filterShortDesc = filterFileArchiveViewModel.ShortDescription.ToLower();
+                query = query.Where(f => EF.Functions.Like(f.ShortDescription.ToLower(), "%" + filterShortDesc + "%"));
             }
 
             if (filterFileArchiveViewModel.IsActive)
@@ -72,11 +73,11 @@ namespace Samr.ERP.Core.Services
             var existsFileArchive = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
             if (existsFileArchive == null)
             {
-                return BaseDataResponse<EditFileArchiveViewModel>.NotFound(null);
+                return BaseDataResponse<EditFileArchiveViewModel>.NotFound(null); 
             }
 
             var vm = _mapper.Map<EditFileArchiveViewModel>(existsFileArchive);
-            vm.FilePath = FileService.GetFileArchivePath( vm.ShortDescription.Trim() + "" + Path.GetExtension(vm.FilePath));
+            vm.FilePath = FileService.GetFileArchivePath(vm.FilePath);
 
             return BaseDataResponse<EditFileArchiveViewModel>.Success(vm);
         }
@@ -92,6 +93,11 @@ namespace Samr.ERP.Core.Services
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.ShortDescription);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            foreach (var allFileArchiveViewModel in pagedList.Items)
+            {
+                allFileArchiveViewModel.FilePath = FileService.GetFileArchivePath(allFileArchiveViewModel.FilePath);
+            }
 
             return BaseDataResponse<PagedList<EditFileArchiveViewModel>>.Success(pagedList);
         }

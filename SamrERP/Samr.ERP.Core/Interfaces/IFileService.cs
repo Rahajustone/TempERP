@@ -7,6 +7,6 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task<string> SaveFile(string folderPath,IFormFile file);
         Task<string> UploadPhoto(string folderPath, IFormFile file, bool createResizedClone);
-        Task<string> GetFileArchiveFullPath(string path);
+        Task<string> GetFileShortDescription(string path);
     }
 }
