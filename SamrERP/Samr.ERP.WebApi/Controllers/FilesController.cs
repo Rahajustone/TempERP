@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
 
@@ -27,6 +28,17 @@ namespace Samr.ERP.WebApi.Controllers
         {
             var image = System.IO.File.OpenRead(FileService.GetFullPath(path));
             return File(image, "image/jpeg");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetArchiveFile(string path)
+        {
+            var realpath = await _fileService.GetFileArchiveFullPath(path);
+            var file = System.IO.File.OpenRead(realpath);
+
+            // TODO
+            // Mimetype should take from each file
+            return File(file, "application/octet-stream");
         }
 
     }
