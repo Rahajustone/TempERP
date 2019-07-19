@@ -135,8 +135,7 @@ namespace Samr.ERP.Core.Services
         {
             if (string.IsNullOrEmpty(path)) return String.Empty;
 
-            //return "https://samr-dev.azurewebsites.net/api/files/GetArchiveFile?path=" + path;
-            return "https://localhost:5001/api/files/GetArchiveFile?path=" + path;
+            return "https://samr-dev.azurewebsites.net/api/files/GetArchiveFile?path=" + path;
         }
 
         public async Task<string> GetFileShortDescription(string path)
