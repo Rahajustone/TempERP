@@ -260,9 +260,9 @@ namespace Samr.ERP.Core.Services
                 return BaseResponse.NotFound(new ErrorModel("user not found"));
             }
 
-            var roles = await _unitOfWork.Roles.All().Select(p => p.Id).ToListAsync();
+            var roles = await _unitOfWork.Roles.All().Select(p => p.Name).ToListAsync();
 
-            var correctRoles = roles.Intersect(model.RolesId);
+            var correctRoles = roles.Intersect(model.RolesName);
 
             var userRoles = _userManager.GetRolesAsync(user);
             //TODO: need to handle roles by role name
