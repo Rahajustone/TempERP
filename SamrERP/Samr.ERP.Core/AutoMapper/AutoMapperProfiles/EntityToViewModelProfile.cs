@@ -236,7 +236,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.FullName()))
                 .ForMember( dst => dst.Photo, src => src.MapFrom(
-                    map => FileService.GetDownloadAction(map.PhotoPath)))
+                    map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember( dst => dst.PositionName,
                     src => src.MapFrom(
                         map => map.Position.Name ))

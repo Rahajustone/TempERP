@@ -70,11 +70,11 @@ namespace Samr.ERP.WebApi.Infrastructure
             var canSighInResult = await _signInManager.CanSignInAsync(user);
             if (!canSighInResult) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("you cant login call to support"));
 
-            var token = GetJwtTokenForUser(user);
+            var token = GetJwtTokenForUser(user, loginModel.RememberMe);
 
             var refreshToken = GenerateTokenByRandomNumber();
             await _userService.AddRefreshToken(refreshToken, user.Id, _accessor.HttpContext.Connection.RemoteIpAddress?.ToString()); // add the new one
-            return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(token,refreshToken));
+            return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(token, refreshToken));
         }
 
         public async Task<BaseDataResponse<AuthenticateResult>> RefreshTokenAsync(ExchangeRefreshToken model)
@@ -85,33 +85,35 @@ namespace Samr.ERP.WebApi.Infrastructure
             if (userPrincipal != null)
             {
                 var userId = Guid.Parse(userPrincipal.Claims.First(c => c.Type == "id").Value);
-                if (_userService.HasUserValidRefreshToken(userId, model.RefreshToken,_accessor.HttpContext.Connection.RemoteIpAddress?.ToString()))
+                if (_userService.HasUserValidRefreshToken(userId, model.RefreshToken, _accessor.HttpContext.Connection.RemoteIpAddress?.ToString()))
                 {
                     var user = await _userService.GetUserAsync(userPrincipal);
                     var jwtToken = GetJwtTokenForUser(user);
 
-                    await _userService.RemoveRefreshToken(userId,model.RefreshToken); // delete the token we've exchanged
+                    await _userService.RemoveRefreshToken(userId, model.RefreshToken); // delete the token we've exchanged
 
                     var refreshToken = GenerateTokenByRandomNumber();
                     await _userService.AddRefreshToken(refreshToken, userId, _accessor.HttpContext.Connection.RemoteIpAddress?.ToString()); // add the new one
-                    
-                    return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(jwtToken,refreshToken));
-                    
+
+                    return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(jwtToken, refreshToken));
+
                 }
             }
-            return  BaseDataResponse<AuthenticateResult>.Fail(null,new ErrorModel("invalid token"));
+            return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("invalid token"));
         }
 
         public ClaimsPrincipal GetPrincipalFromToken(string token)
         {
-            var principal = _jwtSecurityTokenHandler.ValidateToken(token, GetTokenValidationParameters(_tokenSettings.Value), out var securityToken);
+            var tokenValidationParameters = GetTokenValidationParameters(_tokenSettings.Value);
+            tokenValidationParameters.ValidateLifetime = false;
+            var principal = _jwtSecurityTokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
             if (!(securityToken is JwtSecurityToken jwtSecurityToken) || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
             return principal;
         }
 
-        private string GetJwtTokenForUser(User user)
+        private string GetJwtTokenForUser(User user, bool remember = false)
         {
             var employee = _employeeService.GetEmployeeInfo(user.Id);
 
@@ -123,17 +125,18 @@ namespace Samr.ERP.WebApi.Infrastructure
                 new Claim("id", user.Id.ToString()),
                 new Claim("name", employee.Result.FullName),
                 new Claim("position", employee.Result.PositionName),
-                new Claim("photo", FileService.GetDownloadAction(FileService.GetResizedPath(employee.Result.Photo))),
+                new Claim("photo",employee.Result.Photo),
             };
 
 
             //IdentityModelEventSource.ShowPII = true;
+            var accessExpiration = remember ? _tokenSettings.Value.RememberMeExpiration : _tokenSettings.Value.AccessExpiration;
 
             var jwtToken = new JwtSecurityToken(
                 _tokenSettings.Value.Issuer,
                 _tokenSettings.Value.Audience,
                 claim,
-                expires: DateTime.UtcNow.AddMinutes(_tokenSettings.Value.AccessExpiration),
+                expires: DateTime.UtcNow.AddMinutes(accessExpiration),
                 signingCredentials: _signingCredentials
             );
 
@@ -150,8 +153,9 @@ namespace Samr.ERP.WebApi.Infrastructure
                 ValidAudience = appSettings.Audience,
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                ValidateLifetime =  true,
-                ClockSkew = TimeSpan.Zero
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+
 
             };
         }
