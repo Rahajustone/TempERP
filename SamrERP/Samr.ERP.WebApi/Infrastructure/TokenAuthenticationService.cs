@@ -125,7 +125,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                 new Claim("id", user.Id.ToString()),
                 new Claim("name", employee.Result.FullName),
                 new Claim("position", employee.Result.PositionName),
-                new Claim("photo", FileService.GetDownloadAction(FileService.GetResizedPath(employee.Result.Photo))),
+                new Claim("photo",employee.Result.Photo),
             };
 
 
