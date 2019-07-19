@@ -54,7 +54,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<NewsCategoriesViewModel>> Update([FromBody] NewsCategoriesViewModel newsCategoriesViewModel)
+        public async Task<BaseDataResponse<NewsCategoriesViewModel>> Edit([FromBody] NewsCategoriesViewModel newsCategoriesViewModel)
         {
             if (ModelState.IsValid)
             {

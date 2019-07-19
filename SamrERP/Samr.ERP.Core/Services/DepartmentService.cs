@@ -44,7 +44,7 @@ namespace Samr.ERP.Core.Services
         {
             if (filterHandbook.Name != null)
             {
-                query = query.Where(n => n.Name == filterHandbook.Name);
+                query = query.Where(n => EF.Functions.Like(n.Name, "%" + filterHandbook.Name + "%"));
             }
 
             if (filterHandbook.IsActive)
