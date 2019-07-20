@@ -11,6 +11,7 @@ using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Infrastructure;
+using Samr.ERP.WebApi.Models;
 using AuthenticateResult = Samr.ERP.WebApi.Models.AuthenticateResult;
 
 
@@ -25,6 +26,7 @@ namespace Samr.ERP.WebApi.Controllers
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
         private readonly IEmployeeService _employeeService;
+        private readonly IRoleService _roleService;
         private readonly IAuthenticateService _authenticateService;
 
 
@@ -32,12 +34,14 @@ namespace Samr.ERP.WebApi.Controllers
             IMapper mapper,
             IUserService userService,
             IEmployeeService employeeService,
+            IRoleService roleService,
             IAuthenticateService authenticateService
         )
         {
             _mapper = mapper;
             _userService = userService;
             _employeeService = employeeService;
+            _roleService = roleService;
             _authenticateService = authenticateService;
         }
 
@@ -59,7 +63,8 @@ namespace Samr.ERP.WebApi.Controllers
                     return Response(BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user)));
 
                 }
-                return Response(BaseDataResponse<UserViewModel>.Fail(_mapper.Map<UserViewModel>(user),createdUserResponse.Errors.ToErrorModels()));
+                return Response(BaseDataResponse<UserViewModel>.Fail(_mapper.Map<UserViewModel>(user),
+                    createdUserResponse.Errors.ToErrorModels()));
             }
             return Response(BaseDataResponse<UserViewModel>.Fail(null, null));
 
@@ -67,7 +72,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpPost]
         //[AllowAnonymous]
-        public async Task<BaseDataResponse<AuthenticateResult>> Login([FromBody]LoginViewModel model)
+        public async Task<BaseDataResponse<AuthenticateResult>> Login([FromBody] LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -101,6 +106,7 @@ namespace Samr.ERP.WebApi.Controllers
             var currentUser = await _userService.GetUserAsync(User);
             return _mapper.Map<UserViewModel>(currentUser);
         }
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<BaseDataResponse<UserViewModel>> GetById(Guid id)
@@ -131,8 +137,10 @@ namespace Samr.ERP.WebApi.Controllers
             }
             return Response(BaseDataResponse<string>.Fail(null));
         }
+
         [HttpPost]
-        public async Task<BaseDataResponse<string>> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
+        public async Task<BaseDataResponse<string>> ChangePassword(
+            [FromBody] ChangePasswordViewModel changePasswordViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -145,7 +153,7 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<string>.Fail(null));
         }
 
-        
+
         [HttpPost()]
         public async Task<BaseResponse> SendChangePasswordConfirmationCodeToCurrentUser()
         {
@@ -196,6 +204,38 @@ namespace Samr.ERP.WebApi.Controllers
             var getEmployeeData = await _userService.GetEmployeeDataAsync();
 
             return Response(getEmployeeData);
+        }
+
+        [HttpPost]
+        public async Task<BaseResponse> CreateRole([FromBody] CreateRoleDto createRoleDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var resposne = await _roleService.AddAsync(createRoleDto.Name, createRoleDto.Description, createRoleDto.Category);
+
+                return Response(resposne);
+            }
+            return Response(BaseResponse.Fail(null));
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<BaseResponse> SetUserRoles([FromBody] SetUserRolesViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _userService.SetUserRolesAsync(model);
+                return Response(response);
+
+            }
+            return Response(BaseResponse.Fail());
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>> GetUserRoles(Guid id)
+        {
+            return Response(await _userService.GetUserRolesAsync(id));
         }
     }
 }
