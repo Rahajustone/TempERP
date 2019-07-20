@@ -89,13 +89,13 @@ namespace Samr.ERP.Core.Services
             if (refreshToken != null)
             {
                 _unitOfWork.RefreshTokens.Delete(refreshToken);
-                await _unitOfWork.CommitAsync(); 
+                await _unitOfWork.CommitAsync();
             }
         }
 
         public async Task<BaseResponse> GenerateChangePasswordConfirmationCodeToCurrentUser()
         {
-            var confirmCode = RandomGenerator.GenerateRandomNumber(1000,9999);
+            var confirmCode = RandomGenerator.GenerateRandomNumber(1000, 9999);
             var user = _userProvider.CurrentUser;
             if (user == null)
             {
@@ -163,7 +163,7 @@ namespace Samr.ERP.Core.Services
 
             var user = _userProvider.CurrentUser;
             if (user == null) return BaseDataResponse<string>.NotFound("");
-            
+
             //
             if (viewModel.SmsConfirmationCode == user.ChangePasswordConfirmationCode
                 && user.ChangePasswordConfirmationCodeExpires >= DateTime.Now)
@@ -180,7 +180,7 @@ namespace Samr.ERP.Core.Services
                         Description = p.Description
                     }).ToArray());
             }
-            else dataResponse = BaseDataResponse<string>.Fail(string.Empty,new ErrorModel("invalid confirmation code"));
+            else dataResponse = BaseDataResponse<string>.Fail(string.Empty, new ErrorModel("invalid confirmation code"));
 
             return dataResponse;
         }
@@ -252,7 +252,7 @@ namespace Samr.ERP.Core.Services
 
         #region Roles
 
-        public async Task<BaseResponse> SetUserRoles(SetUserRolesViewModel model)
+        public async Task<BaseResponse> SetUserRolesAsync(SetUserRolesViewModel model)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(model.UserId);
             if (user == null)
@@ -260,14 +260,51 @@ namespace Samr.ERP.Core.Services
                 return BaseResponse.NotFound(new ErrorModel("user not found"));
             }
 
-            var roles = await _unitOfWork.Roles.All().Select(p => p.Name).ToListAsync();
+            var allRoles = await _unitOfWork.Roles.All().Select(p => p.Name).ToListAsync();
 
-            var correctRoles = roles.Intersect(model.RolesName);
+            var selectedRoles = allRoles.Intersect(model.RolesName).ToList();
 
-            var userRoles = _userManager.GetRolesAsync(user);
-            //TODO: need to handle roles by role name
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            throw new NotImplementedException();
+            var toRemove = allRoles.Except(selectedRoles).Intersect(userRoles);
+
+            //removing not selected roles
+            var removeRoleResult = await _userManager.RemoveFromRolesAsync(user, toRemove);
+            if (!removeRoleResult.Succeeded) return BaseResponse.Fail(removeRoleResult.Errors.ToErrorModels());
+
+            //adding new roles
+            var addRoleResult = await _userManager.AddToRolesAsync(user, selectedRoles);
+            if (!addRoleResult.Succeeded) return BaseResponse.Fail(addRoleResult.Errors.ToErrorModels());
+
+            return BaseResponse.Success();
+
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>> GetUserRolesAsync(Guid id)
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(id);
+
+            if (user == null)
+                return BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>.NotFound(null);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+
+            var roles = await _unitOfWork.Roles.All()
+                .GroupBy(r => r.Category)
+                .Select(p => new GroupedUserRolesViewModel()
+                {
+                    GroupName = p.Key,
+                    Roles = p.Select(r => new UserRolesViewModel()
+                    {
+                        Name = r.Name,
+                        Description = r.Description,
+                        Selected = userRoles.Contains(r.Name)
+                    })
+                }).ToListAsync();
+
+
+            return BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>.Success(roles);
         }
 
         #endregion

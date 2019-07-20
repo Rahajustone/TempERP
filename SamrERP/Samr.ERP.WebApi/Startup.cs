@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +51,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
@@ -81,8 +83,10 @@ namespace Samr.ERP.WebApi
                         options.Password.RequireNonAlphanumeric = false;
                         options.Password.RequireUppercase = false;
                         options.Password.RequiredLength = 4;
-
+                        
                     })
+                    .AddRoles<Role>()
+                    //.AddRoleManager<Role>()
                     .AddEntityFrameworkStores<SamrDbContext>();
 
             services.Configure<AppSettings>(Configuration.GetSection("TokenSettings"));
