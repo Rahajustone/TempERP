@@ -314,9 +314,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<FileCategory, SelectListItemViewModel>();
 
             CreateMap<FileArchive, EditFileArchiveViewModel>()
-                //.ForMember(dst => dst.FilePath,
-                //    src => src.MapFrom(map => FileService.GetFileArchivePath(map.ShortDescription)))
-                .ReverseMap();
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.UserName))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToShortDateString()));
+            CreateMap<EditFileArchiveViewModel, FileArchive>();
             CreateMap<FileCategory, FileArchiveViewModel>()
                 .ReverseMap();
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();

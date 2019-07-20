@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
+using SixLabors.Shapes;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -33,12 +33,13 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetArchiveFile(string path)
         {
-            var realpath = await _fileService.GetFileArchiveFullPath(path);
-            var file = System.IO.File.OpenRead(realpath);
+            var fileName = await _fileService.GetFileShortDescription(path);
 
-            // TODO
-            // Mimetype should take from each file
-            return File(file, "application/octet-stream");
+            var file = System.IO.File.OpenRead(FileService.GetFullArchivePath(path));
+            
+            var fileExtension = System.IO.Path.GetExtension(path).ToLower();
+
+            return File(file, FileService.GetMimeType(fileExtension), fileName+ fileExtension);
         }
 
     }

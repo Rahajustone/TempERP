@@ -24,17 +24,18 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private static string _filesPath;
         private static readonly int _resizeSize = 150;
-        public static readonly string[] AllowedExtensions = {
-            ".jpg",
-            ".jpeg",
-            ".doc",
-            ".docx",
-            ".xls",
-            ".xlsx",
-            ".pdf",
-            ".csv",
-            ".ppt",
-            ".pptx"
+        public static readonly Dictionary<string, string> AllowedExtensionsWithMiMeType = new Dictionary<string, string>()
+        {
+            {".jpeg", "image/jpeg"},
+            {".jpg", "image/jpeg"},
+            {".doc", "application/msword"},
+            {".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+            {".xls", "application/vnd.ms-excel"},
+            {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+            {".pdf", "application/pdf"},
+            {".csv", "text/csv"},
+            {".ppt", "application/vnd.ms-powerpoint"},
+            {".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"}
         };
 
         public static readonly string EmployeePhotoFolderPath = "Employees\\Photo";
@@ -108,7 +109,7 @@ namespace Samr.ERP.Core.Services
                 await file.CopyToAsync(stream);
             }
 
-            return $"{Path.Combine(folderPath, fileName)}";
+            return fileName;
         }
 
         public static string GetDownloadAction(string path)
@@ -121,25 +122,34 @@ namespace Samr.ERP.Core.Services
         {
             if (string.IsNullOrEmpty(path)) return String.Empty;
 
-            //return "https://samr-dev.azurewebsites.net/api/files/getarchive?path=" + path;
-            return "https://localhost:5001/api/files/getarchive?path=" + path;
+            return "https://samr-dev.azurewebsites.net/api/files/GetArchiveFile?path=" + path;
         }
 
-        public async Task<string> GetFileArchiveFullPath(string path)
+        public async Task<string> GetFileShortDescription(string path)
         {
             var fileArchive = await _unitOfWork.FileArchives.GetDbSet()
-                    .FirstOrDefaultAsync(p => p.ShortDescription.ToLower().Trim() == Path.GetFileNameWithoutExtension(path).ToLower().Trim());
+                .FirstOrDefaultAsync(p => p.FilePath.ToLower() == path.ToLower());
 
-            var realPath = fileArchive.FilePath;
+            if (fileArchive == null)
+            {
+                return String.Empty;
+            }
 
-            return Path.Combine(_filesPath, realPath);
+            var fileName = fileArchive.ShortDescription;
+
+            return fileName;
         }
-
 
         public static string GetFullPath(string path)
         {
             return Path.Combine(_filesPath, path);
         }
+
+        public static string GetFullArchivePath(string path)
+        {
+            return Path.Combine(_filesPath, FileArchiveFolderPath + "\\" + path);
+        }
+
         private static void EnsureDirectoryCreated(string directoryPath)
         {
             if (!Directory.Exists(directoryPath))
@@ -165,7 +175,12 @@ namespace Samr.ERP.Core.Services
 
         private bool ExtensionAllowed(string extension)
         {
-            return AllowedExtensions.Any(p => p.Equals(extension));
+            return AllowedExtensionsWithMiMeType.Keys.Any(p => p.Equals(extension));
+        }
+
+        public static string GetMimeType(string fileExtension)
+        {
+            return AllowedExtensionsWithMiMeType[fileExtension];
         }
     }
 }
