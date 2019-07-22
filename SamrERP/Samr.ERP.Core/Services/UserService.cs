@@ -266,14 +266,15 @@ namespace Samr.ERP.Core.Services
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var toRemove = allRoles.Except(selectedRoles).Intersect(userRoles);
+            var toRemove = allRoles.Except(selectedRoles).Intersect(userRoles).ToList();
 
+            var toAdd = selectedRoles.Except(userRoles);
             //removing not selected roles
             var removeRoleResult = await _userManager.RemoveFromRolesAsync(user, toRemove);
             if (!removeRoleResult.Succeeded) return BaseResponse.Fail(removeRoleResult.Errors.ToErrorModels());
 
             //adding new roles
-            var addRoleResult = await _userManager.AddToRolesAsync(user, selectedRoles);
+            var addRoleResult = await _userManager.AddToRolesAsync(user, toAdd);
             if (!addRoleResult.Succeeded) return BaseResponse.Fail(addRoleResult.Errors.ToErrorModels());
 
             return BaseResponse.Success();
