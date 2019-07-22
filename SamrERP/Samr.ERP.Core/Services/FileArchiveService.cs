@@ -55,7 +55,7 @@ namespace Samr.ERP.Core.Services
                 query = query.Where(f => EF.Functions.Like(f.ShortDescription.ToLower(), "%" + filterShortDesc + "%"));
             }
 
-            if (filterFileArchiveViewModel.IsActive)
+            if (filterFileArchiveViewModel.OnlyActive)
             {
                 query = query.Where(n => n.IsActive);
             }

@@ -58,7 +58,7 @@ namespace Samr.ERP.Core.Services
                 query = query.Where(n => n.Name == filterHandbook.Name);
             }
 
-            if (filterHandbook.IsActive)
+            if (filterHandbook.OnlyActive)
             {
                 query = query.Where(n => n.IsActive);
             }

@@ -10,6 +10,6 @@ namespace Samr.ERP.Core.ViewModels.FileArchive
 
         public string ShortDescription { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool OnlyActive { get; set; }
     }
 }
