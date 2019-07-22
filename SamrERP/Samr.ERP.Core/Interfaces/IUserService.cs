@@ -29,5 +29,7 @@ namespace Samr.ERP.Core.Interfaces
         Task RemoveRefreshToken(Guid userId, string refreshToken);
         Task<BaseResponse> GenerateChangePasswordConfirmationCodeToCurrentUser();
         Task<BaseDataResponse<GetEmployeeDataViewModel>> GetEmployeeDataAsync();
+        Task<BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>> GetUserRolesAsync(Guid id);
+        Task<BaseResponse> SetUserRolesAsync(SetUserRolesViewModel model);
     }
 }
