@@ -42,6 +42,12 @@ namespace Samr.ERP.WebApi.Controllers
             return Ok(DateTime.Now.ToString("F"));
         }
 
+        [HttpGet]
+        public int ErrorByCode(int statusCode)
+        {
+            Response.StatusCode = statusCode;
+            return 0;
+        }
     }
     
     
