@@ -268,7 +268,7 @@ namespace Samr.ERP.Core.Services
 
             var toRemove = allRoles.Except(selectedRoles).Intersect(userRoles).ToList();
 
-            var toAdd = allRoles.Except(userRoles);
+            var toAdd = selectedRoles.Except(userRoles);
             //removing not selected roles
             var removeRoleResult = await _userManager.RemoveFromRolesAsync(user, toRemove);
             if (!removeRoleResult.Succeeded) return BaseResponse.Fail(removeRoleResult.Errors.ToErrorModels());
