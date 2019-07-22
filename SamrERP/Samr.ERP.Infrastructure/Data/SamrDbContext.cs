@@ -60,7 +60,7 @@ namespace Samr.ERP.Infrastructure.Data
 
             //EntitiesConfiguration.ConfigureEntities(builder);
 
-            SeedDataEntities.AddSeed(builder);
+            SeedDataEntities.AddSeed(builder,this);
         }
     }
 }
