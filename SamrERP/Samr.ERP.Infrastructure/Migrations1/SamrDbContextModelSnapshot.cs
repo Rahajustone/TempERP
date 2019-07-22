@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
@@ -15,15 +15,14 @@ namespace Samr.ERP.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -41,8 +40,7 @@ namespace Samr.ERP.Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -624,10 +622,47 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("2702bcdd-104b-475d-14b5-08d70c357974"),
+                            Category = "Employee",
+                            ConcurrencyStamp = "23F4A768-BCF3-4BA4-8D20-CC3E4A9C333A",
+                            Description = "Просмотр списка",
+                            Name = "Employee.All",
+                            NormalizedName = "EMPLOYEE.ALL"
+                        },
+                        new
+                        {
+                            Id = new Guid("29ecf6ce-b82f-4fc5-ae01-08d70cf9f908"),
+                            Category = "Employee",
+                            ConcurrencyStamp = "B8EFD7E4-72E8-4110-96CC-A531AD35D9B4",
+                            Description = "Создание",
+                            Name = "Employee.Create",
+                            NormalizedName = "EMPLOYEE.CREATE"
+                        },
+                        new
+                        {
+                            Id = new Guid("a8eb0e97-eaaa-4976-ae02-08d70cf9f908"),
+                            Category = "Employee",
+                            ConcurrencyStamp = "98003B79-EE18-4D7F-B8A5-357E74E8F77A",
+                            Description = "Редактирование",
+                            Name = "Employee.Edit",
+                            NormalizedName = "EMPLOYEE.EDIT"
+                        },
+                        new
+                        {
+                            Id = new Guid("c5dbeaab-86a3-4400-b50a-08d70e6b40dc"),
+                            Category = "Employee",
+                            ConcurrencyStamp = "36271C6B-8972-4A69-90D0-D9921B6F90D3",
+                            Description = "Подробная информация",
+                            Name = "Employee.Details",
+                            NormalizedName = "EMPLOYEE.DETAILS"
+                        });
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.UsefulLink", b =>
@@ -736,8 +771,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.HasIndex("UserLockReasonId");
 

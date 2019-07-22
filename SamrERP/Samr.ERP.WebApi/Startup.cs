@@ -43,7 +43,7 @@ namespace Samr.ERP.WebApi
             #region Dependecy Injection
 
             services.AddDbContext<SamrDbContext>(options =>
-                options.UseSqlServer(
+                options.UseNpgsql(
                     Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Scoped);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<UserProvider>();
