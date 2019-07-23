@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -34,6 +35,7 @@ namespace Samr.ERP.WebApi.Infrastructure
         private readonly SignInManager<User> _signInManager;
         private readonly IOptions<AppSettings> _tokenSettings;
         private readonly IEmployeeService _employeeService;
+        private readonly UserManager<User> _userManager;
         private readonly IHttpContextAccessor _accessor;
         private readonly SigningCredentials _signingCredentials;
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
@@ -44,6 +46,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             SignInManager<User> signInManager,
             IOptions<AppSettings> tokenSettings,
             IEmployeeService employeeService,
+            UserManager<User> userManager,
             IHttpContextAccessor accessor
             )
         {
@@ -51,6 +54,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             _signInManager = signInManager;
             _tokenSettings = tokenSettings;
             _employeeService = employeeService;
+            _userManager = userManager;
             _accessor = accessor;
 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Value.Secret));
@@ -118,16 +122,18 @@ namespace Samr.ERP.WebApi.Infrastructure
             var employee = _employeeService.GetEmployeeInfo(user.Id);
 
             //TODO:Amir need to finish claims
-            var claim = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.PhoneNumber),
-                new Claim(ClaimTypes.Role, "Admin"),
                 new Claim("id", user.Id.ToString()),
                 new Claim("name", employee.Result.FullName),
                 new Claim("position", employee.Result.PositionName),
                 new Claim("photo",employee.Result.Photo),
             };
 
+            var roles = _userManager.GetRolesAsync(user).Result;
+
+            claims.AddRange(roles.Select(p => new Claim(ClaimTypes.Role, p)));
 
             //IdentityModelEventSource.ShowPII = true;
             var accessExpiration = remember ? _tokenSettings.Value.RememberMeExpiration : _tokenSettings.Value.AccessExpiration;
@@ -135,7 +141,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             var jwtToken = new JwtSecurityToken(
                 _tokenSettings.Value.Issuer,
                 _tokenSettings.Value.Audience,
-                claim,
+                claims,
                 expires: DateTime.UtcNow.AddMinutes(accessExpiration),
                 signingCredentials: _signingCredentials
             );

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -16,8 +14,6 @@ using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 
 namespace Samr.ERP.Core.Services
 {
@@ -72,25 +68,6 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        private IQueryable<AllEmployeeViewModel> GetAllEmployeeQuery(FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule)
-        {
-            var query = _unitOfWork.Employees
-                .GetDbSet()
-                .Include(p => p.CreatedUser)
-                .Include(p => p.Position)
-                .Include(p => p.Position.Department)
-                .Include(p => p.LockUser)
-                .Include(p => p.User)
-                .Where(e => e.EmployeeLockReasonId == null);
-
-            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
-
-            var queryVm = query.ProjectTo<AllEmployeeViewModel>();
-
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
-            return orderedQuery;
-        }
-
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
         {
             BaseDataResponse<GetEmployeeViewModel> dataResponse;
@@ -118,7 +95,22 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule)
         {
-            var orderedQuery = GetAllEmployeeQuery(filterEmployeeViewModel, sortRule);
+            var query = _unitOfWork.Employees
+                .GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(p => p.LockUser)
+                .Include(p => p.User)
+                .Where(e => e.EmployeeLockReasonId == null);
+
+
+            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
+
+            var queryVm = query.ProjectTo<AllEmployeeViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
+
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
@@ -380,28 +372,6 @@ namespace Samr.ERP.Core.Services
             var vm = _mapper.Map<EmployeeInfoTokenViewModel>(emp);
 
             return vm;
-        }
-
-        public async Task<IList<ExportExcelViewModel>> ExportToExcelAsync(FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule)
-        {
-            var query = _unitOfWork.Employees
-                .GetDbSet()
-                .Include(p => p.CreatedUser)
-                .Include(p => p.Position)
-                .Include(p => p.Position.Department)
-                .Include(p => p.LockUser)
-                .Include(p => p.User)
-                .Where(e => e.EmployeeLockReasonId == null);
-
-            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
-
-            var queryVm = query.ProjectTo<ExportExcelViewModel>();
-
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName );
-
-            var all = await orderedQuery.ToListAsync();
-
-            return _mapper.Map<IList<ExportExcelViewModel>>(all);
         }
     }
 }

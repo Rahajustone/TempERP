@@ -5,37 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190625095144_FixEmployeeEntity.cs" />
-    <Compile Remove="Migrations\20190625095329_FixGenderEntity.cs" />
-    <Compile Remove="Migrations\20190625100004_FixEployeeLockentity.cs" />
-    <Compile Remove="Migrations\20190625100021_FixEmployeeLockentity.cs" />
-    <Compile Remove="Migrations\20190625100703_FixNationalityEntity.cs" />
-    <Compile Remove="Migrations\20190625101434_FixPositionEntity.cs" />
-    <Compile Remove="Migrations\20190625103516_FixEntities.cs" />
-    <Compile Remove="Migrations\20190625125441_FixFKs.cs" />
-    <Compile Remove="Migrations\20190626121942_DepartmentRootIdNullable.cs" />
-    <Compile Remove="Migrations\20190627052728_ChangeEmployeeLockReasonName.cs" />
-    <Compile Remove="Migrations\20190627141100_Add_UserForEmployee.cs" />
-    <Compile Remove="Migrations\20190627153715_UserMIgration.cs" />
-    <Compile Remove="Migrations\20190628055522_ChangePositionToCreatableByUserBaseObject.cs" />
-    <Compile Remove="Migrations\20190628084132_FixEntities.cs" />
-    <Compile Remove="Migrations\20190628110015_AnnotionToEntities.cs" />
-    <Compile Remove="Migrations\20190629101813_EmployeeLockNUllabe.cs" />
-    <Compile Remove="Migrations\20190701105316_NewsCategoriesEntity.cs" />
-    <Compile Remove="Migrations\20190701105903_NewsCategoriesEntity.cs" />
-    <Compile Remove="Migrations\20190704144641_EmailSetting_MailPortRange.cs" />
-    <Compile Remove="Migrations\20190709050421_SeedDataToRussion.cs" />
-    <Compile Remove="Migrations\20190712065434_UsefulLinkCategory.cs" />
-    <Compile Remove="Migrations\20190715135043_handbook.cs" />
-    <Compile Remove="Migrations\20190715141532_handbook.cs" />
-    <Compile Remove="Migrations\20190716050609_AddSomeFieldsToHandbook.cs" />
-    <Compile Remove="Migrations\20190717121854_UserChagePaswordConfirmatioCOde.cs" />
+    <Compile Remove="Migrations2\**" />
+    <EmbeddedResource Remove="Migrations2\**" />
+    <None Remove="Migrations2\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
   </ItemGroup>
 
 </Project>
