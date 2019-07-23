@@ -5,15 +5,26 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations2\**" />
-    <EmbeddedResource Remove="Migrations2\**" />
-    <None Remove="Migrations2\**" />
+    <Compile Remove="Migrations1\**" />
+    <EmbeddedResource Remove="Migrations1\**" />
+    <None Remove="Migrations1\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20190722065053_CreateRoles.cs" />
+    <Compile Remove="Migrations\20190722065119_ff.cs" />
+    <Compile Remove="Migrations\20190722074759_CreateRoles.cs" />
+    <Compile Remove="Migrations\20190722074825_ss.cs" />
+    <Compile Remove="Migrations\20190722105801_roles.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Migrations1\SamrDbContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
   </ItemGroup>
 

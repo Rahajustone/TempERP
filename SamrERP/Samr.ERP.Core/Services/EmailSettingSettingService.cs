@@ -103,5 +103,9 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<EmailSettingViewModel>>
                 .Success(_unitOfWork.EmailSettings.GetAll().Select(p => _mapper.Map<EmailSettingViewModel>(p)));
         }
+
+
     }
+
+
 }
