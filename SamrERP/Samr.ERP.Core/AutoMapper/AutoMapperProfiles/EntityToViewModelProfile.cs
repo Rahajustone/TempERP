@@ -151,7 +151,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.HasAccount, src => src.MapFrom(
                     map => map.UserId.HasValue))
                 .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore()); ;
                         //map.FullName()));
 
             CreateMap<Employee, AllLockEmployeeViewModel>()
@@ -242,22 +242,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Position.Name ))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
-
-            CreateMap<Employee, ExportExcelViewModel>()
-                .ForMember(dst => dst.PositionName,
-                    src => src.MapFrom(
-                        map => map.Position.Name))
-                .ForMember(dst => dst.DepartmentName,
-                    src => src.MapFrom(
-                        map => map.Position.Department.Name))
-                .ForMember(dst => dst.FullName,
-                    src => src.MapFrom(
-                        map => map.LastName + " " + map.FirstName + " " + map.MiddleName))
-                .ForMember(dst => dst.HasAccount, src => src.MapFrom(
-                    map => map.UserId.HasValue ? "Да" : "Нет"))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
-                .ReverseMap();
             #endregion
 
             CreateMap<NewsViewModel, News>()
