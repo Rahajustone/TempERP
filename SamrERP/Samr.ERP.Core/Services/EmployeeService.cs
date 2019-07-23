@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -372,6 +373,27 @@ namespace Samr.ERP.Core.Services
             var vm = _mapper.Map<EmployeeInfoTokenViewModel>(emp);
 
             return vm;
+        }
+        public async Task<IList<ExportExcelViewModel>> ExportToExcelAsync(FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule)
+        {
+            var query = _unitOfWork.Employees
+                .GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(p => p.LockUser)
+                .Include(p => p.User)
+                .Where(e => e.EmployeeLockReasonId == null);
+
+            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
+
+            var queryVm = query.ProjectTo<ExportExcelViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName );
+
+            var all = await orderedQuery.ToListAsync();
+
+            return _mapper.Map<IList<ExportExcelViewModel>>(all);
         }
     }
 }

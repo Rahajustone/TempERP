@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
-using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -132,8 +130,49 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseResponse.Fail());
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportExcel([FromQuery]FilterEmployeeViewModel filterEmployeeViewModel, [FromQuery] SortRule sortRule)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("ФИО", typeof(string));
+            dataTable.Columns.Add("Подразделение", typeof(string));
+            dataTable.Columns.Add("Должность", typeof(string));
             dataTable.Columns.Add("Номер Телефона", typeof(string));
+            dataTable.Columns.Add("Эл. адрес", typeof(string));
             dataTable.Columns.Add("Пользователь", typeof(string));
+
+            var employees = await _employeeService.ExportToExcelAsync(filterEmployeeViewModel, sortRule);
+
+            foreach (var employee in employees)
+            {
+                var row = dataTable.NewRow();
+                row["ФИО"] = employee.FullName;
+                row["Подразделение"] = employee.DepartmentName;
+                row["Должность"] = employee.PositionName;
                 row["Номер Телефона"] = employee.Phone;
+                row["Эл. адрес"] = employee.Email;
+                row["Пользователь"] = employee.HasAccount;
+                dataTable.Rows.Add(row);
+            }
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Список_сотрудников");
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Right.Style = ExcelBorderStyle.Thin;
+
+                worksheet.Row(1).Style.Font.Bold = true;
+
+                for (var col = 1; col < dataTable.Columns.Count + 1; col++)
+                {
+                    worksheet.Column(col).AutoFit();
+                }
+
+                return File(package.GetAsByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Список_сотрудников.xlsx");
+            }
+        }
     }
 }
