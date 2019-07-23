@@ -147,9 +147,9 @@ namespace Samr.ERP.WebApi.Controllers
             dataTable.Columns.Add("ФИО", typeof(string));
             dataTable.Columns.Add("Подразделение", typeof(string));
             dataTable.Columns.Add("Должность", typeof(string));
-            dataTable.Columns.Add("номер телефона", typeof(string));
+            dataTable.Columns.Add("Номер Телефона", typeof(string));
             dataTable.Columns.Add("Эл. адрес", typeof(string));
-            dataTable.Columns.Add("Has User", typeof(string));
+            dataTable.Columns.Add("Пользователь", typeof(string));
 
             var employees = await _employeeService.ExportToExcelAsync(filterEmployeeViewModel, sortRule);
 
@@ -159,7 +159,7 @@ namespace Samr.ERP.WebApi.Controllers
                 row["ФИО"] = employee.FullName;
                 row["Подразделение"] = employee.DepartmentName;
                 row["Должность"] = employee.PositionName;
-                row["номер телефона"] = employee.Phone;
+                row["Номер Телефона"] = employee.Phone;
                 row["Эл. адрес"] = employee.Email;
                 row["Пользователь"] = employee.HasAccount;
                 dataTable.Rows.Add(row);

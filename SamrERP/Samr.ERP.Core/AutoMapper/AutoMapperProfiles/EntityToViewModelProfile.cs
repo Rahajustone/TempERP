@@ -147,7 +147,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.LastName + " " + map.FirstName + " " + map.MiddleName))
+                        map => $"{map.LastName} {map.FirstName} {map.MiddleName}"))
                 .ForMember(dst => dst.HasAccount, src => src.MapFrom(
                     map => map.UserId.HasValue))
                 .ReverseMap()
@@ -252,7 +252,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Position.Department.Name))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.LastName + " " + map.FirstName + " " + map.MiddleName))
+                        map => $"{map.LastName} {map.FirstName} {map.MiddleName}"))
                 .ForMember(dst => dst.HasAccount, src => src.MapFrom(
                     map => map.UserId.HasValue ? "Да" : "Нет"))
                 .ReverseMap()
