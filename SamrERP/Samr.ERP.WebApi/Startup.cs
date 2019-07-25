@@ -153,6 +153,7 @@ namespace Samr.ERP.WebApi
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod()
+                .WithExposedHeaders("Content-Disposition")
                 //.SetIsOriginAllowed((host) => true)
                 //.AllowCredentials()
             );
