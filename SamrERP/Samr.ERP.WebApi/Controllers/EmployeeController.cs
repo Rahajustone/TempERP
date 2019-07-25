@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Data;
+using System.IO;
 using System.Threading.Tasks;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -9,9 +12,11 @@ using OfficeOpenXml.Style;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
+using Samr.ERP.WebApi.Services;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -21,16 +26,24 @@ namespace Samr.ERP.WebApi.Controllers
     public class EmployeeController : ApiController
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IHtmlTemplateXService _htmlTemplateXService;
+        private readonly PdfConverterService _pdfConverterService;
 
-        public EmployeeController(IEmployeeService employeeService, IHostingEnvironment host)
+        public EmployeeController(
+            IEmployeeService employeeService,
+            IHtmlTemplateXService htmlTemplateXService,
+            PdfConverterService pdfConverterService,
+            IHostingEnvironment host)
         {
             _employeeService = employeeService;
+            _htmlTemplateXService = htmlTemplateXService;
+            _pdfConverterService = pdfConverterService;
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel,[FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel, [FromQuery] SortRule sortRule)
         {
-            var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel,sortRule);
+            var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel, sortRule);
             return Response(employee);
         }
 
@@ -45,9 +58,9 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<GetEmployeeViewModel>> Get(Guid id)
         {
-          
+
             var employee = await _employeeService.GetByIdAsync(id);
-       
+
             return Response(employee);
         }
 
@@ -56,9 +69,9 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                
-                var employeeResult =  await _employeeService.CreateAsync(editEmployeeViewModel);
-            
+
+                var employeeResult = await _employeeService.CreateAsync(editEmployeeViewModel);
+
                 return Response(employeeResult);
             }
 
@@ -174,5 +187,32 @@ namespace Samr.ERP.WebApi.Controllers
                 return File(package.GetAsByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Список_сотрудников.xlsx");
             }
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> DownloadEmployeeCard(Guid id)
+        {
+            var employeeCardViewModel = await _employeeService.GetEmployeeCardByIdAsync(id);
+            
+            if (employeeCardViewModel != null)
+            {
+                string photoPath = FileService.GetFullPath(employeeCardViewModel.PhotoPath);
+
+                employeeCardViewModel.PhotoPath = @"data:image/png;base64," +
+                                              Convert.ToBase64String(System.IO.File.ReadAllBytes(FileService.GetFullPath("sauron.jpg")));
+
+                var html = await _htmlTemplateXService.RenderTemplateAsync("Employee/EmployeeCardTemplate",
+                        employeeCardViewModel);
+
+
+                var pdfBytes = _pdfConverterService.ConvertToPdf(html);
+                return File(pdfBytes, "application/pdf", "employeeCard");
+               
+
+            }
+
+            return NotFound("employee not found");
+        }
+
+    
     }
 }

@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samr.ERP.WebApi", "Samr.ERP.WebApi\Samr.ERP.WebApi.csproj", "{BD6B019A-3CE3-4645-9772-25187ABA5C64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samr.ERP.Core", "Samr.ERP.Core\Samr.ERP.Core.csproj", "{CCCF6354-EC60-4D32-BA0C-D7309C20B550}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samr.ERP.Core", "Samr.ERP.Core\Samr.ERP.Core.csproj", "{CCCF6354-EC60-4D32-BA0C-D7309C20B550}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samr.ERP.Tests", "Samr.ERP.Tests\Samr.ERP.Tests.csproj", "{5D5BFFDE-3DB0-4FA9-8017-5D64E9F11342}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samr.ERP.Tests", "Samr.ERP.Tests\Samr.ERP.Tests.csproj", "{5D5BFFDE-3DB0-4FA9-8017-5D64E9F11342}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samr.ERP.Infrastructure", "Samr.ERP.Infrastructure\Samr.ERP.Infrastructure.csproj", "{3B952CCE-9DE0-4129-A481-9EFCFA3E7C78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samr.ERP.Infrastructure", "Samr.ERP.Infrastructure\Samr.ERP.Infrastructure.csproj", "{3B952CCE-9DE0-4129-A481-9EFCFA3E7C78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,11 +24,13 @@ using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Data.Helpers;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
+using Samr.ERP.WebApi.Configurations;
 using Samr.ERP.WebApi.Configurations.AutoMapper;
 using Samr.ERP.WebApi.Configurations.Models;
 using Samr.ERP.WebApi.Configurations.Swagger;
 using Samr.ERP.WebApi.Infrastructure;
 using Samr.ERP.WebApi.Middleware;
+using Samr.ERP.WebApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Samr.ERP.WebApi
@@ -46,6 +53,9 @@ namespace Samr.ERP.WebApi
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Scoped);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+            services.AddSingleton<PdfConverterService>();
+            services.AddScoped<IHtmlTemplateXService, HtmlTemplateXService>();
             services.AddScoped<UserProvider>();
             services.AddScoped<RepositoryFactories, RepositoryFactories>();
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
@@ -105,12 +115,16 @@ namespace Samr.ERP.WebApi
             });
 
             #endregion
-
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                options.ViewLocationExpanders.Add(new PdfTemplateLocationExpander());
+            });
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.Configure<ApiBehaviorOptions>(options =>
                 options.SuppressModelStateInvalidFilter = true
             );
+         
 
             services.AddAutoMapperSetup();
 
@@ -122,7 +136,7 @@ namespace Samr.ERP.WebApi
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             SetUpCulture();
-
+            LoadPdfNativeLib();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -157,6 +171,7 @@ namespace Samr.ERP.WebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+            
 
         }
 
@@ -167,6 +182,17 @@ namespace Samr.ERP.WebApi
             CultureInfo.CurrentUICulture = ruCulture;
             CultureInfo.DefaultThreadCurrentCulture = ruCulture;
             CultureInfo.DefaultThreadCurrentUICulture = ruCulture;
+        }
+
+        private void LoadPdfNativeLib()
+        {
+            var processSufix = "32bit";
+            if (Environment.Is64BitProcess && IntPtr.Size == 8)
+            {
+                processSufix = "64bit";
+            }
+            var context = new CustomAssemblyLoadContext();
+            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), $"NativeLibs\\{processSufix}\\libwkhtmltox.dll"));
         }
     }
 }

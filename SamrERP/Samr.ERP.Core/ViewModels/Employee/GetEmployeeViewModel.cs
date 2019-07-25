@@ -24,4 +24,9 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public Guid PositionId { get; set; }
 
     }
+
+    public class GetEmployeeCardTemplateViewModel:GetEmployeeViewModel
+    {
+        
+    }
 }
