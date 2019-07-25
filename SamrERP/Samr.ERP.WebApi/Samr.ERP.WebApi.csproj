@@ -43,6 +43,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="NativeLibs\32bit\libwkhtmltox.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="NativeLibs\64bit\libwkhtmltox.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="NativeLibs\libwkhtmltox32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
