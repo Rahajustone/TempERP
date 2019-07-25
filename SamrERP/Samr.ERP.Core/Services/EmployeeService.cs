@@ -73,14 +73,7 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<GetEmployeeViewModel> dataResponse;
 
-            var employee = await _unitOfWork.Employees.GetDbSet()
-                .Include(p => p.User)
-                .Include(p => p.CreatedUser)
-                .Include(p => p.Position)
-                .Include(p => p.Position.Department)
-                .Include(p => p.Gender)
-                .Include(p => p.EmployeeLockReason)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var employee = await EmployeeById(id);
 
             if (employee == null)
             {
@@ -92,6 +85,27 @@ namespace Samr.ERP.Core.Services
             }
 
             return dataResponse;
+        }
+
+        public async Task<GetEmployeeCardTemplateViewModel> GetEmployeeCardByIdAsync(Guid id)
+        {
+            var employee = await EmployeeById(id);
+
+
+            return _mapper.Map<GetEmployeeCardTemplateViewModel>(employee);
+        }
+
+        private async Task<Employee> EmployeeById(Guid id)
+        {
+            var employee = await _unitOfWork.Employees.GetDbSet()
+                .Include(p => p.User)
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(p => p.Gender)
+                .Include(p => p.EmployeeLockReason)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            return employee;
         }
 
         public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule)

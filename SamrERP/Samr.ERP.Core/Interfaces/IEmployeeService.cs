@@ -35,5 +35,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseResponse> EditPassportDataAsync(EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel);
         Task<EmployeeInfoTokenViewModel> GetEmployeeInfo(Guid userId);
         Task<IList<ExportExcelViewModel>> ExportToExcelAsync(FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
+        Task<GetEmployeeCardTemplateViewModel> GetEmployeeCardByIdAsync(Guid id);
     }
 }
