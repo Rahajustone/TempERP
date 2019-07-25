@@ -1,19 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data;
+using System.IO;
 using System.Threading.Tasks;
-using AutoMapper;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
+using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
-using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.WebApi.Services;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -23,16 +26,24 @@ namespace Samr.ERP.WebApi.Controllers
     public class EmployeeController : ApiController
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IHtmlTemplateXService _htmlTemplateXService;
+        private readonly PdfConverterService _pdfConverterService;
 
-        public EmployeeController(IEmployeeService employeeService, IHostingEnvironment host)
+        public EmployeeController(
+            IEmployeeService employeeService,
+            IHtmlTemplateXService htmlTemplateXService,
+            PdfConverterService pdfConverterService,
+            IHostingEnvironment host)
         {
             _employeeService = employeeService;
+            _htmlTemplateXService = htmlTemplateXService;
+            _pdfConverterService = pdfConverterService;
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel,[FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel, [FromQuery] SortRule sortRule)
         {
-            var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel,sortRule);
+            var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel, sortRule);
             return Response(employee);
         }
 
@@ -47,9 +58,9 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<GetEmployeeViewModel>> Get(Guid id)
         {
-          
+
             var employee = await _employeeService.GetByIdAsync(id);
-       
+
             return Response(employee);
         }
 
@@ -58,9 +69,9 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                
-                var employeeResult =  await _employeeService.CreateAsync(editEmployeeViewModel);
-            
+
+                var employeeResult = await _employeeService.CreateAsync(editEmployeeViewModel);
+
                 return Response(employeeResult);
             }
 
@@ -132,5 +143,76 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseResponse.Fail());
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportExcel([FromQuery]FilterEmployeeViewModel filterEmployeeViewModel, [FromQuery] SortRule sortRule)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("ФИО", typeof(string));
+            dataTable.Columns.Add("Подразделение", typeof(string));
+            dataTable.Columns.Add("Должность", typeof(string));
+            dataTable.Columns.Add("Номер Телефона", typeof(string));
+            dataTable.Columns.Add("Эл. адрес", typeof(string));
+            dataTable.Columns.Add("Пользователь", typeof(string));
+
+            var employees = await _employeeService.ExportToExcelAsync(filterEmployeeViewModel, sortRule);
+
+            foreach (var employee in employees)
+            {
+                var row = dataTable.NewRow();
+                row["ФИО"] = employee.FullName;
+                row["Подразделение"] = employee.DepartmentName;
+                row["Должность"] = employee.PositionName;
+                row["Номер Телефона"] = employee.Phone;
+                row["Эл. адрес"] = employee.Email;
+                row["Пользователь"] = employee.HasAccount;
+                dataTable.Rows.Add(row);
+            }
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Список_сотрудников");
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells["A1"].LoadFromDataTable(dataTable, PrintHeaders: true).Style.Border.Right.Style = ExcelBorderStyle.Thin;
+
+                worksheet.Row(1).Style.Font.Bold = true;
+
+                for (var col = 1; col < dataTable.Columns.Count + 1; col++)
+                {
+                    worksheet.Column(col).AutoFit();
+                }
+
+                return File(package.GetAsByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Список_сотрудников.xlsx");
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> DownloadEmployeeCard(Guid id)
+        {
+            var employeeCardViewModel = await _employeeService.GetEmployeeCardByIdAsync(id);
+            
+            if (employeeCardViewModel != null)
+            {
+                string photoPath = FileService.GetFullPath(employeeCardViewModel.PhotoPath);
+
+                employeeCardViewModel.PhotoPath = @"data:image/png;base64," +
+                                              Convert.ToBase64String(System.IO.File.ReadAllBytes(FileService.GetFullPath("sauron.jpg")));
+
+                var html = await _htmlTemplateXService.RenderTemplateAsync("Employee/EmployeeCardTemplate",
+                        employeeCardViewModel);
+
+
+                var pdfBytes = _pdfConverterService.ConvertToPdf(html);
+                return File(pdfBytes, "application/pdf", "employeeCard");
+               
+
+            }
+
+            return NotFound("employee not found");
+        }
+
+    
     }
 }
