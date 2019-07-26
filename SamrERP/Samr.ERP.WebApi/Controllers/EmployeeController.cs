@@ -197,8 +197,8 @@ namespace Samr.ERP.WebApi.Controllers
             {
                 string photoPath = FileService.GetFullPath(employeeCardViewModel.PhotoPath);
 
-                employeeCardViewModel.PhotoPath = @"data:image/png;base64," +
-                                              Convert.ToBase64String(System.IO.File.ReadAllBytes(FileService.GetFullPath("sauron.jpg")));
+                //employeeCardViewModel.PhotoPath = @"data:image/png;base64," +
+                //                              Convert.ToBase64String(System.IO.File.ReadAllBytes(FileService.GetFullPath("sauron.jpg")));
 
                 var html = await _htmlTemplateXService.RenderTemplateAsync("Employee/EmployeeCardTemplate",
                         employeeCardViewModel);
