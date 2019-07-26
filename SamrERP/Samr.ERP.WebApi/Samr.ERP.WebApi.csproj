@@ -6,6 +6,10 @@
     <UserSecretsId>e42d695e-0ec9-4075-b49d-d7f13946ba6d</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="ViewModels\Account\**" />
     <Compile Remove="wwwroot\**" />
@@ -44,10 +48,10 @@
 
   <ItemGroup>
     <None Update="NativeLibs\32bit\libwkhtmltox.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="NativeLibs\64bit\libwkhtmltox.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="NativeLibs\libwkhtmltox32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
