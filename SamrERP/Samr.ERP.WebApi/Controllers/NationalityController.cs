@@ -37,7 +37,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItems()
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListItem()
         {
             var listItems = await _nationalityService.GetAllListItemAsync();
 

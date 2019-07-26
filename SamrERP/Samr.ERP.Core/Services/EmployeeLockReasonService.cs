@@ -92,19 +92,19 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EditEmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<EmployeeLockReasonViewModel>();
+            var queryVm = query.ProjectTo<EditEmployeeLockReasonViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EmployeeLockReasonViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<EditEmployeeLockReasonViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)

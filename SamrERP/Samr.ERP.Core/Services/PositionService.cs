@@ -78,19 +78,19 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.Department);
         }
 
-        public async Task<BaseDataResponse<PagedList<PositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetAllQuery();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<PositionViewModel>();
+            var queryVm = query.ProjectTo<EditPositionViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<PositionViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<EditPositionViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id)
