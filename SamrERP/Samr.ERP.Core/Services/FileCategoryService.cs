@@ -70,19 +70,19 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(existsFileCategory));
         }
 
-        public async Task<BaseDataResponse<PagedList<FileCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EditFileCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQuery();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<FileCategoryViewModel>();
+            var queryVm = query.ProjectTo<EditFileCategoryViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<FileCategoryViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<EditFileCategoryViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()

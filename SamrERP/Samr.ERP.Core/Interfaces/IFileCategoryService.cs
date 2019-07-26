@@ -14,7 +14,7 @@ namespace Samr.ERP.Core.Interfaces
     public interface IFileCategoryService
     {
         Task<BaseDataResponse<EditFileCategoryViewModel>> GetByIdAsync(Guid id);
-        Task<BaseDataResponse<PagedList<FileCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
+        Task<BaseDataResponse<PagedList<EditFileCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
         Task<BaseDataResponse<EditFileCategoryViewModel>> CreateAsync(EditFileCategoryViewModel fileCategoryViewModel);
         Task<BaseDataResponse<EditFileCategoryViewModel>> EditAsync(EditFileCategoryViewModel editFileCategoryViewModel);
