@@ -17,7 +17,7 @@ using AuthenticateResult = Samr.ERP.WebApi.Models.AuthenticateResult;
 
 namespace Samr.ERP.WebApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     //[EnableCors("AllowOrigin")]
     [ApiController]
     [Route("api/[controller]/[action]")]
@@ -71,7 +71,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         public async Task<BaseDataResponse<AuthenticateResult>> Login([FromBody] LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -86,6 +86,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost()]
+        [AllowAnonymous]
         public async Task<BaseDataResponse<AuthenticateResult>> RefreshToken([FromBody] ExchangeRefreshToken model)
         {
             if (ModelState.IsValid)
