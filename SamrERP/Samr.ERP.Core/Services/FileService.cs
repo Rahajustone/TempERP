@@ -21,6 +21,7 @@ namespace Samr.ERP.Core.Services
 {
     public class FileService : IFileService
     {
+        private const string ApiBaseUrl = "https://51.145.98.38";
         private readonly IUnitOfWork _unitOfWork;
         private static string _filesPath;
         private static readonly int _resizeSize = 150;
@@ -115,14 +116,15 @@ namespace Samr.ERP.Core.Services
         public static string GetDownloadAction(string path)
         {
             if (string.IsNullOrEmpty(path)) return String.Empty;
-            return "https://samr-dev.azurewebsites.net/api/files/getphoto?path=" + path;
+
+            return ApiBaseUrl + "/api/files/getphoto?path=" + path;
         }
 
         public static string GetFileArchivePath(string path)
         {
             if (string.IsNullOrEmpty(path)) return String.Empty;
 
-            return "https://samr-dev.azurewebsites.net/api/files/GetArchiveFile?path=" + path;
+            return ApiBaseUrl + "/api/files/GetArchiveFile?path=" + path;
         }
 
         public async Task<string> GetFileShortDescription(string path)
