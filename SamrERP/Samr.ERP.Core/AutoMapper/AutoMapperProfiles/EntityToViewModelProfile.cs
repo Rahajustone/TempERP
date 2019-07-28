@@ -183,7 +183,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Employee, GetEmployeeViewModel>()
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => map.FullName()))
+                        map => $"{map.LastName} {map.FirstName} {map.MiddleName}" ))
+                .ForMember(dst => dst.MiddleName,
+                src => src.MapFrom(
+                        map => $"{ map.MiddleName }" ))
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))

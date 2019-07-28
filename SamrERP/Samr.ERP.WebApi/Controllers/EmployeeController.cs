@@ -58,7 +58,6 @@ namespace Samr.ERP.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<GetEmployeeViewModel>> Get(Guid id)
         {
-
             var employee = await _employeeService.GetByIdAsync(id);
 
             return Response(employee);
