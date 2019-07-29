@@ -82,7 +82,7 @@ public async Task SendEmailAsync(string email, string subject, string message)
 
     using (var client = new SmtpClient())
     {
-        await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, false);
+        await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, _emailSetting.EnabledSSL);
         await client.AuthenticateAsync(_emailSetting.Sender, _emailSetting.Password);
         await client.SendAsync(emailMessage);
 
