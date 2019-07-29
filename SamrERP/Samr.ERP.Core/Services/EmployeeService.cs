@@ -120,7 +120,7 @@ namespace Samr.ERP.Core.Services
                 .Where(e => e.EmployeeLockReasonId == null);
 
 
-            query = FilterEmployeesQuery(filterEmployeeViewModel, query);
+            query = FilterEmployeesQuery(filterEmployeeViewModel, query.AsNoTracking());
 
             var queryVm = query.ProjectTo<AllEmployeeViewModel>();
 
