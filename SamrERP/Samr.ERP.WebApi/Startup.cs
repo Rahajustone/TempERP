@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -28,6 +29,7 @@ using Samr.ERP.WebApi.Configurations;
 using Samr.ERP.WebApi.Configurations.AutoMapper;
 using Samr.ERP.WebApi.Configurations.Models;
 using Samr.ERP.WebApi.Configurations.Swagger;
+using Samr.ERP.WebApi.Hub;
 using Samr.ERP.WebApi.Infrastructure;
 using Samr.ERP.WebApi.Middleware;
 using Samr.ERP.WebApi.Services;
@@ -80,6 +82,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IHandbookService, HandbookService>();
             services.AddScoped<IFileCategoryService, FileCategoryService>();
             services.AddScoped<IFileArchiveService, FileArchiveService>();
+            services.AddScoped<INotificationService, NotificationService>();
 
             #endregion
 
@@ -124,7 +127,8 @@ namespace Samr.ERP.WebApi
             services.Configure<ApiBehaviorOptions>(options =>
                 options.SuppressModelStateInvalidFilter = true
             );
-         
+
+            services.AddSignalR();
 
             services.AddAutoMapperSetup();
 
@@ -171,7 +175,13 @@ namespace Samr.ERP.WebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<NotificationHub>("/ReceiveMessage");
+            });
+
+            //NotificationService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
 
         }
 

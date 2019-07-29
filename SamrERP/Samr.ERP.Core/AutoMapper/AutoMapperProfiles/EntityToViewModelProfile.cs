@@ -17,6 +17,7 @@ using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Core.ViewModels.News;
+using Samr.ERP.Core.ViewModels.Notification;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
@@ -114,6 +115,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
+                .ForMember( dst => dst.DepartmentName, 
+                    src => src.MapFrom( 
+                        map => map.Department.Name))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
 
@@ -348,6 +352,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<FileCategory, FileArchiveViewModel>()
                 .ReverseMap();
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
+
+            CreateMap<NotificationSystemViewModel, Notification>().ReverseMap();
         }
     }
 }
