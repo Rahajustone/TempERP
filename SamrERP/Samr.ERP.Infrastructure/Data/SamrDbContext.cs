@@ -37,6 +37,8 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<Handbook> Handbooks { get; set; }
         public DbSet<FileCategory> FileCategories { get; set; }
         public DbSet<FileArchive> FileArchives { get; set; }
+        public DbSet<NotificationType> NotificationTypes { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
 
 

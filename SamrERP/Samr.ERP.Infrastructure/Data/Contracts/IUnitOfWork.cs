@@ -32,6 +32,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<RefreshToken> RefreshTokens { get; }
         IRepository<FileCategory> FileCategories { get; }
         IRepository<FileArchive> FileArchives { get; }
-
+        IRepository<NotificationType> NotificationTypes { get; }
+        IRepository<Notification> Notifications { get; }
     }
 }
