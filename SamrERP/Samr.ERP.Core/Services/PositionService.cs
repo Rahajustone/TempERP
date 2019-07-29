@@ -37,16 +37,21 @@ namespace Samr.ERP.Core.Services
             return _unitOfWork.Positions.GetDbSet().Include(p => p.CreatedUser);
         }
 
-        private IQueryable<Position> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Position> query)
+        private IQueryable<Position> FilterQuery(FilterPositionViewModel filterPosition, IQueryable<Position> query)
         {
-            if (filterHandbook.Name != null)
+            if (filterPosition.Name != null)
             {
-                query = query.Where(n => EF.Functions.Like(n.Name, "%" + filterHandbook.Name + "%"));
+                query = query.Where(n => EF.Functions.Like(n.Name, "%" + filterPosition.Name + "%"));
             }
 
-            if (filterHandbook.OnlyActive)
+            if (filterPosition.OnlyActive)
             {
                 query = query.Where(n => n.IsActive);
+            }
+
+            if (filterPosition.DepartmentId != null)
+            {
+                query = query.Where(n => n.DepartmentId == filterPosition.DepartmentId);
             }
 
             return query;
@@ -78,11 +83,11 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.Department);
         }
 
-        public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterPositionViewModel filterPosition, SortRule sortRule)
         {
             var query = GetAllQuery();
 
-            query = FilterQuery(filterHandbook, query);
+            query = FilterQuery(filterPosition, query);
 
             var queryVm = query.ProjectTo<EditPositionViewModel>();
 
