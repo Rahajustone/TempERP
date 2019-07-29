@@ -22,7 +22,7 @@ namespace Samr.ERP.WebApi.Hub
         }
         public async Task SendMessage(string user, string message)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            await Clients.All.SendAsync("SendMessage", user, message);
         }
     }
 }
