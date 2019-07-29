@@ -12,6 +12,10 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\20190727112503_testfc.cs" />
+    <Compile Remove="Migrations\20190729054759_Notifation.cs" />
+    <Compile Remove="Migrations\20190729054939_Notifation2.cs" />
+    <Compile Remove="Migrations\20190729055425_Notifation.cs" />
+    <Compile Remove="Migrations\20190729060047_Notifation22.cs" />
   </ItemGroup>
 
   <ItemGroup>

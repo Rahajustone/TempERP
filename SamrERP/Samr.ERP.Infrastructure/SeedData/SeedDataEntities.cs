@@ -13,7 +13,7 @@ namespace Samr.ERP.Infrastructure.SeedData
         {
             AddGenders(builder);
             AddHandbook(builder);
-            AddRoles(builder);
+            //AddRoles(builder);
             
         }
 
