@@ -19,14 +19,10 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public bool IsLocked { get; set; }
         public string EmployeeLockReasonName { get; set; }
         public DateTime? LockDate { get; set; }
+        public string LockUserFullName { get; set; }
         public Guid GenderId { get; set; }
         public Guid DepartmentId { get; set; }
         public Guid PositionId { get; set; }
 
-    }
-
-    public class GetEmployeeCardTemplateViewModel:GetEmployeeViewModel
-    {
-        
     }
 }

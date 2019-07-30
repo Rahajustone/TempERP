@@ -15,6 +15,7 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly RoleManager<Role> _roleManager;
+        private readonly ActiveUserTokenService _activeUserTokenService;
 
         public RoleService(
             IUnitOfWork unitOfWork,
@@ -39,8 +40,7 @@ namespace Samr.ERP.Core.Services
                 ? BaseResponse.Fail(roleAddResult.Errors.ToErrorModels())
                 : BaseResponse.Success();
         }
-
-
+        
 
     }
 }

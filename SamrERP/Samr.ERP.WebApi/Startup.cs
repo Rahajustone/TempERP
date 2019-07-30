@@ -63,6 +63,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IActiveUserTokenService, ActiveUserTokenService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
@@ -122,14 +123,24 @@ namespace Samr.ERP.WebApi
             {
                 options.ViewLocationExpanders.Add(new PdfTemplateLocationExpander());
             });
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .AllowAnyOrigin()
+                    .WithOrigins("http://localhost:4200")
+                    .WithExposedHeaders("Content-Disposition");
+            }));
+            services.AddSignalR();
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.Configure<ApiBehaviorOptions>(options =>
                 options.SuppressModelStateInvalidFilter = true
             );
-
-            services.AddSignalR();
-
+         
             services.AddAutoMapperSetup();
 
             services.AddSwaggerDocumentation();
@@ -153,22 +164,30 @@ namespace Samr.ERP.WebApi
 
             //app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
             //app.UseCors(options => options.WithOrigins("https://localhost:4200"));
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .WithExposedHeaders("Content-Disposition")
-                //.SetIsOriginAllowed((host) => true)
-                //.AllowCredentials()
-            );
+
+            app.UseCors("CorsPolicy");
+            //app.UseCors(builder => builder
+            //    .AllowAnyOrigin()
+            //    .AllowCredentials()
+            //    .AllowAnyHeader()
+            //    .AllowAnyMethod()
+            //    .SetIsOriginAllowed(_ => true)
+            //    .WithExposedHeaders("Content-Disposition")
+            ////.SetIsOriginAllowed((host) => true)
+            //);
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseAuthentication();
           
             app.UseMiddleware<UserMiddleware>();
+            app.UseMiddleware<TokenManagerMiddleware>();
 
             app.UseSwaggerDocumentation();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<NotificationHub>("/ReceiveMessage");
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -176,10 +195,7 @@ namespace Samr.ERP.WebApi
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<NotificationHub>("/ReceiveMessage");
-            });
+           
 
             //NotificationService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
 

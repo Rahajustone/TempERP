@@ -21,7 +21,7 @@ using Samr.ERP.WebApi.Services;
 namespace Samr.ERP.WebApi.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [Authorize]
+    [Authorize()]
     [ApiController]
     public class EmployeeController : ApiController
     {
@@ -41,6 +41,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.EmployeeAll)]
         public async Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel, [FromQuery] SortRule sortRule)
         {
             var employee = await _employeeService.AllAsync(pagingOptions, filterEmployeeViewModel, sortRule);
@@ -48,6 +49,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.EmployeeAll)]
         public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> AllLockedEmployees([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel)
         {
             var employee = await _employeeService.GetAllLockedEmployeeAsync(pagingOptions, filterEmployeeViewModel);
@@ -56,6 +58,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = Roles.EmployeeDetails)]
         public async Task<BaseDataResponse<GetEmployeeViewModel>> Get(Guid id)
         {
             var employee = await _employeeService.GetByIdAsync(id);
@@ -64,6 +67,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.EmployeeCreate)]
         public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromForm] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)
@@ -79,6 +83,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseDataResponse<EditEmployeeViewModel>> Edit(
             [FromForm] EditEmployeeViewModel editEmployeeViewModel)
         {
@@ -92,6 +97,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseDataResponse<UserViewModel>> CreateUser([FromBody] Guid employeeId)
         {
             var createdUserResponse = await _employeeService.CreateUserForEmployee(employeeId);
@@ -100,6 +106,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseResponse> LockEmployee([FromBody] LockEmployeeViewModel lockEmployeeViewModel)
         {
             if (ModelState.IsValid)
@@ -111,6 +118,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost("{id}")]
+        [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseResponse> UnlockEmployee(Guid id)
         {
             if (ModelState.IsValid)
@@ -122,6 +130,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = Roles.EmployeeDetails)]
         public async Task<BaseDataResponse<GetPassportDataEmployeeViewModel>> GetPassportData(Guid id)
         {
             var passportData = await _employeeService.GetPassportDataAsync(id);
@@ -130,6 +139,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseResponse> EditPassportData([FromForm]
             EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
         {
@@ -144,6 +154,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.EmployeeAll)]
         public async Task<IActionResult> ExportExcel([FromQuery]FilterEmployeeViewModel filterEmployeeViewModel, [FromQuery] SortRule sortRule)
         {
             var dataTable = new DataTable();
@@ -188,10 +199,11 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = Roles.EmployeeDetails)]
         public async Task<IActionResult> DownloadEmployeeCard(Guid id)
         {
             var employeeCardViewModel = await _employeeService.GetEmployeeCardByIdAsync(id);
-            
+
             if (employeeCardViewModel != null)
             {
                 string photoPath = FileService.GetFullPath(employeeCardViewModel.PhotoPath);
@@ -205,13 +217,13 @@ namespace Samr.ERP.WebApi.Controllers
 
                 var pdfBytes = _pdfConverterService.ConvertToPdf(html);
                 return File(pdfBytes, "application/pdf", "employeeCard");
-               
+
 
             }
 
             return NotFound("employee not found");
         }
 
-    
+
     }
 }

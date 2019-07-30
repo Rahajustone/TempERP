@@ -19,6 +19,7 @@ using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Extensions;
 
 namespace Samr.ERP.Core.Services
 {

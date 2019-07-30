@@ -16,6 +16,9 @@
     <Compile Remove="Migrations\20190729054939_Notifation2.cs" />
     <Compile Remove="Migrations\20190729055425_Notifation.cs" />
     <Compile Remove="Migrations\20190729060047_Notifation22.cs" />
+    <Compile Remove="Migrations\20190730132400_SystemUserSeed.cs" />
+    <Compile Remove="Migrations\20190730132415_SystemUserSeed2.cs" />
+    <Compile Remove="Migrations\20190730135232_SystemUserSeed2.cs" />
   </ItemGroup>
 
   <ItemGroup>

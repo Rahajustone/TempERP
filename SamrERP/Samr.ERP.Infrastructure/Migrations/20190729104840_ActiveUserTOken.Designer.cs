@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190729104840_ActiveUserTOken")]
+    partial class ActiveUserTOken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -757,9 +759,9 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<DateTime?>("LockDate");
+                    b.Property<bool>("IsActive");
 
-                    b.Property<Guid?>("LockUserId");
+                    b.Property<DateTime?>("LockDate");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -788,8 +790,6 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LockUserId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
@@ -801,22 +801,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasIndex("UserLockReasonId");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "9132A248-C5F8-4B01-91FB-9AF3777FCA48",
-                            Email = "migdev@mig.tj",
-                            EmailConfirmed = false,
-                            LockoutEnabled = false,
-                            NormalizedUserName = "000000000",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOvH5DQ4ttSuk1j8EVrg4uyxzHJGcnZbuhkdRvuppk2ttPByA/FjKpVcrA001HW68w==",
-                            PhoneNumberConfirmed = false,
-                            TwoFactorEnabled = false,
-                            UserName = "000000000"
-                        });
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.UserLockReason", b =>
@@ -838,15 +822,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasIndex("CreatedUserId");
 
                     b.ToTable("UserLockReasons");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                            IsActive = false
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1084,10 +1059,6 @@ namespace Samr.ERP.Infrastructure.Migrations
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.User", b =>
                 {
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "LockUser")
-                        .WithMany()
-                        .HasForeignKey("LockUserId");
-
                     b.HasOne("Samr.ERP.Infrastructure.Entities.UserLockReason", "UserLockReason")
                         .WithMany()
                         .HasForeignKey("UserLockReasonId");

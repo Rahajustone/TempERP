@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.WebApi.Hub;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -13,10 +15,12 @@ namespace Samr.ERP.WebApi.Controllers
     public class HideInfoController : ControllerBase
     {
         private readonly IFileService _fileService;
+        private readonly IHubContext<NotificationHub> _hub;
 
-        public HideInfoController(IFileService fileService)
+        public HideInfoController(IFileService fileService, IHubContext<NotificationHub> hub)
         {
             _fileService = fileService;
+            _hub = hub;
         }
         [HttpGet]
         public ActionResult<IEnumerable<string>> SecretInfo()
@@ -49,9 +53,12 @@ namespace Samr.ERP.WebApi.Controllers
             return 0;
         }
 
-        //[HttpGet]
-        //public ActionResult
+        [HttpGet]
+        public IActionResult Get()
+        {
+            var timerManager = _hub.Clients.All.SendAsync("transferchartdata", "message recieve");
+
+            return Ok(new { Message = "Request Completed" });
+        }
     }
-    
-    
 }
