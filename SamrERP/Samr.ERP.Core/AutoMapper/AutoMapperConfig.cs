@@ -9,14 +9,17 @@ namespace Samr.ERP.Core.AutoMapper
     {
         public static MapperConfiguration RegisterMappings()
         {
-            Action<IMapperConfigurationExpression> expressionConfig = cfg =>
+            void ExpressionConfig(IMapperConfigurationExpression cfg)
             {
                 cfg.AddProfile(new EntityToViewModelProfile());
-            };
-            var mapperConfiguration = new MapperConfiguration(expressionConfig);
+            }
+
+            var mapperConfiguration = new MapperConfiguration((Action<IMapperConfigurationExpression>) ExpressionConfig);
 
             //TODO надо получить instance через service
-            Mapper.Initialize(expressionConfig);
+#pragma warning disable 618
+            Mapper.Initialize((Action<IMapperConfigurationExpression>) ExpressionConfig);
+#pragma warning restore 618
             return mapperConfiguration;
         }
 

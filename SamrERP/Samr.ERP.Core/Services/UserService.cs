@@ -281,6 +281,14 @@ namespace Samr.ERP.Core.Services
 
         }
 
+        public async Task ClearUserRefreshToken(Guid userId)
+        {
+            _unitOfWork.RefreshTokens.GetDbSet()
+                .RemoveRange(_unitOfWork.RefreshTokens.All().Where(p=>p.UserId == userId));
+
+            await _unitOfWork.CommitAsync();
+        }
+
         public async Task<BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>> GetUserRolesAsync(Guid id)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);

@@ -174,7 +174,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         public bool Exists(Guid id)
         {
-            return Exists(id);
+            return ExistsAsync(id).Result;
         }
 
         public bool Any(Expression<Func<T, bool>> predicate)

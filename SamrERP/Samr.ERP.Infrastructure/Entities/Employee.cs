@@ -55,16 +55,13 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [StringLength(256)]
         public string FactualAddress { get; set; }
-
-        // TODO
+ 
         public DateTime? LockDate { get; set; }
 
-        // TODO
         public Guid? EmployeeLockReasonId { get; set; }
         [ForeignKey(nameof(EmployeeLockReasonId))]
         public EmployeeLockReason EmployeeLockReason { get; set; }
-
-        // TODO
+       
         public Guid? LockUserId { get; set; }
         [ForeignKey(nameof(LockUserId))]
         public User LockUser { get; set; }

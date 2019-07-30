@@ -66,6 +66,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IActiveUserTokenService, ActiveUserTokenService>();
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IEmployeeLockReasonService, EmployeeLockReasonService>();
@@ -180,6 +181,7 @@ namespace Samr.ERP.WebApi
             app.UseAuthentication();
           
             app.UseMiddleware<UserMiddleware>();
+            app.UseMiddleware<TokenManagerMiddleware>();
 
             app.UseSwaggerDocumentation();
             app.UseSignalR(routes =>

@@ -34,5 +34,6 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<FileArchive> FileArchives { get; }
         IRepository<NotificationType> NotificationTypes { get; }
         IRepository<Notification> Notifications { get; }
+        IRepository<ActiveUserToken> ActiveUserTokens { get; }
     }
 }

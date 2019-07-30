@@ -36,6 +36,7 @@ namespace Samr.ERP.WebApi.Infrastructure
         private readonly IOptions<AppSettings> _tokenSettings;
         private readonly IEmployeeService _employeeService;
         private readonly UserManager<User> _userManager;
+        private readonly IActiveUserTokenService _activeUserTokenService;
         private readonly IHttpContextAccessor _accessor;
         private readonly SigningCredentials _signingCredentials;
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
@@ -47,6 +48,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             IOptions<AppSettings> tokenSettings,
             IEmployeeService employeeService,
             UserManager<User> userManager,
+            IActiveUserTokenService activeUserTokenService,
             IHttpContextAccessor accessor
             )
         {
@@ -55,6 +57,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             _tokenSettings = tokenSettings;
             _employeeService = employeeService;
             _userManager = userManager;
+            _activeUserTokenService = activeUserTokenService;
             _accessor = accessor;
 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenSettings.Value.Secret));
@@ -77,27 +80,35 @@ namespace Samr.ERP.WebApi.Infrastructure
             var token = GetJwtTokenForUser(user, loginModel.RememberMe);
 
             var refreshToken = GenerateTokenByRandomNumber();
-            await _userService.AddRefreshToken(refreshToken, user.Id, _accessor.HttpContext.Connection.RemoteIpAddress?.ToString()); // add the new one
+            var remoteIpAddress = _accessor.HttpContext.Connection.RemoteIpAddress?.ToString();
+            await _userService.ClearUserRefreshToken(user.Id);
+            await _userService.AddRefreshToken(refreshToken, user.Id, remoteIpAddress); // add the new one
+            await _activeUserTokenService.AddOrRefreshUserToken(user.Id, token);
+
             return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(token, refreshToken));
         }
 
         public async Task<BaseDataResponse<AuthenticateResult>> RefreshTokenAsync(ExchangeRefreshToken model)
         {
             var userPrincipal = GetPrincipalFromToken(model.AccessToken);
-
+            var tokenActive = await _activeUserTokenService.TokenActive(model.AccessToken);
             // invalid token/signing key was passed and we can't extract user claims
-            if (userPrincipal != null)
+            if (userPrincipal != null && tokenActive)
             {
                 var userId = Guid.Parse(userPrincipal.Claims.First(c => c.Type == "id").Value);
-                if (_userService.HasUserValidRefreshToken(userId, model.RefreshToken, _accessor.HttpContext.Connection.RemoteIpAddress?.ToString()))
+                var ipAddress = _accessor.HttpContext.Connection.RemoteIpAddress?.ToString();
+                if (_userService.HasUserValidRefreshToken(userId, model.RefreshToken, ipAddress))
                 {
                     var user = await _userService.GetUserAsync(userPrincipal);
                     var jwtToken = GetJwtTokenForUser(user);
 
-                    await _userService.RemoveRefreshToken(userId, model.RefreshToken); // delete the token we've exchanged
+                    await _userService.ClearUserRefreshToken(user.Id);
+                    //await _userService.RemoveRefreshToken(userId, model.RefreshToken); // delete the token we've exchanged
 
+                    //TODO Refactor
                     var refreshToken = GenerateTokenByRandomNumber();
                     await _userService.AddRefreshToken(refreshToken, userId, _accessor.HttpContext.Connection.RemoteIpAddress?.ToString()); // add the new one
+                    await _activeUserTokenService.AddOrRefreshUserToken(user.Id, jwtToken);
 
                     return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(jwtToken, refreshToken));
 
