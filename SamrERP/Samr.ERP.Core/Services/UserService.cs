@@ -33,7 +33,7 @@ namespace Samr.ERP.Core.Services
             UserManager<User> userManager,
             IEmailSender emailSender,
             UserProvider userProvider,
-            ActiveUserTokenService activeUserTokenService,
+            IActiveUserTokenService activeUserTokenService,
             IMapper mapper
             )
         {
