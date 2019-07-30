@@ -25,6 +25,7 @@ namespace Samr.ERP.Core.Services
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly UserProvider _userProvider;
+        private readonly ActiveUserTokenService _activeUserTokenService;
         private readonly IMapper _mapper;
 
         public UserService(
@@ -32,6 +33,7 @@ namespace Samr.ERP.Core.Services
             UserManager<User> userManager,
             IEmailSender emailSender,
             UserProvider userProvider,
+            ActiveUserTokenService activeUserTokenService,
             IMapper mapper
             )
         {
@@ -39,7 +41,9 @@ namespace Samr.ERP.Core.Services
             _userManager = userManager;
             _emailSender = emailSender;
             _userProvider = userProvider;
+            _activeUserTokenService = activeUserTokenService;
             _mapper = mapper;
+
         }
 
         public async Task<IdentityResult> CreateAsync(User user, string password)
@@ -156,7 +160,6 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<string>.Success(generatedPass);
         }
 
-
         public async Task<BaseDataResponse<string>> ChangePasswordAsync(ChangePasswordViewModel viewModel)
         {
             BaseDataResponse<string> dataResponse;
@@ -202,12 +205,27 @@ namespace Samr.ERP.Core.Services
 
             userExists.UserLockReasonId = lockUserViewModel.UserLockReasonId;
             userExists.LockDate = DateTime.Now;
+            userExists.LockUserId = _userProvider.CurrentUser.Id;
 
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
         }
 
+        public void LockUser(User user,Guid userLockReasonId)
+        {
+            user.UserLockReasonId = userLockReasonId;
+            user.LockDate = DateTime.Now;
+            user.LockUserId = _userProvider.CurrentUser.Id;
+            _activeUserTokenService.DeactivateTokenByUserId(user.Id);
+        }
+
+        public void UnlockUser(User user)
+        {
+            user.UserLockReasonId = null;
+            user.LockDate = null;
+            user.LockUserId = null;
+        }
         public async Task<BaseResponse> UserUnlockAsync(Guid id)
         {
             var userExists = await _unitOfWork
@@ -219,7 +237,8 @@ namespace Samr.ERP.Core.Services
 
             userExists.UserLockReasonId = null;
             userExists.LockDate = null;
-
+            userExists.LockUserId = null;
+            
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
@@ -277,6 +296,7 @@ namespace Samr.ERP.Core.Services
             var addRoleResult = await _userManager.AddToRolesAsync(user, toAdd);
             if (!addRoleResult.Succeeded) return BaseResponse.Fail(addRoleResult.Errors.ToErrorModels());
 
+            _activeUserTokenService.DeactivateTokenByUserId(user.Id);
             return BaseResponse.Success();
 
         }
@@ -284,7 +304,7 @@ namespace Samr.ERP.Core.Services
         public async Task ClearUserRefreshToken(Guid userId)
         {
             _unitOfWork.RefreshTokens.GetDbSet()
-                .RemoveRange(_unitOfWork.RefreshTokens.All().Where(p=>p.UserId == userId));
+                .RemoveRange(_unitOfWork.RefreshTokens.All().Where(p => p.UserId == userId));
 
             await _unitOfWork.CommitAsync();
         }

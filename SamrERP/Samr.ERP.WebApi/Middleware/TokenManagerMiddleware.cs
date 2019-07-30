@@ -33,9 +33,7 @@ namespace Samr.ERP.WebApi.Middleware
             //AuthorizationResult authorizationResult =
             //    await authorizationService.AuthorizeAsync(context.User, null,"");
 
-            if (
-                (!String.IsNullOrEmpty(token) && await activeUserTokenService.TokenActive(token))
-                || (!authorizationResult.Succeeded))
+            if (String.IsNullOrEmpty(token) || await activeUserTokenService.TokenActive(token))
             {
                 await _next(context);
 

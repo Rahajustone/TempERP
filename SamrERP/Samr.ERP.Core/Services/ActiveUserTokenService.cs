@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,15 @@ namespace Samr.ERP.Core.Services
         public async Task<Boolean> TokenActive(string token)
         {
             return await _unitOfWork.ActiveUserTokens.AnyAsync(p => p.Token == token);
+        }
+
+        public void DeactivateTokenByUserId(Guid userId)
+        {
+            var activeToken = _unitOfWork.ActiveUserTokens.All().FirstOrDefault(p => p.UserId == userId);
+
+            _unitOfWork.ActiveUserTokens.Delete(activeToken);
+
+            _unitOfWork.CommitAsync();
         }
     }
 }
