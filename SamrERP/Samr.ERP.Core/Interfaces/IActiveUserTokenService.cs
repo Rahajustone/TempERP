@@ -7,5 +7,6 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task AddOrRefreshUserToken(Guid userId, string token);
         Task<Boolean> TokenActive(string token);
+        void DeactivateTokenByUserId(Guid userId);
     }
 }

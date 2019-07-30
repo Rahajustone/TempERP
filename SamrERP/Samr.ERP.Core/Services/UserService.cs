@@ -25,7 +25,7 @@ namespace Samr.ERP.Core.Services
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly UserProvider _userProvider;
-        private readonly ActiveUserTokenService _activeUserTokenService;
+        private readonly IActiveUserTokenService _activeUserTokenService;
         private readonly IMapper _mapper;
 
         public UserService(
