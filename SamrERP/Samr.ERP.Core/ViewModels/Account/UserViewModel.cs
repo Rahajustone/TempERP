@@ -11,6 +11,7 @@ namespace Samr.ERP.Core.ViewModels.Account
         public Guid? UserLockReasonId { get; set; }
         public string UserLockReasonName { get; set; }
         public DateTime? LockDate { get; set; }
+        public string LockUserFullName { get; set; }
         
     }
 }
