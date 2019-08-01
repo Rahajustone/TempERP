@@ -14,6 +14,7 @@ using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Notification;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -21,14 +22,16 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserProvider _userProvider;
 
         public static event OnNotificationAdd NotifyMessage;
         public delegate Task OnNotificationAdd(
             object sender, EventArgs e);
-        public NotificationService(IUnitOfWork unitOfWork, IMapper mapper)
+        public NotificationService(IUnitOfWork unitOfWork, IMapper mapper, UserProvider userProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userProvider = userProvider;
         }
         private DbSet<Notification> GetQuery()
         {
@@ -45,6 +48,60 @@ namespace Samr.ERP.Core.Services
             NotifyMessage?.Invoke(this, EventArgs.Empty);
 
             return BaseDataResponse<NotificationSystemViewModel>.Success(_mapper.Map<NotificationSystemViewModel>(notification));
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetSentAsync()
+        {
+            var getSentMessage = await _unitOfWork.Notifications
+                .GetDbSet()
+                .Where(m => m.FromUserId == _userProvider.CurrentUser.Id)
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<NotificationSystemViewModel>>(getSentMessage);
+
+            return BaseDataResponse<IEnumerable<NotificationSystemViewModel>>.Success(vm);
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetReceivedAsync()
+        {
+            var getReceivedMessage = await _unitOfWork.Notifications
+                .GetDbSet()
+                .Where(m => m.FromUserId != _userProvider.CurrentUser.Id)
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<NotificationSystemViewModel>>(getReceivedMessage);
+
+            return BaseDataResponse<IEnumerable<NotificationSystemViewModel>>.Success(vm);
+        }
+
+        public async Task<BaseDataResponse<CreateMessageViewModel>> CreateMessageAsync(CreateMessageViewModel createMessageViewModel)
+        {
+            createMessageViewModel.FromUserId = _userProvider.CurrentUser.Id;
+
+            var message = _mapper.Map<Notification>(createMessageViewModel);
+            _unitOfWork.Notifications.Add(message);
+
+            await _unitOfWork.CommitAsync();
+
+            //NotifyMessage?.Invoke(this, EventArgs.Empty);
+
+            return BaseDataResponse<CreateMessageViewModel>.Success(_mapper.Map<CreateMessageViewModel>(message));
+        }
+
+        public async Task<BaseResponse> MarkThemAsReadAsync(Guid id)
+        {
+            var message = await _unitOfWork.Notifications.GetDbSet().FirstOrDefaultAsync(m => m.Id == id);
+
+            if (message == null)
+            {
+                return  BaseResponse.Fail(null);
+            }
+
+            message.IsViewed = true;
+
+            await _unitOfWork.CommitAsync();
+
+            return BaseResponse.Success();
         }
     }
 }

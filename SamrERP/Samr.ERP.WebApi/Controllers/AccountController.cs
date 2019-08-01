@@ -8,6 +8,7 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.WebApi.Infrastructure;
@@ -154,7 +155,6 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<string>.Fail(null));
         }
 
-
         [HttpPost()]
         public async Task<BaseResponse> SendChangePasswordConfirmationCodeToCurrentUser()
         {
@@ -237,6 +237,15 @@ namespace Samr.ERP.WebApi.Controllers
         public async Task<BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>> GetUserRoles(Guid id)
         {
             return Response(await _userService.GetUserRolesAsync(id));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListUserItem()
+        {
+            var response = await _userService.GetAllSelectListUserItemAsync();
+
+            return Response(response);
         }
     }
 }

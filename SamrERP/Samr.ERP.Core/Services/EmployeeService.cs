@@ -91,7 +91,6 @@ namespace Samr.ERP.Core.Services
         {
             var employee = await EmployeeById(id);
 
-
             return _mapper.Map<GetEmployeeCardTemplateViewModel>(employee);
         }
 
@@ -119,7 +118,6 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.User)
                 .Where(e => e.EmployeeLockReasonId == null);
 
-
             query = FilterEmployeesQuery(filterEmployeeViewModel, query.AsNoTracking());
 
             var queryVm = query.ProjectTo<AllEmployeeViewModel>();
@@ -139,11 +137,6 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<PagedList<AllEmployeeViewModel>>.Success(pagedList);
         }
 
-        //public virtual IQueryable<PersonDto> Get(ODataQueryOptions<Person> query)
-        //{
-        //    var people = query.ApplyTo(uow.Person().GetAll());
-        //    return ConvertToDtos(people);
-        //}
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
             BaseDataResponse<EditEmployeeViewModel> dataResponse;
@@ -335,7 +328,7 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel)
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule)
         {
             var query = _unitOfWork.Employees
                 .GetDbSet()
@@ -348,9 +341,14 @@ namespace Samr.ERP.Core.Services
 
             query = FilterEmployeesQuery(filterEmployeeViewModel, query);
 
-            var itemList = await query.ToMappedPagedListAsync<Employee, AllLockEmployeeViewModel>(pagingOptions);
+            var queryVm = query.ProjectTo<AllLockEmployeeViewModel>();
 
-            return BaseDataResponse<PagedList<AllLockEmployeeViewModel>>.Success(itemList);
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
+
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<AllLockEmployeeViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseResponse> EditPassportDataAsync(EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)

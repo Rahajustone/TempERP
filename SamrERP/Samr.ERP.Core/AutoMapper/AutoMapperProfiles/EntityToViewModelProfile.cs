@@ -276,6 +276,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ReverseMap();
+
+            CreateMap<Employee, SelectListItemViewModel>()
+                .ForMember(dst => dst.Id, src => src.MapFrom(
+                    map => map.UserId))
+                .ForMember(dst => dst.Name, src => src.MapFrom(
+                    map => $"{map.FullName()}" + "(" + $"{map.Phone}" + ")"))
+                .ReverseMap();
             #endregion
 
             CreateMap<NewsViewModel, News>()
@@ -360,6 +367,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
 
             CreateMap<NotificationSystemViewModel, Notification>().ReverseMap();
+            CreateMap<CreateMessageViewModel, Notification>().ReverseMap();
         }
     }
 }
