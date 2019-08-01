@@ -12,6 +12,7 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -136,6 +137,17 @@ namespace Samr.ERP.Core.Services
         {
             var users = _unitOfWork.Users.GetAll().ToList();
             return users;
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListUserItemAsync()
+        {
+            var users = await _unitOfWork.Employees.GetDbSet()
+                .Where(e => e.UserId.HasValue)
+                .Where(u => !(u.User.LockUserId.HasValue))
+                .ToListAsync();
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(users);
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
         }
 
         public async Task<BaseDataResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel)

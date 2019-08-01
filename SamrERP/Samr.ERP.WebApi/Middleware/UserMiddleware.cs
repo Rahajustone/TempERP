@@ -32,9 +32,6 @@ namespace Samr.ERP.WebApi.Middleware
                 userProvider.Initialise(user);
             }
             await next(context);
-
-
-           
         }
     }
 }

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -84,6 +85,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IFileCategoryService, FileCategoryService>();
             services.AddScoped<IFileArchiveService, FileArchiveService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddSingleton<HubEvent.HubEvent>();
 
             #endregion
 

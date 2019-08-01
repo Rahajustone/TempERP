@@ -10,5 +10,9 @@ namespace Samr.ERP.Core.Interfaces
     public interface INotificationService
     {
         Task<BaseDataResponse<NotificationSystemViewModel>> CreateAsync(NotificationSystemViewModel notificationSystemViewModel);
+        Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetSentAsync();
+        Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetReceivedAsync();
+        Task<BaseDataResponse<CreateMessageViewModel>> CreateMessageAsync(CreateMessageViewModel createMessageViewModel);
+        Task<BaseResponse> MarkThemAsReadAsync(Guid id);
     }
 }
