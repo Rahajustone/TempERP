@@ -50,9 +50,9 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = Roles.EmployeeAll)]
-        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> AllLockedEmployees([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel)
+        public async Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> AllLockedEmployees([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterEmployeeViewModel filterEmployeeViewModel, [FromQuery]SortRule sortRule)
         {
-            var employee = await _employeeService.GetAllLockedEmployeeAsync(pagingOptions, filterEmployeeViewModel);
+            var employee = await _employeeService.GetAllLockedEmployeeAsync(pagingOptions, filterEmployeeViewModel, sortRule);
 
             return Response(employee);
         }
@@ -194,7 +194,8 @@ namespace Samr.ERP.WebApi.Controllers
                     worksheet.Column(col).AutoFit();
                 }
 
-                return File(package.GetAsByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Список_сотрудников.xlsx");
+                var fileName = $"Список_сотрудников({DateTime.Now.ToString("dd_MM_yyyy")})";
+                return File(package.GetAsByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
         }
 
@@ -215,8 +216,10 @@ namespace Samr.ERP.WebApi.Controllers
                         employeeCardViewModel);
 
 
+                var fileName = $"employeeCard({DateTime.Now.ToString("dd_MM_yyyy")})";
+
                 var pdfBytes = _pdfConverterService.ConvertToPdf(html);
-                return File(pdfBytes, "application/pdf", "employeeCard");
+                return File(pdfBytes, "application/pdf", fileName);
 
 
             }

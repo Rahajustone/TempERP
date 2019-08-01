@@ -17,18 +17,11 @@ namespace Samr.ERP.Core.Interfaces
     public interface IEmployeeService
     {
         Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id);
-
         Task<BaseDataResponse<PagedList<AllEmployeeViewModel>>> AllAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
-        Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel);
-
         Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel);
         Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId);
-
         Task<BaseDataResponse<EditEmployeeViewModel>> EditAsync(EditEmployeeViewModel editEmployeeViewModel);
-
-        Task<BaseResponse> EditUserDetailsAsync(
-            EditUserDetailsViewModel editUserDetailsView);
-
+        Task<BaseResponse> EditUserDetailsAsync(EditUserDetailsViewModel editUserDetailsView);
         Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel);
         Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId);
         Task<BaseDataResponse<GetPassportDataEmployeeViewModel>> GetPassportDataAsync(Guid employeeId);
@@ -36,5 +29,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<EmployeeInfoTokenViewModel> GetEmployeeInfo(Guid userId);
         Task<IList<ExportExcelViewModel>> ExportToExcelAsync(FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
         Task<GetEmployeeCardTemplateViewModel> GetEmployeeCardByIdAsync(Guid id);
+        Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
     }
 }
