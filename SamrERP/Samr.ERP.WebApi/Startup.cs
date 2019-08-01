@@ -25,6 +25,7 @@ using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Data.Helpers;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
+using Samr.ERP.Infrastructure.SeedData;
 using Samr.ERP.WebApi.Configurations;
 using Samr.ERP.WebApi.Configurations.AutoMapper;
 using Samr.ERP.WebApi.Configurations.Models;
@@ -52,7 +53,7 @@ namespace Samr.ERP.WebApi
             #region Dependecy Injection
 
             services.AddDbContext<SamrDbContext>(options =>
-                options.UseSqlServer(
+                options.UseNpgsql(
                     Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Scoped);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
@@ -148,7 +149,11 @@ namespace Samr.ERP.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager)
         {
             SetUpCulture();
             LoadPdfNativeLib();
@@ -198,7 +203,7 @@ namespace Samr.ERP.WebApi
            
 
             //NotificationService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
-
+            DbInitializer.AddRolesToSystemUser(userManager,roleManager);
         }
 
         private void SetUpCulture()

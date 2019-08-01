@@ -20,7 +20,7 @@ namespace Samr.ERP.Infrastructure.Data
             
         }
 
-        public DbSet<Employee> Employees;
+        public DbSet<Employee> Employees { get;set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
@@ -48,8 +48,8 @@ namespace Samr.ERP.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Employee>().ToTable("Employees");
-            builder.Entity<Department>().ToTable("Departments");
+            //builder.Entity<Employee>().ToTable("Employees");
+            //builder.Entity<Department>().ToTable("Departments");
 
             // cascade delete false
             var cascadeFKs = builder.Model.GetEntityTypes()
@@ -64,7 +64,7 @@ namespace Samr.ERP.Infrastructure.Data
 
             //EntitiesConfiguration.ConfigureEntities(builder);
 
-            SeedDataEntities.AddSeed(builder,this);
+            SeedDataEntities.AddSeed(builder, this);
         }
     }
 }

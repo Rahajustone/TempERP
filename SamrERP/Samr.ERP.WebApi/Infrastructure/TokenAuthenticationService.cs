@@ -130,17 +130,20 @@ namespace Samr.ERP.WebApi.Infrastructure
 
         private string GetJwtTokenForUser(User user, bool remember = false)
         {
-            var employee = _employeeService.GetEmployeeInfo(user.Id);
+            var employee = _employeeService.GetEmployeeInfo(user.Id).Result;
 
             //TODO:Amir need to finish claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.PhoneNumber),
                 new Claim("id", user.Id.ToString()),
-                new Claim("name", employee.Result.FullName),
-                new Claim("position", employee.Result.PositionName),
-                new Claim("photo",employee.Result.Photo),
             };
+            if (employee != null)
+            {
+                claims.Add(new Claim("name", employee.FullName));
+                claims.Add(new Claim("position", employee.PositionName));
+                claims.Add(new Claim("photo", employee.Photo));
+            }
 
             var roles = _userManager.GetRolesAsync(user).Result;
 

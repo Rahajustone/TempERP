@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Samr.ERP.Infrastructure.Data;
 
 namespace Samr.ERP.Infrastructure.Migrations
@@ -15,15 +15,14 @@ namespace Samr.ERP.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -41,8 +40,7 @@ namespace Samr.ERP.Infrastructure.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("ClaimType");
 
@@ -209,6 +207,23 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasIndex("CreatedUserId");
 
                     b.ToTable("EmailSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("9a3fcddb-4680-4206-b712-4e07df82e354"),
+                            CreatedAt = new DateTime(2019, 8, 1, 16, 13, 3, 609, DateTimeKind.Local).AddTicks(974),
+                            CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
+                            EnabledSSL = false,
+                            IsActive = true,
+                            IsDefault = true,
+                            MailPort = 465,
+                            MailServer = "smtp.yandex.ru",
+                            MailServerName = "Yandex Mail",
+                            Password = "formignow",
+                            Sender = "migdev@mig.tj",
+                            SenderName = "Mig Dev"
+                        });
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Employee", b =>
@@ -426,64 +441,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Handbooks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"),
-                            ActionName = "Nationality/All",
-                            DisplayName = "Национальность",
-                            Name = "Nationality"
-                        },
-                        new
-                        {
-                            Id = new Guid("6a5587f0-f20e-47c5-9be9-de5aa3134c97"),
-                            ActionName = "Department/All",
-                            DisplayName = "Отдел",
-                            Name = "Department"
-                        },
-                        new
-                        {
-                            Id = new Guid("0a07b4b6-76b5-4758-ae87-d4ff24bb1d12"),
-                            ActionName = "NewsCategories/All",
-                            DisplayName = "Категория полезных ссылок",
-                            Name = "NewsCategories"
-                        },
-                        new
-                        {
-                            Id = new Guid("7a54980c-296e-4dee-b7cf-68a495c80ee0"),
-                            ActionName = "EmployeeLockReason/All",
-                            DisplayName = "Причина блокировки сотрудника",
-                            Name = "EmployeeLockReason"
-                        },
-                        new
-                        {
-                            Id = new Guid("5a1b9eac-d4a4-4d92-aa77-53c0fe1bead0"),
-                            ActionName = "Position/All",
-                            DisplayName = "Позиция",
-                            Name = "Position"
-                        },
-                        new
-                        {
-                            Id = new Guid("90fdba24-d34f-4347-896e-3bc652328c1f"),
-                            ActionName = "UserLockReason/All",
-                            DisplayName = "Причина блокировки пользователя",
-                            Name = "UserLockReason"
-                        },
-                        new
-                        {
-                            Id = new Guid("3e11f7c3-ee41-4bea-aaf1-1fda2d4cb001"),
-                            ActionName = "UsefulLinkCategory/All",
-                            DisplayName = "Полезная ссылка",
-                            Name = "UsefulLinkCategory"
-                        },
-                        new
-                        {
-                            Id = new Guid("92ddaaaf-fd9f-4f99-8443-2bed011e9d78"),
-                            ActionName = "FileCategory/All",
-                            DisplayName = "Категория файла",
-                            Name = "FileCategory"
-                        });
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.Nationality", b =>
@@ -666,6 +623,8 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<string>("Category");
 
+                    b.Property<string>("CategoryName");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -681,10 +640,51 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("2702bcdd-104b-475d-14b5-08d70c357974"),
+                            Category = "Employee",
+                            CategoryName = "Сотрудники",
+                            ConcurrencyStamp = "23F4A768-BCF3-4BA4-8D20-CC3E4A9C333A",
+                            Description = "Просмотр списка",
+                            Name = "Employee.All",
+                            NormalizedName = "EMPLOYEE.ALL"
+                        },
+                        new
+                        {
+                            Id = new Guid("29ecf6ce-b82f-4fc5-ae01-08d70cf9f908"),
+                            Category = "Employee",
+                            CategoryName = "Сотрудники",
+                            ConcurrencyStamp = "B8EFD7E4-72E8-4110-96CC-A531AD35D9B4",
+                            Description = "Создание",
+                            Name = "Employee.Create",
+                            NormalizedName = "EMPLOYEE.CREATE"
+                        },
+                        new
+                        {
+                            Id = new Guid("a8eb0e97-eaaa-4976-ae02-08d70cf9f908"),
+                            Category = "Employee",
+                            CategoryName = "Сотрудники",
+                            ConcurrencyStamp = "98003B79-EE18-4D7F-B8A5-357E74E8F77A",
+                            Description = "Редактирование",
+                            Name = "Employee.Edit",
+                            NormalizedName = "EMPLOYEE.EDIT"
+                        },
+                        new
+                        {
+                            Id = new Guid("c5dbeaab-86a3-4400-b50a-08d70e6b40dc"),
+                            Category = "Employee",
+                            CategoryName = "Сотрудники",
+                            ConcurrencyStamp = "36271C6B-8972-4A69-90D0-D9921B6F90D3",
+                            Description = "Подробная информация",
+                            Name = "Employee.Details",
+                            NormalizedName = "EMPLOYEE.DETAILS"
+                        });
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.UsefulLink", b =>
@@ -795,8 +795,7 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasName("UserNameIndex");
 
                     b.HasIndex("UserLockReasonId");
 
@@ -813,7 +812,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                             LockoutEnabled = false,
                             NormalizedUserName = "000000000",
                             PasswordHash = "AQAAAAEAACcQAAAAEOvH5DQ4ttSuk1j8EVrg4uyxzHJGcnZbuhkdRvuppk2ttPByA/FjKpVcrA001HW68w==",
+                            PhoneNumber = "000000000",
                             PhoneNumberConfirmed = false,
+                            SecurityStamp = "83147D9F-26BC-486F-AE7E-5DD581362FAA",
                             TwoFactorEnabled = false,
                             UserName = "000000000"
                         });
@@ -843,7 +844,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2019, 8, 1, 16, 13, 3, 606, DateTimeKind.Local).AddTicks(4127),
                             CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             IsActive = false
                         });

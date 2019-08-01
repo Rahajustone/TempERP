@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Samr.ERP.Infrastructure.Migrations
 {
-    public partial class Initial : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,7 +17,8 @@ namespace Samr.ERP.Infrastructure.Migrations
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    Category = table.Column<string>(nullable: true)
+                    Category = table.Column<string>(nullable: true),
+                    CategoryName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -51,6 +52,19 @@ namespace Samr.ERP.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Handbooks", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NotificationTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Message = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NotificationTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,6 +104,18 @@ namespace Samr.ERP.Infrastructure.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ActiveUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(nullable: false),
+                    Token = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActiveUserTokens", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,6 +204,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                     MailServerName = table.Column<string>(maxLength: 128, nullable: false),
                     MailServer = table.Column<string>(maxLength: 128, nullable: false),
                     MailPort = table.Column<int>(nullable: false),
+                    EnabledSSL = table.Column<bool>(nullable: false),
                     SenderName = table.Column<string>(maxLength: 128, nullable: true),
                     Sender = table.Column<string>(nullable: false),
                     Password = table.Column<string>(nullable: true),
@@ -203,55 +230,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EmployeeLockReasons", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    CreatedUserId = table.Column<Guid>(nullable: false),
-                    FirstName = table.Column<string>(maxLength: 32, nullable: false),
-                    LastName = table.Column<string>(maxLength: 32, nullable: false),
-                    MiddleName = table.Column<string>(maxLength: 32, nullable: true),
-                    PositionId = table.Column<Guid>(nullable: false),
-                    ImageName = table.Column<string>(maxLength: 32, nullable: true),
-                    GenderId = table.Column<Guid>(nullable: false),
-                    DateOfBirth = table.Column<DateTime>(nullable: false),
-                    Phone = table.Column<string>(maxLength: 9, nullable: false),
-                    HireDate = table.Column<DateTime>(nullable: false),
-                    Description = table.Column<string>(maxLength: 256, nullable: true),
-                    Email = table.Column<string>(maxLength: 128, nullable: false),
-                    FactualAddress = table.Column<string>(maxLength: 256, nullable: true),
-                    LockDate = table.Column<DateTime>(nullable: true),
-                    EmployeeLockReasonId = table.Column<Guid>(nullable: true),
-                    LockUserId = table.Column<Guid>(nullable: true),
-                    PassportNumber = table.Column<string>(maxLength: 32, nullable: true),
-                    PassportIssuer = table.Column<string>(maxLength: 64, nullable: true),
-                    PassportIssueDate = table.Column<DateTime>(nullable: true),
-                    NationalityId = table.Column<Guid>(nullable: true),
-                    PassportAddress = table.Column<string>(maxLength: 256, nullable: true),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    IsActive = table.Column<bool>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: true),
-                    PhotoPath = table.Column<string>(nullable: true),
-                    PassportScanPath = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Employees_EmployeeLockReasons_EmployeeLockReasonId",
-                        column: x => x.EmployeeLockReasonId,
-                        principalTable: "EmployeeLockReasons",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Employees_Genders_GenderId",
-                        column: x => x.GenderId,
-                        principalTable: "Genders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -334,6 +312,31 @@ namespace Samr.ERP.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NewsCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    CreatedUserId = table.Column<Guid>(nullable: false),
+                    Message = table.Column<string>(nullable: true),
+                    IsViewed = table.Column<bool>(nullable: false),
+                    FromUserId = table.Column<Guid>(nullable: true),
+                    ToUserId = table.Column<Guid>(nullable: true),
+                    NotificationTypeId = table.Column<Guid>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_NotificationTypes_NotificationTypeId",
+                        column: x => x.NotificationTypeId,
+                        principalTable: "NotificationTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -448,7 +451,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                     AccessFailedCount = table.Column<int>(nullable: false),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     UserLockReasonId = table.Column<Guid>(nullable: true),
-                    IsActive = table.Column<bool>(nullable: false),
+                    LockUserId = table.Column<Guid>(nullable: true),
                     LockDate = table.Column<DateTime>(nullable: true),
                     ChangePasswordConfirmationCode = table.Column<int>(maxLength: 4, nullable: true),
                     ChangePasswordConfirmationCodeExpires = table.Column<DateTime>(nullable: true)
@@ -457,35 +460,17 @@ namespace Samr.ERP.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_AspNetUsers_AspNetUsers_LockUserId",
+                        column: x => x.LockUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_AspNetUsers_UserLockReasons_UserLockReasonId",
                         column: x => x.UserLockReasonId,
                         principalTable: "UserLockReasons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Genders",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"), "Мужской" },
-                    { new Guid("0ce7a31f-dfd6-4bdc-ae57-32087c383705"), "Женский" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Handbooks",
-                columns: new[] { "Id", "ActionName", "DisplayName", "LastModifiedAt", "LastModifiedUserFullName", "LastModifiedUserId", "Name" },
-                values: new object[,]
-                {
-                    { new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"), "Nationality/All", "Национальность", null, null, null, "Nationality" },
-                    { new Guid("6a5587f0-f20e-47c5-9be9-de5aa3134c97"), "Department/All", "Отдел", null, null, null, "Department" },
-                    { new Guid("0a07b4b6-76b5-4758-ae87-d4ff24bb1d12"), "NewsCategories/All", "Категория полезных ссылок", null, null, null, "NewsCategories" },
-                    { new Guid("7a54980c-296e-4dee-b7cf-68a495c80ee0"), "EmployeeLockReason/All", "Причина блокировки сотрудника", null, null, null, "EmployeeLockReason" },
-                    { new Guid("5a1b9eac-d4a4-4d92-aa77-53c0fe1bead0"), "Position/All", "Позиция", null, null, null, "Position" },
-                    { new Guid("90fdba24-d34f-4347-896e-3bc652328c1f"), "UserLockReason/All", "Причина блокировки пользователя", null, null, null, "UserLockReason" },
-                    { new Guid("3e11f7c3-ee41-4bea-aaf1-1fda2d4cb001"), "UsefulLinkCategory/All", "Полезная ссылка", null, null, null, "UsefulLinkCategory" },
-                    { new Guid("92ddaaaf-fd9f-4f99-8443-2bed011e9d78"), "FileCategory/All", "Категория файла", null, null, null, "FileCategory" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -513,6 +498,11 @@ namespace Samr.ERP.Infrastructure.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_LockUserId",
+                table: "AspNetUsers",
+                column: "LockUserId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -561,41 +551,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                 column: "CreatedUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_CreatedUserId",
-                table: "Employees",
-                column: "CreatedUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_EmployeeLockReasonId",
-                table: "Employees",
-                column: "EmployeeLockReasonId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_GenderId",
-                table: "Employees",
-                column: "GenderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_LockUserId",
-                table: "Employees",
-                column: "LockUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_NationalityId",
-                table: "Employees",
-                column: "NationalityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_PositionId",
-                table: "Employees",
-                column: "PositionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_UserId",
-                table: "Employees",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FileArchives_CreatedUserId",
                 table: "FileArchives",
                 column: "CreatedUserId");
@@ -629,6 +584,16 @@ namespace Samr.ERP.Infrastructure.Migrations
                 name: "IX_NewsCategories_CreatedUserId",
                 table: "NewsCategories",
                 column: "CreatedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_CreatedUserId",
+                table: "Notifications",
+                column: "CreatedUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_NotificationTypeId",
+                table: "Notifications",
+                column: "NotificationTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Positions_CreatedUserId",
@@ -668,6 +633,14 @@ namespace Samr.ERP.Infrastructure.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                 table: "AspNetUserRoles",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ActiveUserTokens_AspNetUsers_UserId",
+                table: "ActiveUserTokens",
                 column: "UserId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
@@ -746,46 +719,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Employees_AspNetUsers_CreatedUserId",
-                table: "Employees",
-                column: "CreatedUserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employees_AspNetUsers_LockUserId",
-                table: "Employees",
-                column: "LockUserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employees_AspNetUsers_UserId",
-                table: "Employees",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employees_Nationalities_NationalityId",
-                table: "Employees",
-                column: "NationalityId",
-                principalTable: "Nationalities",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Employees_Positions_PositionId",
-                table: "Employees",
-                column: "PositionId",
-                principalTable: "Positions",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_FileArchives_AspNetUsers_CreatedUserId",
                 table: "FileArchives",
                 column: "CreatedUserId",
@@ -842,6 +775,14 @@ namespace Samr.ERP.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Notifications_AspNetUsers_CreatedUserId",
+                table: "Notifications",
+                column: "CreatedUserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_Positions_AspNetUsers_CreatedUserId",
                 table: "Positions",
                 column: "CreatedUserId",
@@ -889,6 +830,9 @@ namespace Samr.ERP.Infrastructure.Migrations
                 table: "UserLockReasons");
 
             migrationBuilder.DropTable(
+                name: "ActiveUserTokens");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -907,16 +851,28 @@ namespace Samr.ERP.Infrastructure.Migrations
                 name: "EmailMessageHistories");
 
             migrationBuilder.DropTable(
-                name: "Employees");
+                name: "EmployeeLockReasons");
 
             migrationBuilder.DropTable(
                 name: "FileArchives");
 
             migrationBuilder.DropTable(
+                name: "Genders");
+
+            migrationBuilder.DropTable(
                 name: "Handbooks");
 
             migrationBuilder.DropTable(
+                name: "Nationalities");
+
+            migrationBuilder.DropTable(
                 name: "News");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "Positions");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
@@ -931,28 +887,19 @@ namespace Samr.ERP.Infrastructure.Migrations
                 name: "EmailSettings");
 
             migrationBuilder.DropTable(
-                name: "EmployeeLockReasons");
-
-            migrationBuilder.DropTable(
-                name: "Genders");
-
-            migrationBuilder.DropTable(
-                name: "Nationalities");
-
-            migrationBuilder.DropTable(
-                name: "Positions");
-
-            migrationBuilder.DropTable(
                 name: "FileCategories");
 
             migrationBuilder.DropTable(
                 name: "NewsCategories");
 
             migrationBuilder.DropTable(
-                name: "UsefulLinkCategories");
+                name: "NotificationTypes");
 
             migrationBuilder.DropTable(
                 name: "Departments");
+
+            migrationBuilder.DropTable(
+                name: "UsefulLinkCategories");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
