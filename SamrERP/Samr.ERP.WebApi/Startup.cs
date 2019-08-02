@@ -67,6 +67,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IActiveUserTokenService, ActiveUserTokenService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<UserService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
