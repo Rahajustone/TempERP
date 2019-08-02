@@ -75,7 +75,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             if (!checkPasswordResult.Succeeded) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("login or pass not correct"));
 
             var canSighInResult = await _signInManager.CanSignInAsync(user);
-            if (!canSighInResult) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("you cant login call to support"));
+            if (!canSighInResult || user.LockDate != null) return BaseDataResponse<AuthenticateResult>.Fail(null,  new ErrorModel("you cant login call to support"));
 
             var token = GetJwtTokenForUser(user, loginModel.RememberMe);
 
