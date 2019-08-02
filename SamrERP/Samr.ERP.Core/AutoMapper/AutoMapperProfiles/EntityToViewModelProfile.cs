@@ -67,6 +67,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.HireDate.ToShortDateString()))
                 .ForMember(dst => dst.PhotoPath,
+                    src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)))
+                .ForMember(dst => dst.PhotoPathResized,
                     src => src.MapFrom(map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ReverseMap();
 
