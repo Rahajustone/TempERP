@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations2\**" />
+    <EmbeddedResource Remove="Migrations2\**" />
+    <None Remove="Migrations2\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+<<<<<<< Updated upstream
+    <Compile Remove="Migrations\20190801083303_Initial.cs" />
+    <Compile Remove="Migrations\20190801103539_ss.cs" />
+    <Compile Remove="Migrations\20190801104229_SeedData.cs" />
+=======
+    <Compile Remove="Migrations\20190727112503_testfc.cs" />
+    <Compile Remove="Migrations\20190729054759_Notifation.cs" />
+    <Compile Remove="Migrations\20190729054939_Notifation2.cs" />
+    <Compile Remove="Migrations\20190729055425_Notifation.cs" />
+    <Compile Remove="Migrations\20190729060047_Notifation22.cs" />
+    <Compile Remove="Migrations\20190730132400_SystemUserSeed.cs" />
+    <Compile Remove="Migrations\20190730132415_SystemUserSeed2.cs" />
+    <Compile Remove="Migrations\20190730135232_SystemUserSeed2.cs" />
+    <Compile Remove="Migrations\20190801093427_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801094436_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801101622_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801102241_fk.cs" />
+    <Compile Remove="Migrations\20190801103349_fk.cs" />
+    <Compile Remove="Migrations\20190801110308_DepartmentLog.cs" />
+>>>>>>> Stashed changes
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />
+  </ItemGroup>
+
+</Project>

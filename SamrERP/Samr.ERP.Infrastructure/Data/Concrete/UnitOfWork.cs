@@ -95,7 +95,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         protected IRepositoryProvider RepositoryProvider { get; set; }
 
-        private IRepository<T> GetStandardRepo<T>() where T : class
+        public IRepository<T> GetStandardRepo<T>() where T : class
         {
             return RepositoryProvider.GetRepositoryForEntityType<T>();
         }

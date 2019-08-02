@@ -23,11 +23,13 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHistoryService<DepartmentLog, Department> _historyService;
 
-        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper)
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper, IHistoryService<DepartmentLog, Department> historyService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _historyService = historyService;
         }
 
         private IQueryable<Department> GetQueryWithUser()
@@ -137,13 +139,18 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var s = _unitOfWork.DepartmentLogs.GetDbSet().FirstOrDefaultAsync();
-
                     var department = _mapper.Map<EditDepartmentViewModel, Department>(editDepartmentViewModel, departmentExists);
 
                     _unitOfWork.Departments.Update(department);
 
                     await _unitOfWork.CommitAsync();
+
+                    var deptLog = new DepartmentLog();
+                    deptLog = _mapper.Map<DepartmentLog>(departmentExists);
+
+                    deptLog.DepartmentId = departmentExists.Id;
+                    
+                    await _historyService.CreateHistory(deptLog, departmentExists);
 
                     dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
                 }

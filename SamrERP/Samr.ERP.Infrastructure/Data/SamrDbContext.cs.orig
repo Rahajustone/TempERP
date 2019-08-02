@@ -42,12 +42,21 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ActiveUserToken> ActiveUserTokens { get; set; }
 
+
+
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+<<<<<<< Updated upstream
             //builder.Entity<Employee>().ToTable("Employees");
             //builder.Entity<Department>().ToTable("Departments");
+=======
+            builder.Entity<Employee>().ToTable("Employees");
+            builder.Entity<Department>().ToTable("Departments");
             //builder.Entity<DepartmentLog>().ToTable("DepartmentLog");
+>>>>>>> Stashed changes
 
             // cascade delete false
             var cascadeFKs = builder.Model.GetEntityTypes()

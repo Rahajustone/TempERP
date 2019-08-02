@@ -87,7 +87,8 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IFileArchiveService, FileArchiveService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddSingleton<HubEvent.HubEvent>();
-
+            services.AddScoped(typeof(IHistoryService<DepartmentLog, Department>),
+                typeof(HistoryService<DepartmentLog, Department>));
             #endregion
 
             #region Identity & JWT
