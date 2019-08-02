@@ -133,7 +133,9 @@ namespace Samr.ERP.WebApi
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyOrigin()
-                    .WithOrigins("http://localhost:4200", "http://sumr.evomedia.pro")
+                    .WithOrigins("http://localhost:4200", 
+                    "http://sumr.evomedia.pro","https://sumr.evomedia.pro",
+                    "http://samr.evomedia.pro","http://samr.evomedia.pro")
                     .WithExposedHeaders("Content-Disposition");
             }));
             services.AddSignalR();
