@@ -343,12 +343,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore()); ;
-
-            CreateMap<Handbook, HandbookViewModel>()
-                .ForMember(dst => dst.LastModifiedAt, src => src.MapFrom(
-                   map => map.LastModifiedAt.HasValue ? map.LastModifiedAt.Value.ToString("dd.MM.yyyy H:mm") : null))
-                .ReverseMap();
-
+            
             CreateMap<FileCategory, FileCategoryViewModel>().ReverseMap();
             CreateMap<FileCategory, EditFileCategoryViewModel>()
                 .ForMember(dst => dst.CreatedUserName,

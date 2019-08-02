@@ -23,17 +23,14 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
 
         public EmployeeLockReasonService(
             IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IHandbookService handbookService
+            IMapper mapper
             )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
         }
 
         private IQueryable<EmployeeLockReason> GetQuery()
@@ -121,17 +118,7 @@ namespace Samr.ERP.Core.Services
                 var employeeLockReason = _mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel);
                 _unitOfWork.EmployeeLockReasons.Add(employeeLockReason);
 
-                var handbookExists = await _handbookService.ChangeStatus("Nationality", employeeLockReason.CreatedUserId);
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
-
-                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
-                }
-                else
-                {
-                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Not found handbook"));
-                }
+                await _unitOfWork.CommitAsync();
 
                 dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
             }
@@ -158,20 +145,11 @@ namespace Samr.ERP.Core.Services
                 else
                 {
                     var employeeLockReason = _mapper.Map<EditEmployeeLockReasonViewModel, EmployeeLockReason>(employeeLockReasonViewModel, employeeLockReasonExists);
-
                     _unitOfWork.EmployeeLockReasons.Update(employeeLockReason);
+                    
+                    await _unitOfWork.CommitAsync();
 
-                    var handbookExists = await _handbookService.ChangeStatus("EmployeeLockReason", employeeLockReason.CreatedUserId);
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
-
-                        dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel("Not found handbook"));
-                    }
+                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
                 }
             }
             else

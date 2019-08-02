@@ -22,15 +22,12 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
 
         public NewsCategoriesService(IUnitOfWork unitOfWork, 
-            IMapper mapper,
-            IHandbookService handbookService)
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
         }
 
         private IQueryable<NewsCategory> GetQueryWithUser()

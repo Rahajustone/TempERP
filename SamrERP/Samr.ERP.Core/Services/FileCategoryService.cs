@@ -24,13 +24,11 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
 
-        public FileCategoryService(IUnitOfWork unitOfWork, IMapper mapper, IHandbookService handbookService)
+        public FileCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
         }
 
         private IQueryable<FileCategory> GetQuery()
@@ -107,17 +105,9 @@ namespace Samr.ERP.Core.Services
                 var fileCategory = _mapper.Map<FileCategory>(fileCategoryViewModel);
                 _unitOfWork.FileCategories.Add(fileCategory);
 
-                var handbookExists = await _handbookService.ChangeStatus("FileCategory", fileCategory.CreatedUserId);
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(fileCategory));
-                }
-                else
-                {
-                    dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Fail(fileCategoryViewModel, new ErrorModel("Not found handbook."));
-                }
+                dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(fileCategory));
             }
 
             return dataResponse;
@@ -142,17 +132,9 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.FileCategories.Update(fileCategory);
 
-                    var handbookExists = await _handbookService.ChangeStatus("FileCategory", fileCategory.CreatedUserId);
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                        dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(fileCategory));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Fail(editFileCategoryViewModel, new ErrorModel("Not found handbook."));
-                    }
+                    dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(fileCategory));
                 }
             }
             else

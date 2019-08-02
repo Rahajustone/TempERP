@@ -116,6 +116,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
             if (entity is ICreatable creatable)
                 DbContext.Entry(creatable).Property(x => x.CreatedAt).IsModified = false;
             
+
             if (entity is IChangeable changeable)
             {
                 changeable.Updated = DateTime.Now;//GetDateTime();

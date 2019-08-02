@@ -83,7 +83,6 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IGenderService, GenderService>();
             services.AddScoped<IUsefulLinkCategoryService, UsefulLinkCategoryService>();
             services.AddScoped<IUsefulLinkService, UsefulLinkService>();
-            services.AddScoped<IHandbookService, HandbookService>();
             services.AddScoped<IFileCategoryService, FileCategoryService>();
             services.AddScoped<IFileArchiveService, FileArchiveService>();
             services.AddScoped<INotificationService, NotificationService>();

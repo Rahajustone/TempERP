@@ -23,15 +23,12 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
 
         public UserLockReasonService(IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IHandbookService handbookService)
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
         }
 
         private IQueryable<UserLockReason> GetQuery()
@@ -113,17 +110,9 @@ namespace Samr.ERP.Core.Services
 
                 _unitOfWork.UserLockReasons.Add(userLockReason);
 
-                var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUserId );
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    response = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
-                }
-                else
-                {
-                    response = BaseDataResponse<UserLockReasonViewModel>.Fail(userLockReasonViewModel, new ErrorModel("Not found handbook."));
-                }
+                response = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
             }
 
             return response;
@@ -145,20 +134,11 @@ namespace Samr.ERP.Core.Services
                 else
                 {
                     var userLockReason = _mapper.Map<UserLockReasonViewModel, UserLockReason>(userLockReasonViewModel, userLockReasonExists);
-
                     _unitOfWork.UserLockReasons.Update(userLockReason);
 
-                    var handbookExists = await _handbookService.ChangeStatus("UserLockReason", userLockReason.CreatedUserId);
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                        dataResponse = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<UserLockReasonViewModel>.Fail(userLockReasonViewModel, new ErrorModel("Not found handbook."));
-                    }
+                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
                 }
             }
             else

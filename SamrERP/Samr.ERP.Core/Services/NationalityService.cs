@@ -22,16 +22,13 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
 
         public NationalityService(
             IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IHandbookService handbookService)
+            IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
         }
 
         private IQueryable<Nationality> GetQuery()
@@ -118,17 +115,9 @@ namespace Samr.ERP.Core.Services
                 var nationality = _mapper.Map<Nationality>(editNationalityViewModel);
                 _unitOfWork.Nationalities.Add(nationality);
 
-                var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUserId);
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
-                }
-                else
-                {
-                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel("Not found handbook"));
-                }
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
             }
 
             return dataResponse;
@@ -153,18 +142,10 @@ namespace Samr.ERP.Core.Services
                     var nationality = _mapper.Map<EditNationalityViewModel, Nationality>(nationalityViewModel, nationalityExists);
 
                     _unitOfWork.Nationalities.Update(nationality);
+                    
+                    await _unitOfWork.CommitAsync();
 
-                    var handbookExists = await _handbookService.ChangeStatus("Nationality", nationality.CreatedUserId );
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
-
-                        dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, new ErrorModel("Not found handbook"));
-                    }
+                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
                 }
             }
             else

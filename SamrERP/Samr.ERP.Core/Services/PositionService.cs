@@ -22,15 +22,12 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IHandbookService _handbookService;
 
         public PositionService(IMapper mapper,
-            IUnitOfWork unitOfWork,
-            IHandbookService handbookService)
+            IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
-            _handbookService = handbookService;
         }
         private IQueryable<Position> GetQueryWithUser()
         {
@@ -123,17 +120,9 @@ namespace Samr.ERP.Core.Services
                 var position = _mapper.Map<Position>(positionViewModel);
                 _unitOfWork.Positions.Add(position);
 
-                var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUserId );
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
-                }
-                else
-                {
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Not found handbook."));
-                }
+                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
             }
 
             return dataResponse;
@@ -159,17 +148,9 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.Positions.Update(position);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUserId );
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                        dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Not found handbook."));
-                    }
+                    dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
                 }
             }
             else

@@ -54,7 +54,6 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<UserLockReason> UserLockReasons => GetStandardRepo<UserLockReason>();
         public IRepository<UsefulLinkCategory> UsefulLinkCategories => GetStandardRepo<UsefulLinkCategory>();
         public IRepository<UsefulLink> UsefulLinks => GetStandardRepo<UsefulLink>();
-        public IRepository<Handbook> Handbooks => GetStandardRepo<Handbook>();
         public IRepository<RefreshToken> RefreshTokens => GetStandardRepo<RefreshToken>();
         public IRepository<FileCategory> FileCategories => GetStandardRepo<FileCategory>();
         public IRepository<FileArchive> FileArchives => GetStandardRepo<FileArchive>();

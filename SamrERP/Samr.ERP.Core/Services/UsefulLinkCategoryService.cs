@@ -24,15 +24,13 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
 
         public UsefulLinkCategoryService(IUnitOfWork unitOfWork,
-            IMapper mapper,
-            IHandbookService handbookService)
+            IMapper mapper
+            )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
         }
         private DbSet<UsefulLinkCategory> GetQuery()
         {
@@ -107,17 +105,9 @@ namespace Samr.ERP.Core.Services
 
                 _unitOfWork.UsefulLinkCategories.Add(usefulLinkCategory);
 
-                var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUserId);
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
-                }
-                else
-                {
-                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Fail(editUsefulLinkCategoryViewModel, new ErrorModel("Not found handbook."));
-                }
+                response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
             }
 
             return response;
@@ -146,17 +136,9 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.UsefulLinkCategories.Update(usefulLinkCategory);
 
-                    var handbookExists = await _handbookService.ChangeStatus("UsefulLinkCategory", usefulLinkCategory.CreatedUserId);
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                        response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
-                    }
-                    else
-                    {
-                        response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Fail(editUsefulLinkCategoryViewModel, new ErrorModel("Not found handbook."));
-                    }
+                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
                 }
             }
 
