@@ -22,6 +22,7 @@ namespace Samr.ERP.Infrastructure.Data
 
         public DbSet<Employee> Employees { get;set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<DepartmentLog> DepartmentLogs { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
         public DbSet<Gender> Genders { get; set; }
@@ -50,6 +51,7 @@ namespace Samr.ERP.Infrastructure.Data
             base.OnModelCreating(builder);
             //builder.Entity<Employee>().ToTable("Employees");
             //builder.Entity<Department>().ToTable("Departments");
+            //builder.Entity<DepartmentLog>().ToTable("DepartmentLog");
 
             // cascade delete false
             var cascadeFKs = builder.Model.GetEntityTypes()

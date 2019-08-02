@@ -14,6 +14,12 @@
     <Compile Remove="Migrations\20190801083303_Initial.cs" />
     <Compile Remove="Migrations\20190801103539_ss.cs" />
     <Compile Remove="Migrations\20190801104229_SeedData.cs" />
+    <Compile Remove="Migrations\20190801093427_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801094436_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801101622_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801102241_fk.cs" />
+    <Compile Remove="Migrations\20190801103349_fk.cs" />
+    <Compile Remove="Migrations\20190801110308_DepartmentLog.cs" />
   </ItemGroup>
 
   <ItemGroup>

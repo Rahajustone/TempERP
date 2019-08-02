@@ -23,16 +23,11 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
 
-        public DepartmentService(
-            IUnitOfWork unitOfWork, 
-            IMapper mapper, 
-            IHandbookService handbookService)
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
         }
 
         private IQueryable<Department> GetQueryWithUser()
@@ -116,17 +111,9 @@ namespace Samr.ERP.Core.Services
                 var department = _mapper.Map<Department>(editDepartmentViewModel);
                 _unitOfWork.Departments.Add(department);
 
-                var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUserId);
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-                }
-                else
-                {
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("Not found handbook."));
-                }
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
             }
 
             return dataResponse;
@@ -150,21 +137,15 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
+                    var s = _unitOfWork.DepartmentLogs.GetDbSet().FirstOrDefaultAsync();
+
                     var department = _mapper.Map<EditDepartmentViewModel, Department>(editDepartmentViewModel, departmentExists);
 
                     _unitOfWork.Departments.Update(department);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUserId);
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                        dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("Not found handbook."));
-                    }
+                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
                 }
             }
             else
