@@ -74,6 +74,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 
             CreateMap<Department, DepartmentViewModel>()
                 .ReverseMap();
+            CreateMap<Department, DepartmentLog>().ReverseMap();
 
             CreateMap<Department, EditDepartmentViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
