@@ -14,6 +14,7 @@ using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Extensions;
 using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
@@ -21,7 +22,7 @@ namespace Samr.ERP.Core.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IUserService _userService;
+        private readonly UserService _userService;
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
         private readonly IFileService _fileService;
@@ -29,7 +30,7 @@ namespace Samr.ERP.Core.Services
 
         public EmployeeService(
             IUnitOfWork unitOfWork,
-            IUserService userService,
+            UserService userService,
             UserProvider userProvider,
             IEmailSender emailSender,
             IFileService fileService,
@@ -285,6 +286,8 @@ namespace Samr.ERP.Core.Services
             employee.EmployeeLockReasonId = employeeLockReason.Id;
             employee.LockDate = DateTime.Now;
 
+            _userService.LockUser(employee.User,GuidExtensions.FULL_GUID);
+
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
@@ -299,11 +302,12 @@ namespace Samr.ERP.Core.Services
 
             if (employee?.EmployeeLockReasonId == null) return BaseResponse.NotFound();
 
-            //TODO LockUnlockUser
+            
             employee.LockUserId = null;
             employee.EmployeeLockReasonId = null;
             employee.LockDate = null;
 
+            _userService.UnlockUser(employee.User);
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();

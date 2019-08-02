@@ -68,6 +68,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IActiveUserTokenService, ActiveUserTokenService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<UserService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IAuthenticateService, TokenAuthenticationService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
@@ -134,7 +135,9 @@ namespace Samr.ERP.WebApi
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyOrigin()
-                    .WithOrigins("http://localhost:4200", "http://sumr.evomedia.pro")
+                    .WithOrigins("http://localhost:4200", 
+                    "http://sumr.evomedia.pro","https://sumr.evomedia.pro",
+                    "http://samr.evomedia.pro","http://samr.evomedia.pro")
                     .WithExposedHeaders("Content-Disposition");
             }));
             services.AddSignalR();
