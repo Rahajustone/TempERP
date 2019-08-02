@@ -23,6 +23,6 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public Guid GenderId { get; set; }
         public Guid DepartmentId { get; set; }
         public Guid PositionId { get; set; }
-
+        public string PhotoPathMax { get; set; }
     }
 }
