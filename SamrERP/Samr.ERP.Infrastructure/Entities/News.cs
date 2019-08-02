@@ -29,6 +29,8 @@ namespace Samr.ERP.Infrastructure.Entities
         [Required]
         public  string PublishAt { get; set; }
 
+        public string Image { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
     }

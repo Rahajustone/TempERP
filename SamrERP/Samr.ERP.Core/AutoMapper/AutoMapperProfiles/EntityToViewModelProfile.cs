@@ -292,7 +292,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.NewsCategoryName,
                     src => src.MapFrom(
                         map => map.NewsCategory.Name))
+                .ForMember(dst => dst.ImagePath, src => src.MapFrom(
+                    map => FileService.GetDownloadAction(map.Image)))
                 .ReverseMap()
+                .ForMember(dst => dst.NewsCategory, opt => opt.Ignore())
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
 
             CreateMap<ListNewsViewModel, News>();

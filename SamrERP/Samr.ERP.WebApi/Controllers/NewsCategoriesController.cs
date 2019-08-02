@@ -58,7 +58,7 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _newsCategoriesService.Editsync(newsCategoriesViewModel);
+                var response = await _newsCategoriesService.EditAsync(newsCategoriesViewModel);
 
                 return response;
             }

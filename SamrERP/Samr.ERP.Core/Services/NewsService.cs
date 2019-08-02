@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -19,20 +21,26 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public NewsService(IUnitOfWork unitOfWork, IMapper mapper)
+        public NewsService(IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _fileService = fileService;
+        }
+
+        private IQueryable<News> GetQuery()
+        {
+            return _unitOfWork.News.GetDbSet()
+                .Include(n => n.NewsCategory);
         }
 
         public async Task<BaseDataResponse<EditNewsViewModel>> GetByIdAsync(Guid id)
         {
             BaseDataResponse<EditNewsViewModel> response;
 
-            var existsNews = await _unitOfWork.News.GetDbSet()
-                .Include(n => n.NewsCategory)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var existsNews = await GetQuery().FirstOrDefaultAsync(p => p.Id == id);
             if (existsNews == null)
             {
                 response = BaseDataResponse<EditNewsViewModel>.NotFound(null);
@@ -47,12 +55,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions  pagingOptions)
         {
-            var query = _unitOfWork
-                .News
-                .GetDbSet()
-                .Include(u => u.NewsCategory);
-
-            var pageList = await query.ToMappedPagedListAsync<News, EditNewsViewModel>(pagingOptions);
+            var pageList = await GetQuery().ToMappedPagedListAsync<News, EditNewsViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<EditNewsViewModel>>.Success(pageList);
         }
@@ -69,14 +72,15 @@ namespace Samr.ERP.Core.Services
             else
             {
                 var news = _mapper.Map<News>(newsViewModel);
+
+                if (newsViewModel.ImageFile != null)
+                {
+                    news.Image = await _fileService.UploadPhoto(FileService.NewsPhotoFolderPath, newsViewModel.ImageFile, true);
+                }
+
                 _unitOfWork.News.Add(news);
 
                 await _unitOfWork.CommitAsync();
-
-                // TODO
-                news = await _unitOfWork.News.GetDbSet()
-                    .Include(p => p.NewsCategory)
-                    .FirstOrDefaultAsync(p => p.Id == news.Id);
 
                 response = BaseDataResponse<EditNewsViewModel>.Success(_mapper.Map<EditNewsViewModel>(news));
             }
@@ -84,12 +88,12 @@ namespace Samr.ERP.Core.Services
             return response;
         }
 
-        public async Task<BaseDataResponse<EditNewsViewModel>> UpdateAsync(EditNewsViewModel newsViewModel)
+        public async Task<BaseDataResponse<EditNewsViewModel>> EditAsync(EditNewsViewModel newsViewModel)
         {
             BaseDataResponse<EditNewsViewModel> dataResponse;
 
-            var newsExists = await _unitOfWork.News.ExistsAsync(newsViewModel.Id);
-            if (newsExists)
+            var newsExists = await _unitOfWork.News.GetDbSet().FirstOrDefaultAsync( p => p.Id == newsViewModel.Id);
+            if (newsExists != null)
             {
                 var checkShortDescriptionUnique = await _unitOfWork.News
                     .GetDbSet()
@@ -102,8 +106,12 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    // TODO
-                    var news = _mapper.Map<News>(newsViewModel);
+                    var news = _mapper.Map<EditNewsViewModel, News>(newsViewModel, newsExists);
+
+                    if (newsViewModel.ImageFile != null)
+                    {
+                        news.Image = await _fileService.UploadPhoto(FileService.NewsPhotoFolderPath, newsViewModel.ImageFile, true);
+                    }
 
                     _unitOfWork.News.Update(news);
 

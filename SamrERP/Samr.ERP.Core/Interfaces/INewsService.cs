@@ -14,6 +14,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<EditNewsViewModel>> GetByIdAsync(Guid id);
         Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions pagingOptions);
         Task<BaseDataResponse<EditNewsViewModel>> CreateAsync(EditNewsViewModel newsViewModel);
-        Task<BaseDataResponse<EditNewsViewModel>> UpdateAsync(EditNewsViewModel newsViewModel);
+        Task<BaseDataResponse<EditNewsViewModel>> EditAsync(EditNewsViewModel newsViewModel);
     }
 }

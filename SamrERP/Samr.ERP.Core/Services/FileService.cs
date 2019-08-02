@@ -41,6 +41,8 @@ namespace Samr.ERP.Core.Services
 
         public static readonly string EmployeePhotoFolderPath = "Employees\\Photo";
         public static readonly string EmployeePassportScanFolderPath = "Employees\\PassportScan";
+        public static readonly string NewsPhotoFolderPath = "News\\Photo";
+
 
         public static readonly string FileArchiveFolderPath = "FileArchiveFolder";
 

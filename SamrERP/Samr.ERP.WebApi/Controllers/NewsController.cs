@@ -43,7 +43,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditNewsViewModel>> Post([FromBody] EditNewsViewModel newsViewModel)
+        public async Task<BaseDataResponse<EditNewsViewModel>> Create([FromForm] EditNewsViewModel newsViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -56,11 +56,11 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditNewsViewModel>> Edit([FromBody] EditNewsViewModel positionViewModel)
+        public async Task<BaseDataResponse<EditNewsViewModel>> Edit([FromForm] EditNewsViewModel positionViewModel)
         {
             if (ModelState.IsValid)
             {
-                var responseData = await _newsService.UpdateAsync(positionViewModel);
+                var responseData = await _newsService.EditAsync(positionViewModel);
                 return Response(responseData);
             }
 

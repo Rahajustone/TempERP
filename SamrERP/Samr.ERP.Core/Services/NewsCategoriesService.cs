@@ -102,23 +102,15 @@ namespace Samr.ERP.Core.Services
                 var newsCategory = _mapper.Map<NewsCategory>(newsCategoriesViewModel);
                 _unitOfWork.NewsCategories.Add(newsCategory);
 
-                var handbookExists = await _handbookService.ChangeStatus("Department", newsCategory.CreatedUserId );
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    response = BaseDataResponse<NewsCategoriesViewModel>.Success(_mapper.Map<NewsCategoriesViewModel>(newsCategory));
-                }
-                else
-                {
-                    response = BaseDataResponse<NewsCategoriesViewModel>.Fail(newsCategoriesViewModel, new ErrorModel("Not found handbook."));
-                }
+                response = BaseDataResponse<NewsCategoriesViewModel>.Success(_mapper.Map<NewsCategoriesViewModel>(newsCategory));
             }
 
             return response;
         }
 
-        public async Task<BaseDataResponse<NewsCategoriesViewModel>> Editsync(NewsCategoriesViewModel newsCategoriesViewModel)
+        public async Task<BaseDataResponse<NewsCategoriesViewModel>> EditAsync(NewsCategoriesViewModel newsCategoriesViewModel)
         {
             BaseDataResponse<NewsCategoriesViewModel> dataResponse;
 
@@ -139,17 +131,9 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.NewsCategories.Update(newsCategory);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Department", newsCategory.CreatedUserId );
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();
 
-                        dataResponse = BaseDataResponse<NewsCategoriesViewModel>.Success(_mapper.Map<NewsCategoriesViewModel>(newsCategory));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<NewsCategoriesViewModel>.Fail(newsCategoriesViewModel, new ErrorModel("Not found handbook."));
-                    }
+                    dataResponse = BaseDataResponse<NewsCategoriesViewModel>.Success(_mapper.Map<NewsCategoriesViewModel>(newsCategory));
                 }
             }
             else

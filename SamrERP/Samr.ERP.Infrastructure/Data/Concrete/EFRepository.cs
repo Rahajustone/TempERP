@@ -109,8 +109,13 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 DbSet.Attach(entity);
             }
             dbEntityEntry.State = EntityState.Modified;
+
             if (entity is ICreatableByUser creatableByUser)
                 DbContext.Entry(creatableByUser).Property(x => x.CreatedUserId).IsModified = false;
+
+            if (entity is ICreatable creatable)
+                DbContext.Entry(creatable).Property(x => x.CreatedAt).IsModified = false;
+            
             if (entity is IChangeable changeable)
             {
                 changeable.Updated = DateTime.Now;//GetDateTime();
