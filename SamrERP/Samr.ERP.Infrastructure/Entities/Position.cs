@@ -8,18 +8,8 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Position : CreatableByUserBaseObject, IActivable, ICreatable
+    public class Position : PositionBaseObject
     {
-        [Required]
-        [StringLength(64)]
-        public string Name { get; set; }
-
-        public Guid DepartmentId { get; set; }
-        [ForeignKey(nameof(DepartmentId))]
-        public Department Department { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
+        
     }
 }
