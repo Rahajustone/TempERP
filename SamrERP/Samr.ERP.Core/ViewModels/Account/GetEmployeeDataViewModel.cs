@@ -17,5 +17,6 @@ namespace Samr.ERP.Core.ViewModels.Account
         public string Phone { get; set; }
         public string Email { get; set; }
         public string PhotoPath { get; set; }
+        public string PhotoPathResized { get; set; }
     }
 }

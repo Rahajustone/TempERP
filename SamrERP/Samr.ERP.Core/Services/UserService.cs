@@ -215,9 +215,9 @@ namespace Samr.ERP.Core.Services
                 || userExists.UserLockReasonId != null)
                 return BaseResponse.Fail();
 
-            userExists.UserLockReasonId = lockUserViewModel.UserLockReasonId;
-            userExists.LockDate = DateTime.Now;
-            userExists.LockUserId = _userProvider.CurrentUser.Id;
+            LockUser(userExists,lockUserViewModel.UserLockReasonId);
+
+
 
             await _unitOfWork.CommitAsync();
 
@@ -247,9 +247,7 @@ namespace Samr.ERP.Core.Services
             if (userExists?.UserLockReasonId == null)
                 return BaseResponse.Fail();
 
-            userExists.UserLockReasonId = null;
-            userExists.LockDate = null;
-            userExists.LockUserId = null;
+            UnlockUser(userExists);
             
             await _unitOfWork.CommitAsync();
 
