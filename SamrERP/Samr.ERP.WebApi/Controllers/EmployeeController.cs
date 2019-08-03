@@ -207,7 +207,7 @@ namespace Samr.ERP.WebApi.Controllers
 
             if (employeeCardViewModel != null)
             {
-                string photoPath = FileService.GetFullPath(employeeCardViewModel.PhotoPath);
+                //string photoPath = FileService.GetFullPath(employeeCardViewModel.PhotoPath);
 
                 //employeeCardViewModel.PhotoPath = @"data:image/png;base64," +
                 //                              Convert.ToBase64String(System.IO.File.ReadAllBytes(FileService.GetFullPath("sauron.jpg")));
