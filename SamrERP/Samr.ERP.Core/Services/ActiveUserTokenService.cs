@@ -50,9 +50,12 @@ namespace Samr.ERP.Core.Services
         {
             var activeToken = _unitOfWork.ActiveUserTokens.All().FirstOrDefault(p => p.UserId == userId);
 
-            _unitOfWork.ActiveUserTokens.Delete(activeToken);
+            if (activeToken != null)
+            {
+                _unitOfWork.ActiveUserTokens.Delete(activeToken);
 
-            _unitOfWork.CommitAsync();
+                _unitOfWork.CommitAsync(); 
+            }
         }
     }
 }
