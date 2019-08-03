@@ -35,7 +35,8 @@ namespace Samr.ERP.Infrastructure.SeedData
                         IsDefault = true,
                         IsActive = true,
                         CreatedUserId = GuidExtensions.FULL_GUID,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.Now,
+                        EnabledSSL = true
                     });
         }
 

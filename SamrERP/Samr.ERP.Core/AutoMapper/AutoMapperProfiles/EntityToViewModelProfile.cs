@@ -299,8 +299,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.ImagePath, src => src.MapFrom(
                     map => FileService.GetDownloadAction(map.Image)))
                 .ReverseMap()
-                .ForMember(dst => dst.NewsCategory, opt => opt.Ignore())
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
+                .ForMember(dst => dst.NewsCategory, opt => opt.Ignore());
 
             CreateMap<ListNewsViewModel, News>();
             CreateMap<News, ListNewsViewModel>();
@@ -373,7 +373,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<NotificationSystemViewModel, Notification>()
             .ReverseMap();
             CreateMap<CreateMessageViewModel, Notification>()
-            .ReverseMap();
+                .ForMember(dst => dst.NotificationType, opt => opt.Ignore())
+                .ReverseMap();
         }
     }
 }
