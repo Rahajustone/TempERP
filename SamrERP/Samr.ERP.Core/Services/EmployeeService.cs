@@ -286,9 +286,10 @@ namespace Samr.ERP.Core.Services
             employee.EmployeeLockReasonId = employeeLockReason.Id;
             employee.LockDate = DateTime.Now;
 
-            _userService.LockUser(employee.User,GuidExtensions.FULL_GUID);
-
+            _unitOfWork.Employees.Update(employee);
             await _unitOfWork.CommitAsync();
+
+            _userService.LockUser(employee.User,GuidExtensions.FULL_GUID);
 
             return BaseResponse.Success();
         }
