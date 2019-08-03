@@ -7,11 +7,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class FileCategory : CreatableByUserBaseObject, IActivable, ICreatable
+    public class FileCategory : FileCategoryBaseObject
     {
-        [StringLength(64)]
-        public string Name { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }
