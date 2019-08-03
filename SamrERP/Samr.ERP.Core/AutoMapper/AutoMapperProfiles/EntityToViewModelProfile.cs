@@ -125,8 +125,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.Department.Name))
                 .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
-
+                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
+                .ForMember(dst => dst.Department, opt => opt.Ignore());
 
             #region Employee
 
@@ -342,7 +342,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
                 .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore()); ;
+                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
+                .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
             
             CreateMap<FileCategory, FileCategoryViewModel>().ReverseMap();
             CreateMap<FileCategory, EditFileCategoryViewModel>()
@@ -367,8 +368,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap();
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
 
-            CreateMap<NotificationSystemViewModel, Notification>().ReverseMap();
-            CreateMap<CreateMessageViewModel, Notification>().ReverseMap();
+            CreateMap<NotificationSystemViewModel, Notification>()
+            .ReverseMap();
+            CreateMap<CreateMessageViewModel, Notification>()
+            .ReverseMap();
         }
     }
 }
