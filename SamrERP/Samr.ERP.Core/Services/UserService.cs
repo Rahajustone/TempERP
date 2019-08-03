@@ -217,6 +217,7 @@ namespace Samr.ERP.Core.Services
 
             LockUser(userExists,lockUserViewModel.UserLockReasonId);
 
+            _activeUserTokenService.DeactivateTokenByUserId(userExists.Id);
 
 
             await _unitOfWork.CommitAsync();
@@ -229,7 +230,6 @@ namespace Samr.ERP.Core.Services
             user.UserLockReasonId = userLockReasonId;
             user.LockDate = DateTime.Now;
             user.LockUserId = _userProvider.CurrentUser.Id;
-            _activeUserTokenService.DeactivateTokenByUserId(user.Id);
         }
 
         public void UnlockUser(User user)

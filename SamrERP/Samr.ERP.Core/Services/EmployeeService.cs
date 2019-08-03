@@ -26,6 +26,7 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
         private readonly IFileService _fileService;
+        private readonly IActiveUserTokenService _activeUserTokenService;
         private readonly IMapper _mapper;
 
         public EmployeeService(
@@ -34,6 +35,7 @@ namespace Samr.ERP.Core.Services
             UserProvider userProvider,
             IEmailSender emailSender,
             IFileService fileService,
+            IActiveUserTokenService activeUserTokenService,
             IMapper mapper
 
             )
@@ -43,6 +45,7 @@ namespace Samr.ERP.Core.Services
             _userProvider = userProvider;
             _emailSender = emailSender;
             _fileService = fileService;
+            _activeUserTokenService = activeUserTokenService;
             _mapper = mapper;
         }
 
@@ -287,10 +290,18 @@ namespace Samr.ERP.Core.Services
             employee.LockDate = DateTime.Now;
 
             _unitOfWork.Employees.Update(employee);
+
+            if (employee.User != null)
+            {
+                _userService.LockUser(employee.User, GuidExtensions.FULL_GUID);
+            }
+
             await _unitOfWork.CommitAsync();
+            if (employee.User != null)
+            {
+                _activeUserTokenService.DeactivateTokenByUserId(employee.UserId.Value);
 
-            _userService.LockUser(employee.User,GuidExtensions.FULL_GUID);
-
+            }
             return BaseResponse.Success();
         }
 
@@ -308,7 +319,10 @@ namespace Samr.ERP.Core.Services
             employee.EmployeeLockReasonId = null;
             employee.LockDate = null;
 
-            _userService.UnlockUser(employee.User);
+            if (employee.User != null)
+            {
+                _userService.UnlockUser(employee.User); 
+            }
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
