@@ -7,11 +7,8 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Nationality : CreatableByUserBaseObject, IActivable, ICreatable
+    public class Nationality : NationalityBaseObject
     {
-        [Required]
-        public string Name { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedAt { get; set; }
+
     }
 }

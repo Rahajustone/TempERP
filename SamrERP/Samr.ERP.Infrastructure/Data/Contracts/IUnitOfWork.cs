@@ -21,20 +21,27 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<DepartmentLog> DepartmentLogs { get; }
         IRepository<EmployeeLockReason> EmployeeLockReasons { get; }
         IRepository<Nationality> Nationalities { get; }
+        IRepository<NationalityLog> NationalityLogs { get; }
         IRepository<Position> Positions { get; }
+        IRepository<PositionLog> PositionLogs { get; }
         IRepository<News> News { get; }
         IRepository<NewsCategory> NewsCategories { get; }
+        IRepository<NewsCategoryLog> NewsCategoryLogs { get; }
         IRepository<EmailSetting> EmailSettings { get; }
         IRepository<EmailMessageHistory> EmailMessageHistories { get; }
         IRepository<UserLockReason> UserLockReasons { get; }
+        IRepository<UserLockReasonLog> UserLockReasonLogs { get; }
         IRepository<UsefulLinkCategory> UsefulLinkCategories { get; }
         IRepository<UsefulLink> UsefulLinks { get; }
         IRepository<RefreshToken> RefreshTokens { get; }
         IRepository<FileCategory> FileCategories { get; }
+        IRepository<FileCategoryLog> FileCategoryLogs { get; }
         IRepository<FileArchive> FileArchives { get; }
         IRepository<NotificationType> NotificationTypes { get; }
         IRepository<Notification> Notifications { get; }
         IRepository<ActiveUserToken> ActiveUserTokens { get; }
+        IRepository<EmployeeLockReasonLog> EmployeeLockReasonLog { get; }
+        IRepository<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; }
         IRepository<T> GetStandardRepo<T>() where T : class;
     }
 }

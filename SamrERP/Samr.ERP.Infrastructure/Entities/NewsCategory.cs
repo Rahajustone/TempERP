@@ -8,12 +8,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class NewsCategory : CreatableByUserBaseObject, ICreatable, IActivable
+    public class NewsCategory : NewsCategoryBaseObject
     {
-        [Required]
-        [StringLength(64)]
-        public string Name { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public bool IsActive { get; set; }
     }
 }

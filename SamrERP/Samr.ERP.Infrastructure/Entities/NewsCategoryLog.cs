@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Samr.ERP.Infrastructure.Entities.BaseObjects;
-using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class UsefulLinkCategory : UsefulLinkCategoryBaseObject
+    public class NewsCategoryLog : NewsCategoryBaseObject
     {
+        public Guid NewsCategoryId { get; set; }
+        public NewsCategory NewsCategory { get; set; }
     }
 }

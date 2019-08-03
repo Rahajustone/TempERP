@@ -230,10 +230,11 @@ namespace Samr.ERP.Core.Services
                 var checkEmailUnique = await _unitOfWork.Employees
                     .GetDbSet()
                     .AnyAsync(e => e.Id != editEmployeeViewModel.Id
-                                   && e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower());
+                                   && e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower()
+                                   && e.Email.ToLower() == editEmployeeViewModel.Email.ToLower());
                 if (checkEmailUnique)
                 {
-                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Duplicate phone number!"));
+                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Duplicate phone number and Email!"));
                 }
                 else
                 {
@@ -262,7 +263,7 @@ namespace Samr.ERP.Core.Services
                 return BaseResponse.NotFound();
 
             var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == _userProvider.CurrentUser.Id);
-
+             
             employee.Email = editUserDetailsView.Email;
             employee.FactualAddress = editUserDetailsView.FactualAddress;
 
@@ -374,20 +375,35 @@ namespace Samr.ERP.Core.Services
         {
             BaseResponse response;
 
-            var existEmployee = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync(e => e.Id == editPassportDataEmployeeViewModel.EmployeeId);
+            var existEmployee = await _unitOfWork.Employees
+                .GetDbSet()
+                .FirstOrDefaultAsync(e => e.Id == editPassportDataEmployeeViewModel.EmployeeId);
 
             if (existEmployee != null)
             {
-                var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
-                if (editPassportDataEmployeeViewModel.PassportScan != null)
+                var passportNumberUnique = await _unitOfWork.Employees.GetDbSet()
+                    .AnyAsync(e => e.Id != editPassportDataEmployeeViewModel.EmployeeId 
+                                   && e.PassportNumber.ToLower() == editPassportDataEmployeeViewModel.PassportNumber.ToLower());
+
+                if (passportNumberUnique) 
                 {
-                    passportDataEmployee.PassportScanPath = await _fileService.UploadPhoto(FileService.EmployeePassportScanFolderPath, editPassportDataEmployeeViewModel.PassportScan, true);
+                    response = BaseResponse.Fail(new ErrorModel("Passport number must be unique"));
                 }
-                _unitOfWork.Employees.Update(passportDataEmployee);
+                else
+                {
+                    var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
 
-                await _unitOfWork.CommitAsync();
+                    if (editPassportDataEmployeeViewModel.PassportScan != null)
+                    {
+                        passportDataEmployee.PassportScanPath = await _fileService.UploadPhoto(FileService.EmployeePassportScanFolderPath, editPassportDataEmployeeViewModel.PassportScan, true);
+                    }
 
-                response = BaseResponse.Success();
+                    _unitOfWork.Employees.Update(passportDataEmployee);
+
+                    await _unitOfWork.CommitAsync();
+
+                    response = BaseResponse.Success();
+                }
             }
             else
             {

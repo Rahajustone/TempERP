@@ -24,18 +24,24 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<DepartmentLog> DepartmentLogs { get; set; }
         public DbSet<Position> Positions { get; set; }
+        public DbSet<PositionLog> PositionLogs { get; set; }
         public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
+        public DbSet<EmployeeLockReasonLog> EmployeeLockReasonLogs { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
+        public DbSet<NationalityLog> NationalityLogs { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<NewsCategory> NewsCategories { get; set; }
+        public DbSet<NewsCategoryLog> NewsCategoryLogs { get; set; }
         public DbSet<EmailSetting> EmailSettings { get; set; }
         public DbSet<EmailMessageHistory> EmailMessageHistories { get; set; }
         public DbSet<UserLockReason> UserLockReasons { get; set; }
         public DbSet<UsefulLinkCategory> UsefulLinkCategories { get; set; }
+        public DbSet<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; set; }
         public DbSet<UsefulLink> UsefulLinks { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<FileCategory> FileCategories { get; set; }
+        public DbSet<FileCategoryLog> FileCategoryLogs { get; set; }
         public DbSet<FileArchive> FileArchives { get; set; }
         public DbSet<NotificationType> NotificationTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
