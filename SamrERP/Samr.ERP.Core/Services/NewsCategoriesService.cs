@@ -11,6 +11,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -66,6 +67,14 @@ namespace Samr.ERP.Core.Services
             }
 
             return dataResponse;
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
+        {
+            var listItem = await _unitOfWork.NewsCategories.GetDbSet().Where(p => p.IsActive).ToListAsync();
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(
+                _mapper.Map<IEnumerable<SelectListItemViewModel>>(listItem));
         }
 
         public async Task<BaseDataResponse<PagedList<NewsCategoriesViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)

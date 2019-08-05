@@ -311,6 +311,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+            CreateMap<NewsCategory, SelectListItemViewModel>();
 
             CreateMap<EmailSetting, EmailSettingViewModel>();
             CreateMap<EmailSettingViewModel, EmailSetting>();

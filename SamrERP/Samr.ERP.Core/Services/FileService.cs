@@ -21,7 +21,7 @@ namespace Samr.ERP.Core.Services
 {
     public class FileService : IFileService
     {
-        private const string ApiBaseUrl = "https://51.145.98.38";
+        private const string ApiBaseUrl = "https://51.145.98.38:4446";
         private readonly IUnitOfWork _unitOfWork;
         private static string _filesPath;
         private static readonly int _resizeSize = 150;
