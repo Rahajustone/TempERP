@@ -146,9 +146,9 @@ namespace Samr.ERP.Core.Services
                     await _unitOfWork.CommitAsync();
 
                     var deptLog = new DepartmentLog();
-                    deptLog = _mapper.Map<DepartmentLog>(departmentExists);
+                    //deptLog = _mapper.Map<DepartmentLog>(departmentExists);
 
-                    deptLog.DepartmentId = departmentExists.Id;
+                    //deptLog.DepartmentId = departmentExists.Id;
                     
                     await _historyService.CreateHistory(deptLog, departmentExists);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Samr.ERP.Core.AutoMapper.AutoMapperProfiles;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities.BaseObjects;
@@ -22,10 +23,18 @@ namespace Samr.ERP.Core.Services
 
         public async Task<bool> CreateHistory(TSource source, TDest dest)
         {
-            //var entity = _mapper.Map<TSource>(source);
+            var tDest = _mapper.Map<Destination<TDest>>(dest);
 
-            var id = ((IBaseObject) source).Id;
-            _unitOfWork.GetStandardRepo<TDest>().Add(dest);
+            var tSource = _mapper.Map<Source<TSource>>(tDest);
+
+            var id = ((IBaseObject) dest).Id;
+
+            var entity = _mapper.Map<TSource>(tSource);
+
+            (entity).Id = id;
+
+
+            _unitOfWork.GetStandardRepo<TSource>().Add(entity);
 
             await _unitOfWork.CommitAsync();
 

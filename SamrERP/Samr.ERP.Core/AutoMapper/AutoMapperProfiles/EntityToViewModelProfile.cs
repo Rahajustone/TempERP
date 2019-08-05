@@ -10,7 +10,6 @@ using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.FileArchive;
-using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
 using Samr.ERP.Core.ViewModels.Handbook.FileCategory;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
@@ -29,6 +28,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
     {
         public EntityToViewModelProfile()
         {
+            CreateMap(typeof(Source<>), typeof(Destination<>));
+
+            //CreateMap<Department, DepartmentLog>()
+            //    .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
+            //    .ForMember(dst => dst.Id, opt => opt.Ignore())
+            //    .ForMember(dst => dst.Department, opt => opt.Ignore())
+            //    .ReverseMap();
+
             CreateMap<User, UserViewModel>()
                 .ForMember(dst => dst.IsLocked,
                     src => src.MapFrom(
@@ -74,7 +81,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 
             CreateMap<Department, DepartmentViewModel>()
                 .ReverseMap();
-            CreateMap<Department, DepartmentLog>().ReverseMap();
 
             CreateMap<Department, EditDepartmentViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
