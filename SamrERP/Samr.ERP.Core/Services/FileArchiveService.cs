@@ -53,7 +53,7 @@ namespace Samr.ERP.Core.Services
             if (filterFileArchiveViewModel.ShortDescription != null)
             {
                 var filterShortDesc = filterFileArchiveViewModel.ShortDescription.ToLower();
-                query = query.Where(f => EF.Functions.Like(f.ShortDescription.ToLower(), "%" + filterShortDesc + "%"));
+                query = query.Where(f => EF.Functions.Like(f.Title.ToLower(), "%" + filterShortDesc + "%"));
             }
 
             if (filterFileArchiveViewModel.OnlyActive)
@@ -91,7 +91,7 @@ namespace Samr.ERP.Core.Services
 
             var queryVm = query.ProjectTo<EditFileArchiveViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.ShortDescription);
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Title);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
@@ -108,7 +108,7 @@ namespace Samr.ERP.Core.Services
             BaseDataResponse<EditFileArchiveViewModel> response;
 
             var existsFileArchive = await _unitOfWork.FileArchives.GetDbSet()
-                .FirstOrDefaultAsync(p => p.ShortDescription.ToLower() == editFileArchiveViewModel.ShortDescription.ToLower());
+                .FirstOrDefaultAsync(p => p.Title.ToLower() == editFileArchiveViewModel.Title.ToLower());
             if (existsFileArchive != null)
             {
                 response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel, new ErrorModel("Entity  was found with the same name!"));
@@ -144,7 +144,7 @@ namespace Samr.ERP.Core.Services
             else
             {
                 var checkNameUnique = await GetQuery()
-                    .AnyAsync(d => d.Id != editFileArchiveViewModel.Id && d.ShortDescription.ToLower() == editFileArchiveViewModel.ShortDescription.ToLower());
+                    .AnyAsync(d => d.Id != editFileArchiveViewModel.Id && d.Title.ToLower() == editFileArchiveViewModel.Title.ToLower());
                 if (checkNameUnique)
                 {
                     response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel,

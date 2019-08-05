@@ -67,7 +67,7 @@ namespace Samr.ERP.Core.Services
             var newsExists = _unitOfWork.News.Any(u => u.ShortDescription == newsViewModel.ShortDescription);
             if (newsExists)
             {
-                response = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel, new ErrorModel("ShortDescription must not be unique"));
+                response = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel, new ErrorModel("Title must not be unique"));
             }
             else
             {

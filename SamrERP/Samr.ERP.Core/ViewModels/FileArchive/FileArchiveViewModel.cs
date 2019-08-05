@@ -11,7 +11,7 @@ namespace Samr.ERP.Core.ViewModels.FileArchive
         
         public string FilePath { get; set; }
 
-        public string ShortDescription { get; set; }
+        public string Title { get; set; }
 
         public string Description { get; set; }
 

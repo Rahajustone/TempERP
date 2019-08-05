@@ -11,5 +11,7 @@ namespace Samr.ERP.Core.ViewModels.News
         public string NewsCategoryName { get; set; }
         public IFormFile ImageFile { get; set; }
         public string ImagePath { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

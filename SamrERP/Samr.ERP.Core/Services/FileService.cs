@@ -139,7 +139,7 @@ namespace Samr.ERP.Core.Services
                 return String.Empty;
             }
 
-            var fileName = fileArchive.ShortDescription;
+            var fileName = fileArchive.Title;
 
             return fileName;
         }
