@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -31,8 +32,17 @@ namespace Samr.ERP.Core.Services
 
             var entity = _mapper.Map<TSource>(tSource);
 
-            (entity).Id = id;
+            //Type tSourceRef = tSource.GetType();
+            //var relationName = tSourceRef.Name;
 
+            //Type tDestRef = entity.GetType();
+
+            //PropertyInfo propInfo = entity.GetType().GetProperty("relationName");
+            //if (propInfo != null)
+            //    propInfo.SetValue(entity, Convert.ChangeType(id, propInfo.PropertyType));
+
+
+            //(entity).Id = id;
 
             _unitOfWork.GetStandardRepo<TSource>().Add(entity);
 

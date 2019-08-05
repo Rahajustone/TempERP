@@ -29,6 +29,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
         public EntityToViewModelProfile()
         {
             CreateMap(typeof(Source<>), typeof(Destination<>));
+            CreateMap(typeof(Destination<>), typeof(Source<>));
 
             //CreateMap<Department, DepartmentLog>()
             //    .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
@@ -304,6 +305,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.NewsCategory.Name))
                 .ForMember(dst => dst.ImagePath, src => src.MapFrom(
                     map => FileService.GetDownloadAction(map.Image)))
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.ToShortName()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.NewsCategory, opt => opt.Ignore());

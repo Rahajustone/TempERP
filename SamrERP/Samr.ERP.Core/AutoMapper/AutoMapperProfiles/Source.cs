@@ -8,9 +8,4 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
     {
         public TSource Value { get; set; }
     }
-
-    public class Destination<TDest>
-    {
-        public TDest Value { get; set; }
-    }
 }
