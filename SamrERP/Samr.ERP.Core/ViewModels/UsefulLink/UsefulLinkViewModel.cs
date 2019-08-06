@@ -14,6 +14,9 @@ namespace Samr.ERP.Core.ViewModels.UsefulLink
         public String UsefulLinkCategory { get; set; }
 
         [Required]
+        public string Url { get; set; }
+        
+        [Required]
         [StringLength(128)]
         public string Title { get; set; }
 

@@ -16,6 +16,9 @@ namespace Samr.ERP.Infrastructure.Entities
         public UsefulLinkCategory UsefulLinkCategory { get; set; }
 
         [Required]
+        public string Url { get; set; }
+
+        [Required]
         [StringLength(128)]
         public string Title { get; set; }
         
