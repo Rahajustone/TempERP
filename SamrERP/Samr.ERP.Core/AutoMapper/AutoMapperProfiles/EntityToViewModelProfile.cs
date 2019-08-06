@@ -29,7 +29,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
         public EntityToViewModelProfile()
         {
             CreateMap(typeof(Source<>), typeof(Destination<>));
-            CreateMap(typeof(Destination<>), typeof(Source<>));
+            //CreateMap(typeof(Destination<>), typeof(Source<>));
 
             //CreateMap<Department, DepartmentLog>()
             //    .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))

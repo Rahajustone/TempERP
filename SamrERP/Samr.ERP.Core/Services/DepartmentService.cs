@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.AutoMapper.AutoMapperProfiles;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -139,18 +140,24 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
+                    //var departmentLog = _mapper.Map<DepartmentLog>(departmentExists);
+
+                    var departmentLog = _mapper.Map<Source<DepartmentLog>>(_mapper.Map<Destination<Department>>(departmentExists));
+
                     var department = _mapper.Map<EditDepartmentViewModel, Department>(editDepartmentViewModel, departmentExists);
 
                     _unitOfWork.Departments.Update(department);
 
+                    _unitOfWork.DepartmentLogs.Add(departmentLog.Value);
+
                     await _unitOfWork.CommitAsync();
 
-                    var deptLog = new DepartmentLog();
-                    //deptLog = _mapper.Map<DepartmentLog>(departmentExists);
+                    //var deptLog = new DepartmentLog();
+                    ////deptLog = _mapper.Map<DepartmentLog>(departmentExists);
 
-                    //deptLog.DepartmentId = departmentExists.Id;
+                    ////deptLog.DepartmentId = departmentExists.Id;
                     
-                    await _historyService.CreateHistory(deptLog, departmentExists);
+                    //await _historyService.CreateHistory(deptLog, departmentExists);
 
                     dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
                 }

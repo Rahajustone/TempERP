@@ -17,7 +17,7 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         [StringLength(128)]
-        public string ShortDescription { get; set; }
+        public string Title { get; set; }
         
         [StringLength(512)]
         public string Description { get; set; }

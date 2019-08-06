@@ -39,14 +39,14 @@ namespace Samr.ERP.Core.Services
 
         private static IQueryable<News> GetFilterQuery(FilterNewsViewModel filterNewViewModel, IQueryable<News> query)
         {
-            if (filterNewViewModel.FromDate.HasValue)
+            if (filterNewViewModel.FromDate != null)
             {
-                query = query.Where(p => p.CreatedAt >= filterNewViewModel.FromDate);
+                query = query.Where(p => p.CreatedAt >=  DateTime.Parse(filterNewViewModel.FromDate));
             }
 
-            if (filterNewViewModel.ToDate.HasValue)
+            if (filterNewViewModel.ToDate != null)
             {
-                query = query.Where(p => p.CreatedAt <= filterNewViewModel.FromDate);
+                query = query.Where(p => p.CreatedAt <= DateTime.Parse(filterNewViewModel.FromDate));
             }
 
             if (filterNewViewModel.Title != null)

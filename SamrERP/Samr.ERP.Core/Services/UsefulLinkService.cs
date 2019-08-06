@@ -33,6 +33,32 @@ namespace Samr.ERP.Core.Services
             return _unitOfWork.UsefulLinks.GetDbSet();
         }
 
+        private IQueryable<UsefulLink> GetQueryFilter(FilterUsefulLinkViewModel filterUsefulLinkViewModel, IQueryable<UsefulLink> query)
+        {
+            if (filterUsefulLinkViewModel.FromDate.HasValue)
+            {
+                query = query.Where(p => p.CreatedAt >= filterUsefulLinkViewModel.FromDate);
+            }
+
+            if (filterUsefulLinkViewModel.ToDate.HasValue)
+            {
+                query = query.Where(p => p.CreatedAt <= filterUsefulLinkViewModel.FromDate);
+            }
+
+            if (filterUsefulLinkViewModel.Title != null)
+                query = query.Where(p => EF.Functions.Like(p.Title, "%" + filterUsefulLinkViewModel.Title + "%"));
+
+            if (filterUsefulLinkViewModel.CategoryId != Guid.Empty)
+                query = query.Where(p => p.UsefulLinkCategoryId == filterUsefulLinkViewModel.CategoryId);
+
+            if (filterUsefulLinkViewModel.OnlyActive)
+            {
+                query = query.Where(n => n.IsActive);
+            }
+
+            return query;
+        }
+
         public async Task<BaseDataResponse<UsefulLinkViewModel>> GetByIdAsync(Guid id)
         {
             var existsUsefulLink = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
@@ -64,7 +90,7 @@ namespace Samr.ERP.Core.Services
             BaseDataResponse<UsefulLinkViewModel> response;
 
             var existsUsefulLink = await GetQuery()
-                .FirstOrDefaultAsync(p => p.ShortDescription.ToLower() == editUsefulLinkViewModel.ShortDescription.ToLower());
+                .FirstOrDefaultAsync(p => p.Title.ToLower() == editUsefulLinkViewModel.Title.ToLower());
             if (existsUsefulLink != null)
             {
                 response = BaseDataResponse<UsefulLinkViewModel>.Fail(editUsefulLinkViewModel, new ErrorModel("Entity  was found with the same name!"));
@@ -95,7 +121,7 @@ namespace Samr.ERP.Core.Services
             else
             {
                 var checkNameUnique = await GetQuery()
-                    .AnyAsync(d => d.Id != editUsefulLinkViewModel.Id && d.ShortDescription.ToLower() == editUsefulLinkViewModel.ShortDescription.ToLower());
+                    .AnyAsync(d => d.Id != editUsefulLinkViewModel.Id && d.Title.ToLower() == editUsefulLinkViewModel.Title.ToLower());
                 if (checkNameUnique)
                 {
                     response = BaseDataResponse<UsefulLinkViewModel>.Fail(editUsefulLinkViewModel,
