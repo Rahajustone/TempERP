@@ -28,9 +28,9 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        private DbSet<UsefulLink> GetQuery()
+        private IQueryable<UsefulLink> GetQuery()
         {
-            return _unitOfWork.UsefulLinks.GetDbSet();
+            return _unitOfWork.UsefulLinks.GetDbSet().Include(p => p.CreatedUser);
         }
 
         private IQueryable<UsefulLink> GetQueryFilter(FilterUsefulLinkViewModel filterUsefulLinkViewModel, IQueryable<UsefulLink> query)
@@ -70,9 +70,12 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<UsefulLinkViewModel>.Success(_mapper.Map<UsefulLinkViewModel>(existsUsefulLink));
         }
 
-        public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> GetAllAsync(PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterUsefulLinkViewModel filterUsefulLinkViewModel)
         {
-            var pagedList = await GetQuery().ToMappedPagedListAsync<UsefulLink, UsefulLinkViewModel>(pagingOptions);
+            var query = GetQuery();
+            query = GetQueryFilter(filterUsefulLinkViewModel, query);
+
+            var pagedList = await query.ToMappedPagedListAsync<UsefulLink, UsefulLinkViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<UsefulLinkViewModel>>.Success(pagedList);
         }

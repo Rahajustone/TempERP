@@ -30,9 +30,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> All([FromQuery] PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> All([FromQuery] PagingOptions pagingOptions, [FromQuery]FilterUsefulLinkViewModel filterUsefulLinkViewModel)
         {
-            var response = await _usefulLinkService.GetAllAsync(pagingOptions);
+            var response = await _usefulLinkService.GetAllAsync(pagingOptions, filterUsefulLinkViewModel);
             return Response(response);
         }
 

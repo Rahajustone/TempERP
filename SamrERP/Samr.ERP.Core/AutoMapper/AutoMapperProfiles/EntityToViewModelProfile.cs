@@ -29,11 +29,15 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
         public EntityToViewModelProfile()
         {
             CreateMap(typeof(Source<>), typeof(Destination<>));
+            
+            #region Log
 
             CreateMap<Department, DepartmentLog>()
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Department, opt => opt.Ignore());
+
+            CreateMap<DepartmentLog, DepartmentLogViewModel>();
 
             CreateMap<Position, PositionLog>()
                 .ForMember(dst => dst.PositionId, src => src.MapFrom(map => map.Id))
@@ -69,6 +73,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.FileCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.FileCategory, opt => opt.Ignore());
+
+            #endregion
 
             CreateMap<User, UserViewModel>()
                 .ForMember(dst => dst.IsLocked,

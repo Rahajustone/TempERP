@@ -50,7 +50,7 @@ namespace Samr.ERP.Core.Services
             }
 
             if (filterNewViewModel.Title != null)
-                query = query.Where(p => EF.Functions.Like(p.Title, "%" + filterNewViewModel.Title + "%"));
+                query = query.Where(p => EF.Functions.Like(p.Title.ToLower(), "%" + filterNewViewModel.Title.ToLower() + "%"));
 
             if (filterNewViewModel.CategoryId != Guid.Empty)
                 query = query.Where(p => p.NewsCategoryId == filterNewViewModel.CategoryId);

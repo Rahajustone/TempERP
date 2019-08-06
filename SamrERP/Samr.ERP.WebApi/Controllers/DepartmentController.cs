@@ -75,6 +75,13 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(null, null));
         }
-     
+
+        [HttpGet]
+        public async Task<BaseDataResponse<PagedList<DepartmentLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery]PagingOptions pagingOptions, [FromQuery] SortRule sortRule)
+        {
+            var departmentsLog = await _departmentService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(departmentsLog);
+        }
+
     }
 }

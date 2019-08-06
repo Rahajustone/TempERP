@@ -19,5 +19,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
         Task<BaseDataResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel departmentViewModel);
         Task<BaseDataResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel departmentViewModel);
+        Task<BaseDataResponse<PagedList<DepartmentLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }
