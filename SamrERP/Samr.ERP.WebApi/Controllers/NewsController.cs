@@ -26,11 +26,10 @@ namespace Samr.ERP.WebApi.Controllers
             _newsService = newsService;
         }
 
-
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterNewsViewModel filterNewsViewModel)
         {
-            var news = await _newsService.GetAllAsync(pagingOptions);
+            var news = await _newsService.GetAllAsync(pagingOptions, filterNewsViewModel);
             return Response(news);
         }
 

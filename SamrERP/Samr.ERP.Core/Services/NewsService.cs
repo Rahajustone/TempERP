@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Remotion.Linq.Clauses;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -36,6 +37,32 @@ namespace Samr.ERP.Core.Services
                 .Include(n => n.NewsCategory);
         }
 
+        private static IQueryable<News> GetFilterQuery(FilterNewsViewModel filterNewViewModel, IQueryable<News> query)
+        {
+            if (filterNewViewModel.FromDate.HasValue)
+            {
+                query = query.Where(p => p.CreatedAt >= filterNewViewModel.FromDate);
+            }
+
+            if (filterNewViewModel.ToDate.HasValue)
+            {
+                query = query.Where(p => p.CreatedAt <= filterNewViewModel.FromDate);
+            }
+
+            if (filterNewViewModel.Title != null)
+                query = query.Where(p => EF.Functions.Like(p.Title, "%" + filterNewViewModel.Title + "%"));
+
+            if (filterNewViewModel.CategoryId != Guid.Empty)
+                query = query.Where(p => p.NewsCategoryId == filterNewViewModel.CategoryId);
+
+            if (filterNewViewModel.OnlyActive)
+            {
+                query = query.Where(n => n.IsActive);
+            }
+
+            return query;
+        }
+
         public async Task<BaseDataResponse<EditNewsViewModel>> GetByIdAsync(Guid id)
         {
             BaseDataResponse<EditNewsViewModel> response;
@@ -53,12 +80,17 @@ namespace Samr.ERP.Core.Services
             return response;
         }
 
-        public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions  pagingOptions)
+        public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions  pagingOptions, FilterNewsViewModel filterNewViewModel)
         {
-            var pageList = await GetQuery().ToMappedPagedListAsync<News, EditNewsViewModel>(pagingOptions);
+            var query =  GetQuery();
+            query = GetFilterQuery(filterNewViewModel, query);
+
+            var pageList = await query.ToMappedPagedListAsync<News, EditNewsViewModel>(pagingOptions);
 
             return BaseDataResponse<PagedList<EditNewsViewModel>>.Success(pageList);
         }
+
+        
 
         public async Task<BaseDataResponse<EditNewsViewModel>> CreateAsync(EditNewsViewModel newsViewModel)
         {
@@ -67,7 +99,7 @@ namespace Samr.ERP.Core.Services
             var newsExists = _unitOfWork.News.Any(u => u.ShortDescription == newsViewModel.ShortDescription);
             if (newsExists)
             {
-                response = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel, new ErrorModel("Title must not be unique"));
+                response = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel, new ErrorModel("Duplicate Title. Title must be unique"));
             }
             else
             {

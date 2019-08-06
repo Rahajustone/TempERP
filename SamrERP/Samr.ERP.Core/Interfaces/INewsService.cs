@@ -12,7 +12,7 @@ namespace Samr.ERP.Core.Interfaces
     public interface INewsService
     {
         Task<BaseDataResponse<EditNewsViewModel>> GetByIdAsync(Guid id);
-        Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions pagingOptions);
+        Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterNewsViewModel filterNewsViewModel);
         Task<BaseDataResponse<EditNewsViewModel>> CreateAsync(EditNewsViewModel newsViewModel);
         Task<BaseDataResponse<EditNewsViewModel>> EditAsync(EditNewsViewModel newsViewModel);
     }
