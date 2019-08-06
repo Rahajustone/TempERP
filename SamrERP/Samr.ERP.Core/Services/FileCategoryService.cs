@@ -128,8 +128,10 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var fileCategory = _mapper.Map<EditFileCategoryViewModel, FileCategory>(editFileCategoryViewModel, existsFileCategory);
+                    var fileCategoryLog = _mapper.Map<FileCategoryLog>(existsFileCategory);
+                    _unitOfWork.FileCategoryLogs.Add(fileCategoryLog);
 
+                    var fileCategory = _mapper.Map<EditFileCategoryViewModel, FileCategory>(editFileCategoryViewModel, existsFileCategory);
                     _unitOfWork.FileCategories.Update(fileCategory);
 
                     await _unitOfWork.CommitAsync();

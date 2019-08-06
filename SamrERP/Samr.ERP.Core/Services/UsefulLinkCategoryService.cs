@@ -132,8 +132,10 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var usefulLinkCategory = _mapper.Map<EditUsefulLinkCategoryViewModel, UsefulLinkCategory>(editUsefulLinkCategoryViewModel, existUsefulLinkCategory);
+                    var usefulLinkCategoryLog = _mapper.Map<UsefulLinkCategoryLog>(existUsefulLinkCategory);
+                    _unitOfWork.UsefulLinkCategoryLogs.Add(usefulLinkCategoryLog);
 
+                    var usefulLinkCategory = _mapper.Map<EditUsefulLinkCategoryViewModel, UsefulLinkCategory>(editUsefulLinkCategoryViewModel, existUsefulLinkCategory);
                     _unitOfWork.UsefulLinkCategories.Update(usefulLinkCategory);
 
                     await _unitOfWork.CommitAsync();

@@ -144,6 +144,9 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
+                    var employeeLockReasonLog = _mapper.Map<EmployeeLockReasonLog>(employeeLockReasonExists);
+                    _unitOfWork.EmployeeLockReasonLog.Add(employeeLockReasonLog);
+
                     var employeeLockReason = _mapper.Map<EditEmployeeLockReasonViewModel, EmployeeLockReason>(employeeLockReasonViewModel, employeeLockReasonExists);
                     _unitOfWork.EmployeeLockReasons.Update(employeeLockReason);
                     

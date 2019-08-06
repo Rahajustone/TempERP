@@ -133,6 +133,9 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
+                    var userLockReasonLog = _mapper.Map<UserLockReasonLog>(userLockReasonExists);
+                    _unitOfWork.UserLockReasonLogs.Add(userLockReasonLog);
+
                     var userLockReason = _mapper.Map<UserLockReasonViewModel, UserLockReason>(userLockReasonViewModel, userLockReasonExists);
                     _unitOfWork.UserLockReasons.Update(userLockReason);
 

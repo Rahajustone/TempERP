@@ -133,8 +133,10 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var newsCategory = _mapper.Map<NewsCategoriesViewModel, NewsCategory>(newsCategoriesViewModel, newsCategoryExists);
+                    var newsCategoryLog = _mapper.Map<NewsCategoryLog>(newsCategoryExists);
+                    _unitOfWork.NewsCategoryLogs.Add(newsCategoryLog);
 
+                    var newsCategory = _mapper.Map<NewsCategoriesViewModel, NewsCategory>(newsCategoriesViewModel, newsCategoryExists);
                     _unitOfWork.NewsCategories.Update(newsCategory);
 
                     await _unitOfWork.CommitAsync();

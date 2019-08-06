@@ -7,5 +7,7 @@ namespace Samr.ERP.Infrastructure.Entities
 {
     public class EmployeeLockReasonLog : EmployeeLockReasonBaseObject
     {
+        public Guid EmployeeLockReasonId { get; set; }
+        public EmployeeLockReason EmployeeLockReason { get; set; }
     }
 }

@@ -144,6 +144,9 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
+                    var positionLog = _mapper.Map<PositionLog>(positionExists);
+                    _unitOfWork.PositionLogs.Add(positionLog);
+
                     var position = _mapper.Map<EditPositionViewModel, Position>(positionViewModel, positionExists);
 
                     _unitOfWork.Positions.Update(position);

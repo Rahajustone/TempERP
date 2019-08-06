@@ -140,24 +140,15 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    //var departmentLog = _mapper.Map<DepartmentLog>(departmentExists);
-
-                    var departmentLog = _mapper.Map<Source<DepartmentLog>>(_mapper.Map<Destination<Department>>(departmentExists));
+                    var departmentLog = _mapper.Map<DepartmentLog>(departmentExists);
 
                     var department = _mapper.Map<EditDepartmentViewModel, Department>(editDepartmentViewModel, departmentExists);
 
                     _unitOfWork.Departments.Update(department);
 
-                    _unitOfWork.DepartmentLogs.Add(departmentLog.Value);
+                    _unitOfWork.DepartmentLogs.Add(departmentLog);
 
                     await _unitOfWork.CommitAsync();
-
-                    //var deptLog = new DepartmentLog();
-                    ////deptLog = _mapper.Map<DepartmentLog>(departmentExists);
-
-                    ////deptLog.DepartmentId = departmentExists.Id;
-                    
-                    //await _historyService.CreateHistory(deptLog, departmentExists);
 
                     dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
                 }

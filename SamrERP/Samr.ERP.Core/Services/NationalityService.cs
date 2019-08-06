@@ -139,8 +139,10 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var nationality = _mapper.Map<EditNationalityViewModel, Nationality>(nationalityViewModel, nationalityExists);
+                    var nationalityLog = _mapper.Map<NationalityLog>(nationalityExists);
+                    _unitOfWork.NationalityLogs.Add(nationalityLog);
 
+                    var nationality = _mapper.Map<EditNationalityViewModel, Nationality>(nationalityViewModel, nationalityExists);
                     _unitOfWork.Nationalities.Update(nationality);
                     
                     await _unitOfWork.CommitAsync();
