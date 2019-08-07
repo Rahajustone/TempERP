@@ -36,13 +36,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Department, opt => opt.Ignore());
-
             CreateMap<DepartmentLog, DepartmentLogViewModel>();
 
             CreateMap<Position, PositionLog>()
                 .ForMember(dst => dst.PositionId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Position, opt => opt.Ignore());
+            CreateMap<PositionLog, PositionLogViewModel>();
 
             CreateMap<Nationality, NationalityLog>()
                 .ForMember(dst => dst.NationalityId, src => src.MapFrom(map => map.Id))

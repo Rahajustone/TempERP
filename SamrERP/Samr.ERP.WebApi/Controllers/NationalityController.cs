@@ -80,5 +80,11 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, null));
         }
 
+        [HttpGet]
+        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllLog(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var nationality = await _nationalityService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(nationality);
+        }
     }
 }

@@ -36,8 +36,6 @@ namespace Samr.ERP.Core.Services
             return _unitOfWork.Nationalities.GetDbSet();
         }
 
-        //private static IQueryable<Nationality> 
-
         private IQueryable<Nationality> GetQueryWithUser()
         {
             return GetQuery().Include(u => u.CreatedUser);
@@ -156,6 +154,19 @@ namespace Samr.ERP.Core.Services
             }
 
             return dataResponse;
+        }
+
+        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.NationalityLogs.GetDbSet().Where(p => p.NationalityId == id);
+
+            var queryVm = query.ProjectTo<EditNationalityViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<EditNationalityViewModel>>.Success(pagedList);
         }
     }
 }
