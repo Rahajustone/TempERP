@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Remotion.Linq.Clauses;
@@ -12,6 +14,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.News;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
@@ -41,12 +44,14 @@ namespace Samr.ERP.Core.Services
         {
             if (filterNewViewModel.FromDate != null)
             {
-                query = query.Where(p => p.CreatedAt >=  filterNewViewModel.FromDate);
+                var fromDate = Convert.ToDateTime(filterNewViewModel.FromDate + " 00:00");
+                query = query.Where(p => p.CreatedAt >= fromDate);
             }
 
             if (filterNewViewModel.ToDate != null)
             {
-                query = query.Where(p => p.CreatedAt <= filterNewViewModel.FromDate);
+                var toDate = Convert.ToDateTime(filterNewViewModel.ToDate + " 23:59");
+                query = query.Where(p => p.CreatedAt <= toDate);
             }
 
             if (filterNewViewModel.Title != null)
@@ -68,13 +73,23 @@ namespace Samr.ERP.Core.Services
             BaseDataResponse<EditNewsViewModel> response;
 
             var existsNews = await GetQuery().FirstOrDefaultAsync(p => p.Id == id);
+
             if (existsNews == null)
             {
                 response = BaseDataResponse<EditNewsViewModel>.NotFound(null);
             }
             else
             {
-                response = BaseDataResponse<EditNewsViewModel>.Success(_mapper.Map<EditNewsViewModel>(existsNews));
+                var vm = _mapper.Map<EditNewsViewModel>(existsNews);
+
+                var employeeData = await _unitOfWork
+                    .Employees.GetDbSet()
+                    .Include(p => p.Position)
+                    .FirstOrDefaultAsync(p => p.UserId == existsNews.CreatedUserId);
+
+                vm.Author = _mapper.Map<MiniProfileViewModel>(employeeData);
+
+                response = BaseDataResponse<EditNewsViewModel>.Success(vm);
             }
 
             return response;
@@ -85,12 +100,24 @@ namespace Samr.ERP.Core.Services
             var query =  GetQuery();
             query = GetFilterQuery(filterNewViewModel, query);
 
-            var pageList = await query.ToMappedPagedListAsync<News, EditNewsViewModel>(pagingOptions);
+            var queryVm = query.ProjectTo<EditNewsViewModel>();
 
-            return BaseDataResponse<PagedList<EditNewsViewModel>>.Success(pageList);
+            var pagedList = await queryVm.ToPagedListAsync(pagingOptions);
+
+            var userIds = pagedList.Items.Select(p => p.CreatedUserId).ToList();
+
+            var employeeData = _unitOfWork
+                .Employees.GetDbSet()
+                .Include(p => p.Position)
+                .Where(p => userIds.Contains(p.UserId.ToString()));
+
+            foreach (var allNewsViewModel in pagedList.Items)
+            {
+                allNewsViewModel.Author = _mapper.Map<MiniProfileViewModel>(employeeData);
+            }
+
+            return BaseDataResponse<PagedList<EditNewsViewModel>>.Success(pagedList);
         }
-
-        
 
         public async Task<BaseDataResponse<EditNewsViewModel>> CreateAsync(EditNewsViewModel newsViewModel)
         {

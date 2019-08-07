@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Samr.ERP.Core.ViewModels.Employee;
 
 namespace Samr.ERP.Core.ViewModels.News
 {
@@ -11,8 +12,11 @@ namespace Samr.ERP.Core.ViewModels.News
         public string NewsCategoryName { get; set; }
         public IFormFile ImageFile { get; set; }
         public string ImagePath { get; set; }
-
         public bool IsActive { get; set; }
         public string CreatedUserName { get; set; }
+
+        public MiniProfileViewModel Author { get; set; }
+
+        public string CreatedUserId { get; set; }
     }
 }

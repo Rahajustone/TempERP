@@ -11,7 +11,7 @@ namespace Samr.ERP.Core.ViewModels.UsefulLink
 
         public Guid UsefulLinkCategoryId { get; set; }
 
-        public String UsefulLinkCategory { get; set; }
+        public String UsefulLinkCategoryName { get; set; }
 
         [Required]
         public string Url { get; set; }
@@ -25,7 +25,7 @@ namespace Samr.ERP.Core.ViewModels.UsefulLink
 
         public bool IsActive { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
         public string CreatedUserName { get; set; }
     }
 }

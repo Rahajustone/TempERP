@@ -50,6 +50,18 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<FileArchive> FilterQuery(FilterFileArchiveViewModel filterFileArchiveViewModel, IQueryable<FileArchive> query)
         {
+            if (filterFileArchiveViewModel.FromDate != null)
+            {
+                var fromDate = Convert.ToDateTime(filterFileArchiveViewModel.FromDate + " 00:00");
+                query = query.Where(p => p.CreatedAt >= fromDate);
+            }
+
+            if (filterFileArchiveViewModel.ToDate != null)
+            {
+                var toDate = Convert.ToDateTime(filterFileArchiveViewModel.ToDate + " 23:59");
+                query = query.Where(p => p.CreatedAt <= toDate);
+            }
+
             if (filterFileArchiveViewModel.ShortDescription != null)
             {
                 var filterShortDesc = filterFileArchiveViewModel.ShortDescription.ToLower();

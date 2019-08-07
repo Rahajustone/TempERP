@@ -21,6 +21,8 @@
     <Compile Remove="Migrations\20190801103349_fk.cs" />
     <Compile Remove="Migrations\20190801110308_DepartmentLog.cs" />
     <Compile Remove="Migrations\20190802044539_AddFieldToNewss.cs" />
+    <Compile Remove="Migrations\20190807053047_ForegignKyFix.cs" />
+    <Compile Remove="Migrations\20190807053133_ForegignKyFix.cs" />
   </ItemGroup>
 
   <ItemGroup>

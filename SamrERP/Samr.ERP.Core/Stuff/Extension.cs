@@ -58,6 +58,11 @@ namespace Samr.ERP.Core.Stuff
             return target.ToString("dd-MM-yyyy");
         }
 
+        public static string ToStringFormatCustom(this DateTime target)
+        {
+            return target.ToString("dd.MM.yyyy");
+        }
+
         public static async Task<PagedList<T>> ToPagedListAsync<T>(this IQueryable<T> source, PagingOptions pagingOptions)
         {
             var count = await source.CountAsync();

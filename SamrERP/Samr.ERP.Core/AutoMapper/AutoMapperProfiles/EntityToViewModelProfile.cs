@@ -347,9 +347,25 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(
                         map => map.CreatedUser.ToShortName()))
+                .ForMember(dst => dst.CreatedAt, src => src.MapFrom(map => map.CreatedAt.ToShortDateString()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.NewsCategory, opt => opt.Ignore());
+
+
+
+            CreateMap<Employee, MiniProfileViewModel>()
+                .ForMember(dst => dst.EmployeeId,
+                    src => src.MapFrom(
+                        map => map.Id))
+                .ForMember(dst => dst.FullName, src => src.MapFrom(
+                    map => $"{map.LastName} {map.FirstName} {map.MiddleName}"))
+                .ForMember(dst => dst.PhotoPath, src => src.MapFrom(
+                    map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
+                .ForMember(dst => dst.PositionName,
+                    src => src.MapFrom(
+                        map => map.Position.Name))
+                .ReverseMap();
 
             CreateMap<ListNewsViewModel, News>();
             CreateMap<News, ListNewsViewModel>();
@@ -393,6 +409,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
+                .ForMember(dst => dst.UsefulLinkCategoryName,
+                    src => src.MapFrom( map => map.UsefulLinkCategory.Name))
+                .ForMember(dst => dst.CreatedAt, src => src.MapFrom(
+                    map => map.CreatedAt.ToShortDateString()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());

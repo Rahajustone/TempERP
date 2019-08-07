@@ -30,23 +30,27 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<UsefulLink> GetQuery()
         {
-            return _unitOfWork.UsefulLinks.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.UsefulLinks.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(c => c.UsefulLinkCategory);
         }
 
         private IQueryable<UsefulLink> GetQueryFilter(FilterUsefulLinkViewModel filterUsefulLinkViewModel, IQueryable<UsefulLink> query)
         {
-            if (filterUsefulLinkViewModel.FromDate.HasValue)
+            if (filterUsefulLinkViewModel.FromDate != null)
             {
-                query = query.Where(p => p.CreatedAt >= filterUsefulLinkViewModel.FromDate);
+                var fromDate = Convert.ToDateTime(filterUsefulLinkViewModel.FromDate + " 00:00");
+                query = query.Where(p => p.CreatedAt >= fromDate);
             }
 
-            if (filterUsefulLinkViewModel.ToDate.HasValue)
+            if (filterUsefulLinkViewModel.ToDate != null)
             {
-                query = query.Where(p => p.CreatedAt <= filterUsefulLinkViewModel.FromDate);
+                var toDate = Convert.ToDateTime(filterUsefulLinkViewModel.ToDate + " 23:59");
+                query = query.Where(p => p.CreatedAt <= toDate);
             }
 
             if (filterUsefulLinkViewModel.Title != null)
-                query = query.Where(p => EF.Functions.Like(p.Title, "%" + filterUsefulLinkViewModel.Title + "%"));
+                query = query.Where(p => EF.Functions.Like(p.Title.ToLower(), "%" + filterUsefulLinkViewModel.Title.ToLower() + "%"));
 
             if (filterUsefulLinkViewModel.CategoryId != Guid.Empty)
                 query = query.Where(p => p.UsefulLinkCategoryId == filterUsefulLinkViewModel.CategoryId);

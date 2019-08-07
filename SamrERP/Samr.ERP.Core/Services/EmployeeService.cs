@@ -128,7 +128,6 @@ namespace Samr.ERP.Core.Services
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
 
-
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
             foreach (var allEmployeeViewModel in pagedList.Items)
