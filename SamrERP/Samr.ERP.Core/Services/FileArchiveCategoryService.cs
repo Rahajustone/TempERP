@@ -82,6 +82,7 @@ namespace Samr.ERP.Core.Services
         {
             var categorySelectList = await _unitOfWork.FileArchives
                 .GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
                 .Include(p => p.FileCategory)
                 .GroupBy(p => p.FileCategoryId)
                 .Select(p =>

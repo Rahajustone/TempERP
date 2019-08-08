@@ -51,6 +51,7 @@ namespace Samr.ERP.Core.Services
         private IQueryable<FileArchive> GetQueryWithInclude()
         {
             return GetQuery()
+                .OrderByDescending( p => p.CreatedAt)
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
                 .ThenInclude(p => p.Position);

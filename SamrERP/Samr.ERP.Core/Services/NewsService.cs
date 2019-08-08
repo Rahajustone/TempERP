@@ -41,9 +41,10 @@ namespace Samr.ERP.Core.Services
                 .Include(n => n.NewsCategory);
         }
 
-        private IIncludableQueryable<News, Position> GetQueryWithInclude()
+        private IQueryable<News> GetQueryWithInclude()
         {
             return _unitOfWork.News.GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
                 .Include(n => n.NewsCategory)
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
@@ -100,7 +101,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions  pagingOptions, FilterNewsViewModel filterNewViewModel)
         {
-            IQueryable<News> query = GetQueryWithInclude();
+            var query = GetQueryWithInclude();
 
             query = GetFilterQuery(filterNewViewModel, query);
 
