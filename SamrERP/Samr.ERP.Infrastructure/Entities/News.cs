@@ -25,9 +25,7 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         public string Description { get; set; }
-
-        [Required]
-        public  DateTime PublishAt { get; set; }
+        public DateTime PublishAt { get; set; }
 
         public string Image { get; set; }
 

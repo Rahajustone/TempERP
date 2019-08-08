@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Samr.ERP.Infrastructure.Data;
@@ -9,9 +10,10 @@ using Samr.ERP.Infrastructure.Data;
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190808141016_RemoveColumn_PublishAt")]
+    partial class RemoveColumn_PublishAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,7 +242,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("9a3fcddb-4680-4206-b712-4e07df82e354"),
-                            CreatedAt = new DateTime(2019, 8, 8, 19, 11, 17, 75, DateTimeKind.Local).AddTicks(5650),
+                            CreatedAt = new DateTime(2019, 8, 8, 19, 10, 16, 223, DateTimeKind.Local).AddTicks(6905),
                             CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             EnabledSSL = true,
                             IsActive = true,
@@ -562,8 +564,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.Property<bool>("IsActive");
 
                     b.Property<Guid>("NewsCategoryId");
-
-                    b.Property<DateTime>("PublishAt");
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()
@@ -1013,7 +1013,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                            CreatedAt = new DateTime(2019, 8, 8, 19, 11, 17, 74, DateTimeKind.Local).AddTicks(5781),
+                            CreatedAt = new DateTime(2019, 8, 8, 19, 10, 16, 222, DateTimeKind.Local).AddTicks(5038),
                             CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             IsActive = false
                         });

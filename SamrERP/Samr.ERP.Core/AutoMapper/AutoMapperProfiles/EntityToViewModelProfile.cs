@@ -357,6 +357,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt, 
                     src => src.MapFrom(
                         map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dst => dst.PublishAt,
+                    src => src.MapFrom(
+                        map => map.PublishAt.ToShortDateString()))
                 .ForMember(dest => dest.Author, 
                     src => src.MapFrom(
                         map => new MiniProfileViewModel

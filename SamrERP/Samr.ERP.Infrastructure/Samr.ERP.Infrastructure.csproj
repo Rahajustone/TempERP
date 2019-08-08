@@ -24,6 +24,8 @@
     <Compile Remove="Migrations\20190807053047_ForegignKyFix.cs" />
     <Compile Remove="Migrations\20190807053133_ForegignKyFix.cs" />
     <Compile Remove="Migrations\20190807135903_AddEmployeeRelationToUser.cs" />
+    <Compile Remove="Migrations\20190808135658_ChangeFiledsInNews.cs" />
+    <Compile Remove="Migrations\20190808140502_ChangeFiledsInNews.cs" />
   </ItemGroup>
 
   <ItemGroup>
