@@ -73,5 +73,12 @@ namespace Samr.ERP.WebApi.Controllers
 
             return BaseDataResponse<NewsCategoryViewModel>.Fail(null);
         }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<PagedList<NewsCategoryLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        {
+            var response = await _newsCategoryService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(response);
+        }
     }
 }

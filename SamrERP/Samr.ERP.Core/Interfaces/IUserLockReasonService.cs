@@ -18,5 +18,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemsAsync();
         Task<BaseDataResponse<UserLockReasonViewModel>> CreateAsync(UserLockReasonViewModel userLockReasonViewModel);
         Task<BaseDataResponse<UserLockReasonViewModel>> EditAsync(UserLockReasonViewModel userLockReasonViewModel);
+        Task<BaseDataResponse<PagedList<UserLockReasonLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

@@ -7,7 +7,9 @@ using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
+using Samr.ERP.Core.ViewModels.Handbook.UsefulLinkCategory;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
+using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Interfaces
 {
@@ -18,5 +20,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> CreateAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel);
         Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> EditAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel);
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
+        Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

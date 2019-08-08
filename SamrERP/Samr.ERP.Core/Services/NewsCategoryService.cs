@@ -162,5 +162,18 @@ namespace Samr.ERP.Core.Services
 
             return dataResponse;
         }
+
+        public async Task<BaseDataResponse<PagedList<NewsCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.NewsCategoryLogs.GetDbSet().Where(p => p.NewsCategoryId == id);
+
+            var queryVm = query.ProjectTo<NewsCategoryLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<NewsCategoryLogViewModel>>.Success(pagedList);
+        }
     }
 }

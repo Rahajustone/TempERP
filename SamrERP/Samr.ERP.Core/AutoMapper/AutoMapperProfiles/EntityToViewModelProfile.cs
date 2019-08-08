@@ -12,7 +12,7 @@ using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.FileArchive;
 using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
-using Samr.ERP.Core.ViewModels.Handbook.FileCategory;
+using Samr.ERP.Core.ViewModels.Handbook.FileArchiveCategory;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
@@ -434,8 +434,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
             
-            CreateMap<FileArchiveCategory, FileCategoryViewModel>().ReverseMap();
-            CreateMap<FileArchiveCategory, EditFileCategoryViewModel>()
+            CreateMap<FileArchiveCategory, FileArchiveCategoryViewModel>().ReverseMap();
+            CreateMap<FileArchiveCategory, EditFileArchiveCategoryViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(
                         map => map.CreatedUser.UserName))

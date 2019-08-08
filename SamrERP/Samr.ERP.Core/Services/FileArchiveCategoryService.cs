@@ -13,10 +13,11 @@ using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
-using Samr.ERP.Core.ViewModels.Handbook.FileCategory;
+using Samr.ERP.Core.ViewModels.Handbook.FileArchiveCategory;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using FileArchiveCategoryLog = Samr.ERP.Infrastructure.Entities.FileArchiveCategoryLog;
 
 namespace Samr.ERP.Core.Services
 {
@@ -52,30 +53,30 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<EditFileCategoryViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> GetByIdAsync(Guid id)
         {
             var existsFileCategory = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
             if (existsFileCategory == null)
             {
-                return BaseDataResponse<EditFileCategoryViewModel>.NotFound(null);
+                return BaseDataResponse<EditFileArchiveCategoryViewModel>.NotFound(null);
             }
 
-            return BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(existsFileCategory));
+            return BaseDataResponse<EditFileArchiveCategoryViewModel>.Success(_mapper.Map<EditFileArchiveCategoryViewModel>(existsFileCategory));
         }
 
-        public async Task<BaseDataResponse<PagedList<EditFileCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EditFileArchiveCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQuery();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<EditFileCategoryViewModel>();
+            var queryVm = query.ProjectTo<EditFileArchiveCategoryViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EditFileCategoryViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<EditFileArchiveCategoryViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
@@ -98,60 +99,74 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
         }
 
-        public async Task<BaseDataResponse<EditFileCategoryViewModel>> CreateAsync(EditFileCategoryViewModel fileCategoryViewModel)
+        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> CreateAsync(EditFileArchiveCategoryViewModel fileArchiveCategoryViewModel)
         {
-            BaseDataResponse<EditFileCategoryViewModel> dataResponse;
+            BaseDataResponse<EditFileArchiveCategoryViewModel> dataResponse;
 
-            var fileCategoryExists = _unitOfWork.FileArchiveCategories.Any(p => p.Name.ToLower() == fileCategoryViewModel.Name.ToLower());
+            var fileCategoryExists = _unitOfWork.FileArchiveCategories.Any(p => p.Name.ToLower() == fileArchiveCategoryViewModel.Name.ToLower());
             if (fileCategoryExists)
             {
-                dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Fail(fileCategoryViewModel, new ErrorModel("Already this model in database."));
+                dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.Fail(fileArchiveCategoryViewModel, new ErrorModel("Already this model in database."));
             }
             else
             {
-                var fileCategory = _mapper.Map<FileArchiveCategory>(fileCategoryViewModel);
+                var fileCategory = _mapper.Map<FileArchiveCategory>(fileArchiveCategoryViewModel);
                 _unitOfWork.FileArchiveCategories.Add(fileCategory);
 
                 await _unitOfWork.CommitAsync();
 
-                dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(fileCategory));
+                dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.Success(_mapper.Map<EditFileArchiveCategoryViewModel>(fileCategory));
             }
 
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<EditFileCategoryViewModel>> EditAsync(EditFileCategoryViewModel editFileCategoryViewModel)
+        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> EditAsync(EditFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
         {
-            BaseDataResponse<EditFileCategoryViewModel> dataResponse;
+            BaseDataResponse<EditFileArchiveCategoryViewModel> dataResponse;
 
-            var existsFileCategory = await GetQuery().FirstOrDefaultAsync(u => u.Id == editFileCategoryViewModel.Id);
+            var existsFileCategory = await GetQuery().FirstOrDefaultAsync(u => u.Id == editFileArchiveCategoryViewModel.Id);
             if (existsFileCategory != null)
             {
-                var checkNameUnique = await GetQuery().AnyAsync(u => u.Id != editFileCategoryViewModel.Id
-                                                                     && u.Name.ToLower() == editFileCategoryViewModel.Name.ToLower());
+                var checkNameUnique = await GetQuery().AnyAsync(u => u.Id != editFileArchiveCategoryViewModel.Id
+                                                                     && u.Name.ToLower() == editFileArchiveCategoryViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
-                    dataResponse = BaseDataResponse<EditFileCategoryViewModel>.NotFound(editFileCategoryViewModel, new ErrorModel("Duplicate name of file category!"));
+                    dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.NotFound(editFileArchiveCategoryViewModel, new ErrorModel("Duplicate name of file category!"));
                 }
                 else
                 {
                     var fileCategoryLog = _mapper.Map<FileArchiveCategoryLog>(existsFileCategory);
                     _unitOfWork.FileArchiveCategoryLogs.Add(fileCategoryLog);
 
-                    var fileCategory = _mapper.Map<EditFileCategoryViewModel, FileArchiveCategory>(editFileCategoryViewModel, existsFileCategory);
+                    var fileCategory = _mapper.Map<EditFileArchiveCategoryViewModel, FileArchiveCategory>(editFileArchiveCategoryViewModel, existsFileCategory);
                     _unitOfWork.FileArchiveCategories.Update(fileCategory);
 
                     await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Success(_mapper.Map<EditFileCategoryViewModel>(fileCategory));
+                    dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.Success(_mapper.Map<EditFileArchiveCategoryViewModel>(fileCategory));
                 }
             }
             else
             {
-                dataResponse = BaseDataResponse<EditFileCategoryViewModel>.NotFound(editFileCategoryViewModel);
+                dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.NotFound(editFileArchiveCategoryViewModel);
             }
 
             return dataResponse;
         }
+
+        public async Task<BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.UsefulLinkCategoryLogs.GetDbSet().Where(p => p.UsefulLinkCategoryId == id);
+
+            var queryVm = query.ProjectTo<FileArchiveCategoryLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>.Success(pagedList);
+        }
     }
 }
+

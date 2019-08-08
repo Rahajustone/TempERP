@@ -162,5 +162,18 @@ namespace Samr.ERP.Core.Services
 
             return dataResponse;
         }
+
+        public async Task<BaseDataResponse<PagedList<EmployeeLockReasonLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.EmployeeLockReasonLog.GetDbSet().Where(p => p.EmployeeLockReasonId == id);
+
+            var queryVm = query.ProjectTo<EmployeeLockReasonLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<EmployeeLockReasonLogViewModel>>.Success(pagedList);
+        }
     }
 }

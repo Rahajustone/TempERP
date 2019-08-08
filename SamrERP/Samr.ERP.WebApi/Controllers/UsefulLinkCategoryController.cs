@@ -77,5 +77,12 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(editUsefulLinkCategoryViewModel));
         }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        {
+            var response = await _usefulLinkCategoryService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(response);
+        }
     }
 }

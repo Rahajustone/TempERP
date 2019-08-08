@@ -13,7 +13,7 @@ using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
-using Samr.ERP.Core.ViewModels.Handbook.FileCategory;
+using Samr.ERP.Core.ViewModels.Handbook.FileArchiveCategory;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -31,7 +31,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditFileCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EditFileArchiveCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var fileCategories = await _fileArchiveCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(fileCategories);
@@ -45,7 +45,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditFileCategoryViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> Get(Guid id)
         {
             var fileCategory = await _fileArchiveCategoryService.GetByIdAsync(id);
 
@@ -53,27 +53,34 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditFileCategoryViewModel>> Create([FromBody] EditFileCategoryViewModel editFileCategoryViewModel)
+        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> Create([FromBody] EditFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
-                var result = await _fileArchiveCategoryService.CreateAsync(editFileCategoryViewModel);
+                var result = await _fileArchiveCategoryService.CreateAsync(editFileArchiveCategoryViewModel);
                 return Response(result);
             }
 
-            return Response(BaseDataResponse<EditFileCategoryViewModel>.Fail(editFileCategoryViewModel, null));
+            return Response(BaseDataResponse<EditFileArchiveCategoryViewModel>.Fail(editFileArchiveCategoryViewModel, null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditFileCategoryViewModel>> Edit([FromBody] EditFileCategoryViewModel editFileCategoryViewModel)
+        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> Edit([FromBody] EditFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
-                var result = await _fileArchiveCategoryService.EditAsync(editFileCategoryViewModel);
+                var result = await _fileArchiveCategoryService.EditAsync(editFileArchiveCategoryViewModel);
                 return Response(result);
             }
 
-            return Response(BaseDataResponse<EditFileCategoryViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<EditFileArchiveCategoryViewModel>.Fail(null, null));
+        }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        {
+            var response = await _fileArchiveCategoryService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(response);
         }
     }
 }

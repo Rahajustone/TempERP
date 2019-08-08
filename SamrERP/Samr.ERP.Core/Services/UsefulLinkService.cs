@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -11,7 +12,9 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
+using Samr.ERP.Core.ViewModels.Handbook.UsefulLinkCategory;
 using Samr.ERP.Core.ViewModels.UsefulLink;
+using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 
@@ -155,6 +158,19 @@ namespace Samr.ERP.Core.Services
             }
 
             return response;
+        }
+
+        public async Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.UserLockReasonLogs.GetDbSet().Where(p => p.UserLockReasonId == id);
+
+            var queryVm = query.ProjectTo<UsefulLinkCategoryLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>.Success(pagedList);
         }
     }
 }
