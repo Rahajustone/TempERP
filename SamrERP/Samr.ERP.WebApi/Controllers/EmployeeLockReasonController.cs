@@ -12,6 +12,7 @@ using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
+using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -67,11 +68,18 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var departmentResult = await _employeeLockReason.EditAsync(employeeLockReasonViewModel);
-                return Response(departmentResult);
+                var response = await _employeeLockReason.EditAsync(employeeLockReasonViewModel);
+                return Response(response);
             }
 
             return Response(BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(null, null));
+        }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<PagedList<EmployeeLockReasonLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        {
+            var response = await _employeeLockReason.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(response);
         }
     }
 }

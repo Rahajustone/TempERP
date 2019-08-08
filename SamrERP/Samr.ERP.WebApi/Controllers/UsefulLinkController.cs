@@ -13,6 +13,7 @@ using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.UsefulLink;
+using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -73,6 +74,13 @@ namespace Samr.ERP.WebApi.Controllers
             }
 
             return Response(BaseDataResponse<UsefulLinkViewModel>.Fail(null, null));
+        }
+
+        [HttpGet]
+        public async Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        {
+            var response = await _usefulLinkService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(response);
         }
     }
 }

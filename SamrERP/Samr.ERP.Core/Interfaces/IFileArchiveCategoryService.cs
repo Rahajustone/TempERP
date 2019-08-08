@@ -7,16 +7,17 @@ using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
-using Samr.ERP.Core.ViewModels.Handbook.FileCategory;
+using Samr.ERP.Core.ViewModels.Handbook.FileArchiveCategory;
 
 namespace Samr.ERP.Core.Interfaces
 {
     public interface IFileArchiveCategoryService
     {
-        Task<BaseDataResponse<EditFileCategoryViewModel>> GetByIdAsync(Guid id);
-        Task<BaseDataResponse<PagedList<EditFileCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
+        Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<PagedList<EditFileArchiveCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
-        Task<BaseDataResponse<EditFileCategoryViewModel>> CreateAsync(EditFileCategoryViewModel fileCategoryViewModel);
-        Task<BaseDataResponse<EditFileCategoryViewModel>> EditAsync(EditFileCategoryViewModel editFileCategoryViewModel);
+        Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> CreateAsync(EditFileArchiveCategoryViewModel fileArchiveCategoryViewModel);
+        Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> EditAsync(EditFileArchiveCategoryViewModel editFileArchiveCategoryViewModel);
+        Task<BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }
