@@ -12,6 +12,7 @@ using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
+using Samr.ERP.Core.ViewModels.Handbook.UsefulLinkCategory;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 
 namespace Samr.ERP.WebApi.Controllers

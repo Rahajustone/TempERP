@@ -156,17 +156,17 @@ namespace Samr.ERP.Core.Services
             return dataResponse;
         }
 
-        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<NationalityLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
             var query = _unitOfWork.NationalityLogs.GetDbSet().Where(p => p.NationalityId == id);
 
-            var queryVm = query.ProjectTo<EditNationalityViewModel>();
+            var queryVm = query.ProjectTo<NationalityLogViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EditNationalityViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<NationalityLogViewModel>>.Success(pagedList);
         }
     }
 }

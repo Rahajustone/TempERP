@@ -81,7 +81,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<NationalityLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
         {
             var nationality = await _nationalityService.GetAllLogAsync(id, pagingOptions, sortRule);
             return Response(nationality);
