@@ -208,11 +208,11 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseResponse> CreateRole([FromBody] CreateRoleDto createRoleDto)
+        public async Task<BaseResponse> CreateRole([FromBody] Role role)
         {
             if (ModelState.IsValid)
             {
-                var resposne = await _roleService.AddAsync(createRoleDto.Name, createRoleDto.Description, createRoleDto.Category);
+                var resposne = await _roleService.AddAsync(role);
 
                 return Response(resposne);
             }

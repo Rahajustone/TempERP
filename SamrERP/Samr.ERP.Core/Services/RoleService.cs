@@ -26,14 +26,8 @@ namespace Samr.ERP.Core.Services
             _roleManager = roleManager;
         }
 
-        public async Task<BaseResponse> AddAsync(string name, string description, string category)
+        public async Task<BaseResponse> AddAsync(Role role)
         {
-            var role = new Role()
-            {
-                Name = name,
-                Description = description,
-                Category = category
-            };
 
             var roleAddResult = await _roleManager.CreateAsync(role);
             return !roleAddResult.Succeeded
