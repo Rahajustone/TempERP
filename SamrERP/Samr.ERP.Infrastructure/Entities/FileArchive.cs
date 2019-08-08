@@ -13,7 +13,7 @@ namespace Samr.ERP.Infrastructure.Entities
     {
         public Guid FileCategoryId { get; set; }
         [ForeignKey(nameof(FileCategoryId))]
-        public FileCategory FileCategory { get; set; }
+        public FileArchiveCategory FileArchiveCategory { get; set; }
 
         [Required]
         [StringLength(64)]

@@ -31,12 +31,12 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        private IQueryable<FileCategory> GetQuery()
+        private IQueryable<FileArchiveCategory> GetQuery()
         {
-            return _unitOfWork.FileCategories.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.FileArchiveCategories.GetDbSet().Include(p => p.CreatedUser);
         }
 
-        private IQueryable<FileCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<FileCategory> query)
+        private IQueryable<FileArchiveCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<FileArchiveCategory> query)
         {
             if (filterHandbook.Name != null)
             {
@@ -83,13 +83,13 @@ namespace Samr.ERP.Core.Services
             var categorySelectList = await _unitOfWork.FileArchives
                 .GetDbSet()
                 .OrderByDescending(p => p.CreatedAt)
-                .Include(p => p.FileCategory)
+                .Include(p => p.FileArchiveCategory)
                 .GroupBy(p => p.FileCategoryId)
                 .Select(p =>
                     new SelectListItemViewModel()
                     {
                         Id = p.Key,
-                        Name = p.First().FileCategory.Name,
+                        Name = p.First().FileArchiveCategory.Name,
                         ItemsCount = p.Count()
                     }).ToListAsync();
 
@@ -102,15 +102,15 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditFileCategoryViewModel> dataResponse;
 
-            var fileCategoryExists = _unitOfWork.FileCategories.Any(p => p.Name.ToLower() == fileCategoryViewModel.Name.ToLower());
+            var fileCategoryExists = _unitOfWork.FileArchiveCategories.Any(p => p.Name.ToLower() == fileCategoryViewModel.Name.ToLower());
             if (fileCategoryExists)
             {
                 dataResponse = BaseDataResponse<EditFileCategoryViewModel>.Fail(fileCategoryViewModel, new ErrorModel("Already this model in database."));
             }
             else
             {
-                var fileCategory = _mapper.Map<FileCategory>(fileCategoryViewModel);
-                _unitOfWork.FileCategories.Add(fileCategory);
+                var fileCategory = _mapper.Map<FileArchiveCategory>(fileCategoryViewModel);
+                _unitOfWork.FileArchiveCategories.Add(fileCategory);
 
                 await _unitOfWork.CommitAsync();
 
@@ -135,11 +135,11 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
-                    var fileCategoryLog = _mapper.Map<FileCategoryLog>(existsFileCategory);
-                    _unitOfWork.FileCategoryLogs.Add(fileCategoryLog);
+                    var fileCategoryLog = _mapper.Map<FileArchiveCategoryLog>(existsFileCategory);
+                    _unitOfWork.FileArchiveCategoryLogs.Add(fileCategoryLog);
 
-                    var fileCategory = _mapper.Map<EditFileCategoryViewModel, FileCategory>(editFileCategoryViewModel, existsFileCategory);
-                    _unitOfWork.FileCategories.Update(fileCategory);
+                    var fileCategory = _mapper.Map<EditFileCategoryViewModel, FileArchiveCategory>(editFileCategoryViewModel, existsFileCategory);
+                    _unitOfWork.FileArchiveCategories.Update(fileCategory);
 
                     await _unitOfWork.CommitAsync();
 

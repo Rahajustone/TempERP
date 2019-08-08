@@ -5,9 +5,9 @@ using Samr.ERP.Infrastructure.Entities.BaseObjects;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class FileCategoryLog : FileCategoryBaseObject
+    public class FileArchiveCategoryLog : FileCategoryBaseObject
     {
         public Guid FileCategoryId { get; set; }
-        public FileCategory FileCategory { get; set; }
+        public FileArchiveCategory FileArchiveCategory { get; set; }
     }
 }

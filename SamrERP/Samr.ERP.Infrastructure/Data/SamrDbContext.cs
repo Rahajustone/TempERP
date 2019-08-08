@@ -41,8 +41,8 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; set; }
         public DbSet<UsefulLink> UsefulLinks { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        public DbSet<FileCategory> FileCategories { get; set; }
-        public DbSet<FileCategoryLog> FileCategoryLogs { get; set; }
+        public DbSet<FileArchiveCategory> FileArchiveCategories { get; set; }
+        public DbSet<FileArchiveCategoryLog> FileArchiveCategoryLogs { get; set; }
         public DbSet<FileArchive> FileArchives { get; set; }
         public DbSet<NotificationType> NotificationTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }

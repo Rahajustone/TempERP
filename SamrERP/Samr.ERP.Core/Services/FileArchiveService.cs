@@ -106,7 +106,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
         {
-            var query = GetQueryWithInclude().Include(c => c.FileCategory).AsQueryable();
+            var query = GetQueryWithInclude().Include(c => c.FileArchiveCategory).AsQueryable();
 
             query = FilterQuery(filterFileArchiveViewModel, query);
 

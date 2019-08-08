@@ -7,7 +7,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class FileCategory : FileCategoryBaseObject
+    public class FileArchiveCategory : FileCategoryBaseObject
     {
     }
 }

@@ -70,10 +70,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
 
-            CreateMap<FileCategory, FileCategoryLog>()
+            CreateMap<FileArchiveCategory, FileArchiveCategoryLog>()
                 .ForMember(dst => dst.FileCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
-                .ForMember(dst => dst.FileCategory, opt => opt.Ignore());
+                .ForMember(dst => dst.FileArchiveCategory, opt => opt.Ignore());
 
             #endregion
 
@@ -434,8 +434,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
             
-            CreateMap<FileCategory, FileCategoryViewModel>().ReverseMap();
-            CreateMap<FileCategory, EditFileCategoryViewModel>()
+            CreateMap<FileArchiveCategory, FileCategoryViewModel>().ReverseMap();
+            CreateMap<FileArchiveCategory, EditFileCategoryViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(
                         map => map.CreatedUser.UserName))
@@ -443,7 +443,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                    map => map.CreatedAt.ToShortDateString()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
-            CreateMap<FileCategory, SelectListItemViewModel>();
+            CreateMap<FileArchiveCategory, SelectListItemViewModel>();
 
             CreateMap<FileArchive, EditFileArchiveViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
@@ -463,7 +463,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         }))
                 ;
             CreateMap<EditFileArchiveViewModel, FileArchive>();
-            CreateMap<FileCategory, FileArchiveViewModel>()
+            CreateMap<FileArchiveCategory, FileArchiveViewModel>()
                 .ReverseMap();
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
 

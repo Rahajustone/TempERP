@@ -61,8 +61,8 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<UsefulLinkCategoryLog> UsefulLinkCategoryLogs => GetStandardRepo<UsefulLinkCategoryLog>();
         public IRepository<UsefulLink> UsefulLinks => GetStandardRepo<UsefulLink>();
         public IRepository<RefreshToken> RefreshTokens => GetStandardRepo<RefreshToken>();
-        public IRepository<FileCategory> FileCategories => GetStandardRepo<FileCategory>();
-        public IRepository<FileCategoryLog> FileCategoryLogs => GetStandardRepo<FileCategoryLog>();
+        public IRepository<FileArchiveCategory> FileArchiveCategories => GetStandardRepo<FileArchiveCategory>();
+        public IRepository<FileArchiveCategoryLog> FileArchiveCategoryLogs => GetStandardRepo<FileArchiveCategoryLog>();
         public IRepository<FileArchive> FileArchives => GetStandardRepo<FileArchive>();
         public  IRepository<NotificationType> NotificationTypes => GetStandardRepo<NotificationType>();
         public  IRepository<Notification> Notifications => GetStandardRepo<Notification>();
