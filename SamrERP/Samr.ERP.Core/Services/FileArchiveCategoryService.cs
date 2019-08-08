@@ -80,18 +80,17 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
         {
-            var categorySelectList = await _unitOfWork.FileArchives
-                .GetDbSet()
-                .OrderByDescending(p => p.CreatedAt)
-                .Include(p => p.FileArchiveCategory)
-                .GroupBy(p => p.FileCategoryId)
+            var categorySelectList = await GetQuery()
+                .Where(p=>p.IsActive)
                 .Select(p =>
                     new SelectListItemViewModel()
                     {
-                        Id = p.Key,
-                        Name = p.First().FileArchiveCategory.Name,
-                        ItemsCount = p.Count()
+                        Id = p.Id,
+                        Name = p.Name,
+                        ItemsCount = _unitOfWork.FileArchives.GetDbSet().Count(m =>m.FileCategoryId == p.Id )
                     }).ToListAsync();
+
+
 
             var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
 
