@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Org.BouncyCastle.Math.EC;
@@ -19,6 +20,7 @@ using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.News;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -27,12 +29,20 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
+        private readonly UserManager<User> _userManager;
+        private readonly UserProvider _userProvider;
 
-        public NewsService(IUnitOfWork unitOfWork, IMapper mapper, IFileService fileService)
+        public NewsService(IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IFileService fileService,
+            UserManager<User> userManager,
+            UserProvider userProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileService = fileService;
+            _userManager = userManager;
+            _userProvider = userProvider;
         }
 
         private IQueryable<News> GetQuery()
@@ -102,6 +112,12 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions  pagingOptions, FilterNewsViewModel filterNewViewModel)
         {
             var query = GetQueryWithInclude();
+
+            var result = await _userManager.IsInRoleAsync(_userProvider.CurrentUser, "Admin");
+            if (!result)
+            {
+                query = query.Where(p => p.PublishAt  <= DateTime.Now);
+            }
 
             query = GetFilterQuery(filterNewViewModel, query);
 

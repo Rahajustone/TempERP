@@ -86,14 +86,14 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
         {
-            var categorySelectList = await _unitOfWork.UsefulLinks
+            var categorySelectList = await _unitOfWork.UsefulLinkCategories
                 .GetDbSet()
                 .Where(p => p.IsActive)
                 .Select(p =>
                     new SelectListItemViewModel()
                     {
                         Id = p.Id,
-                        Name = p.Title,
+                        Name = p.Name,
                         ItemsCount = _unitOfWork.UsefulLinks.GetDbSet().Count(m => m.UsefulLinkCategoryId == p.Id)
                     }).ToListAsync();
 

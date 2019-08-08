@@ -437,7 +437,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                             PositionName = map.CreatedUser.Employee.Position.Name
                         }))
                 .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
             
             CreateMap<FileArchiveCategory, FileArchiveCategoryViewModel>().ReverseMap();

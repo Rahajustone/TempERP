@@ -38,13 +38,6 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(response);
         }
 
-        [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListItem()
-        {
-            var response = await _usefulLinkService.GetAllSelectListItemAsync();
-            return Response(response);
-        }
-
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<UsefulLinkViewModel>> Get(Guid id)
         {

@@ -95,14 +95,6 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<PagedList<UsefulLinkViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
-        {
-            var listItem = await GetQuery().Where(p => p.IsActive).ToListAsync();
-
-            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(
-                _mapper.Map<IEnumerable<SelectListItemViewModel>>(listItem));
-        }
-
         public async Task<BaseDataResponse<UsefulLinkViewModel>> CreateAsync(UsefulLinkViewModel editUsefulLinkViewModel)
         {
             BaseDataResponse<UsefulLinkViewModel> response;
