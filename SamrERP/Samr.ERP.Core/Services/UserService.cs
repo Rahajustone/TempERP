@@ -333,7 +333,7 @@ namespace Samr.ERP.Core.Services
                 .GroupBy(r => r.Category)
                 .Select(p => new GroupedUserRolesViewModel()
                 {
-                    GroupName = p.Key,
+                    GroupName = p.First().CategoryName,
                     Roles = p.Select(r => new UserRolesViewModel()
                     {
                         Name = r.Name,
