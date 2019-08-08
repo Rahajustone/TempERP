@@ -113,11 +113,12 @@ namespace Samr.ERP.Core.Services
         {
             var query = GetQueryWithInclude();
 
-            var result = await _userManager.IsInRoleAsync(_userProvider.CurrentUser, "Admin");
-            if (!result)
-            {
-                query = query.Where(p => p.PublishAt  <= DateTime.Now);
-            }
+            // TODO
+            //var result = await _userManager.IsInRoleAsync(_userProvider.CurrentUser, "Admin");
+            //if (!result)
+            //{
+            //    query = query.Where(p => p.PublishAt  <= DateTime.Now);
+            //}
 
             query = GetFilterQuery(filterNewViewModel, query);
 
