@@ -60,7 +60,7 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> GetByIdAsync(Guid id)
         {
             var existUsefulLinkCategory = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
-            if (existUsefulLinkCategory == null )
+            if (existUsefulLinkCategory == null)
             {
                 return BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(null);
             }
@@ -85,9 +85,19 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
         {
-             var listItem = await GetQuery().Where(p => p.IsActive).ToListAsync();
+            var categorySelectList = await _unitOfWork.UsefulLinks
+                .GetDbSet()
+                .Include(p => p.UsefulLinkCategory)
+                .GroupBy(p => p.UsefulLinkCategoryId)
+                .Select(p =>
+                    new SelectListItemViewModel()
+                    {
+                        Id = p.Key,
+                        Name = p.First().UsefulLinkCategory.Name,
+                        ItemsCount = p.Count()
+                    }).ToListAsync();
 
-             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(listItem));
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(categorySelectList);
         }
 
         public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> CreateAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel)
@@ -120,7 +130,7 @@ namespace Samr.ERP.Core.Services
             var existUsefulLinkCategory = await GetQuery().FirstOrDefaultAsync(p => p.Id == editUsefulLinkCategoryViewModel.Id);
             if (existUsefulLinkCategory == null)
             {
-                 response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(editUsefulLinkCategoryViewModel);
+                response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(editUsefulLinkCategoryViewModel);
             }
             else
             {

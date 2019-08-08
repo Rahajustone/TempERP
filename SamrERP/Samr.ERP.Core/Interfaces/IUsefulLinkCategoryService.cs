@@ -15,8 +15,8 @@ namespace Samr.ERP.Core.Interfaces
     {
         Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> GetByIdAsync(Guid id);
         Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
-        Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
         Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> CreateAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel);
         Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> EditAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel);
+        Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
     }
 }

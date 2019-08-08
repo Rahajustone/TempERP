@@ -13,10 +13,10 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface INewsCategoryService
     {
-        Task<BaseDataResponse<NewsCategoriesViewModel>> GetByIdAsync(Guid id);
-        Task<BaseDataResponse<PagedList<NewsCategoriesViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
-        Task<BaseDataResponse<NewsCategoriesViewModel>> CreateAsync(NewsCategoriesViewModel newsCategoriesViewModel);
-        Task<BaseDataResponse<NewsCategoriesViewModel>> EditAsync(NewsCategoriesViewModel newsCategoriesViewModel);
+        Task<BaseDataResponse<NewsCategoryViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<PagedList<NewsCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
+        Task<BaseDataResponse<NewsCategoryViewModel>> CreateAsync(NewsCategoryViewModel newsCategoryViewModel);
+        Task<BaseDataResponse<NewsCategoryViewModel>> EditAsync(NewsCategoryViewModel newsCategoryViewModel);
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
     }
 }

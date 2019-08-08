@@ -2,6 +2,7 @@
 using System.IO.Compression;
 using System.Security.AccessControl;
 using AutoMapper;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
@@ -366,7 +367,16 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<ListNewsViewModel, News>();
             CreateMap<News, ListNewsViewModel>();
 
-            CreateMap<NewsCategory, NewsCategoriesViewModel>()
+            //CreateMap<News, SelectListItemViewModel>()
+            //    .ForMember(dst => dst.Id, src => src.MapFrom(
+            //        map => map.NewsCategory.Id))
+            //    .ForMember(dst => dst.Name, src => src.MapFrom(
+            //        map => map.NewsCategory.Name))
+            //    .ForMember(dst => dst.ItemsCount, src => src.MapFrom(
+            //        map => Count(map.NewsCategory)));
+
+
+            CreateMap<NewsCategory, NewsCategoryViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
@@ -381,6 +391,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
                         map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
+                .ForMember(dst => dst.CreatedAt, src => src.MapFrom(
+                    map => map.CreatedAt.ToShortDateString()))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
 

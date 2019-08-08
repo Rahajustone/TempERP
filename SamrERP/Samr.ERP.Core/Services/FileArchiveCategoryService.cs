@@ -20,12 +20,12 @@ using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Services
 {
-    public class FileArchiveArchiveCategoryService : IFileArchiveCategoryService
+    public class FileArchiveCategoryService : IFileArchiveCategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public FileArchiveArchiveCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        public FileArchiveCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -80,10 +80,21 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
         {
-            var listItem = await GetQuery().Where(p => p.IsActive).ToListAsync();
+            var categorySelectList = await _unitOfWork.FileArchives
+                .GetDbSet()
+                .Include(p => p.FileCategory)
+                .GroupBy(p => p.FileCategoryId)
+                .Select(p =>
+                    new SelectListItemViewModel()
+                    {
+                        Id = p.Key,
+                        Name = p.First().FileCategory.Name,
+                        ItemsCount = p.Count()
+                    }).ToListAsync();
 
-            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(
-                _mapper.Map<IEnumerable<SelectListItemViewModel>>(listItem));
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
         }
 
         public async Task<BaseDataResponse<EditFileCategoryViewModel>> CreateAsync(EditFileCategoryViewModel fileCategoryViewModel)
