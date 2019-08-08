@@ -51,8 +51,7 @@ namespace Samr.ERP.Infrastructure.SeedData
                 NormalizedUserName = "000000000",
                 PasswordHash = "AQAAAAEAACcQAAAAEOvH5DQ4ttSuk1j8EVrg4uyxzHJGcnZbuhkdRvuppk2ttPByA/FjKpVcrA001HW68w==",//123qwe
                 ConcurrencyStamp = "9132A248-C5F8-4B01-91FB-9AF3777FCA48",
-                SecurityStamp = "83147D9F-26BC-486F-AE7E-5DD581362FAA",
-
+                SecurityStamp = "83147D9F-26BC-486F-AE7E-5DD581362FAA"
             };
             
             builder.Entity<User>()

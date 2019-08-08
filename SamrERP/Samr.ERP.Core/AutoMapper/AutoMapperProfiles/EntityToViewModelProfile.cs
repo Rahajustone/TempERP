@@ -347,26 +347,22 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(
                         map => map.CreatedUser.ToShortName()))
-                .ForMember(dst => dst.CreatedAt, src => src.MapFrom(map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dst => dst.CreatedAt, 
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dest => dest.Author, 
+                    src => src.MapFrom(
+                        map => new MiniProfileViewModel
+                        {
+                            EmployeeId = map.CreatedUser.Employee.Id.ToString(),
+                            FullName = $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
+                            PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
+                            PositionName = map.CreatedUser.Employee.Position.Name
+                        }))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.NewsCategory, opt => opt.Ignore());
-
-
-
-            CreateMap<Employee, MiniProfileViewModel>()
-                .ForMember(dst => dst.EmployeeId,
-                    src => src.MapFrom(
-                        map => map.Id))
-                .ForMember(dst => dst.FullName, src => src.MapFrom(
-                    map => $"{map.LastName} {map.FirstName} {map.MiddleName}"))
-                .ForMember(dst => dst.PhotoPath, src => src.MapFrom(
-                    map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
-                .ForMember(dst => dst.PositionName,
-                    src => src.MapFrom(
-                        map => map.Position.Name))
-                .ReverseMap();
-
+            
             CreateMap<ListNewsViewModel, News>();
             CreateMap<News, ListNewsViewModel>();
 
@@ -413,6 +409,15 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom( map => map.UsefulLinkCategory.Name))
                 .ForMember(dst => dst.CreatedAt, src => src.MapFrom(
                     map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dest => dest.Author,
+                    src => src.MapFrom(
+                        map => new MiniProfileViewModel
+                        {
+                            EmployeeId = map.CreatedUser.Employee.Id.ToString(),
+                            FullName = $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
+                            PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
+                            PositionName = map.CreatedUser.Employee.Position.Name
+                        }))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
@@ -434,7 +439,17 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.UserName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dest => dest.Author,
+                    src => src.MapFrom(
+                        map => new MiniProfileViewModel
+                        {
+                            EmployeeId = map.CreatedUser.Employee.Id.ToString(),
+                            FullName = $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
+                            PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
+                            PositionName = map.CreatedUser.Employee.Position.Name
+                        }))
+                ;
             CreateMap<EditFileArchiveViewModel, FileArchive>();
             CreateMap<FileCategory, FileArchiveViewModel>()
                 .ReverseMap();

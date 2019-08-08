@@ -11,7 +11,7 @@ using Samr.ERP.Core.ViewModels.Handbook.FileCategory;
 
 namespace Samr.ERP.Core.Interfaces
 {
-    public interface IFileCategoryService
+    public interface IFileArchiveCategoryService
     {
         Task<BaseDataResponse<EditFileCategoryViewModel>> GetByIdAsync(Guid id);
         Task<BaseDataResponse<PagedList<EditFileCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);

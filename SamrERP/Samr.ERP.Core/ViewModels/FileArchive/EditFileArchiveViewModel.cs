@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Samr.ERP.Core.ViewModels.Employee;
 
 namespace Samr.ERP.Core.ViewModels.FileArchive
 {
@@ -9,5 +10,7 @@ namespace Samr.ERP.Core.ViewModels.FileArchive
     {
         public IFormFile File { get; set; }
         public string CreatedUserName { get; set; }
+
+        public MiniProfileViewModel Author { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using Samr.ERP.Core.ViewModels.Employee;
 
 namespace Samr.ERP.Core.ViewModels.UsefulLink
 {
@@ -11,7 +12,7 @@ namespace Samr.ERP.Core.ViewModels.UsefulLink
 
         public Guid UsefulLinkCategoryId { get; set; }
 
-        public String UsefulLinkCategoryName { get; set; }
+        public string UsefulLinkCategoryName { get; set; }
 
         [Required]
         public string Url { get; set; }
@@ -27,5 +28,7 @@ namespace Samr.ERP.Core.ViewModels.UsefulLink
 
         public string CreatedAt { get; set; }
         public string CreatedUserName { get; set; }
+
+        public MiniProfileViewModel Author { get; set; }
     }
 }

@@ -11,7 +11,7 @@ using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 
 namespace Samr.ERP.Core.Interfaces
 {
-    public interface INewsCategoriesService
+    public interface INewsCategoryService
     {
         Task<BaseDataResponse<NewsCategoriesViewModel>> GetByIdAsync(Guid id);
         Task<BaseDataResponse<PagedList<NewsCategoriesViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);

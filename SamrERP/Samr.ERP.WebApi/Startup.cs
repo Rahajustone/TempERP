@@ -77,13 +77,13 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<INewsService, NewsService>();
-            services.AddScoped<INewsCategoriesService, NewsCategoriesService>();
+            services.AddScoped<INewsCategoryService, NewsCategoryService>();
             services.AddScoped<IEmailSettingService, EmailSettingSettingService>();
             services.AddScoped<IUserLockReasonService, UserLockReasonService>();
             services.AddScoped<IGenderService, GenderService>();
             services.AddScoped<IUsefulLinkCategoryService, UsefulLinkCategoryService>();
             services.AddScoped<IUsefulLinkService, UsefulLinkService>();
-            services.AddScoped<IFileCategoryService, FileCategoryService>();
+            services.AddScoped<IFileArchiveCategoryService, FileArchiveArchiveCategoryService>();
             services.AddScoped<IFileArchiveService, FileArchiveService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddSingleton<HubEvent.HubEvent>();

@@ -8,6 +8,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Org.BouncyCastle.Math.EC;
 using Remotion.Linq.Clauses;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -38,6 +39,15 @@ namespace Samr.ERP.Core.Services
         {
             return _unitOfWork.News.GetDbSet()
                 .Include(n => n.NewsCategory);
+        }
+
+        private IIncludableQueryable<News, Position> GetQueryWithInclude()
+        {
+            return _unitOfWork.News.GetDbSet()
+                .Include(n => n.NewsCategory)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .ThenInclude(p => p.Position);
         }
 
         private static IQueryable<News> GetFilterQuery(FilterNewsViewModel filterNewViewModel, IQueryable<News> query)
@@ -72,7 +82,7 @@ namespace Samr.ERP.Core.Services
         {
             BaseDataResponse<EditNewsViewModel> response;
 
-            var existsNews = await GetQuery().FirstOrDefaultAsync(p => p.Id == id);
+            var existsNews = await GetQueryWithInclude().FirstOrDefaultAsync(p => p.Id == id);
 
             if (existsNews == null)
             {
@@ -82,13 +92,6 @@ namespace Samr.ERP.Core.Services
             {
                 var vm = _mapper.Map<EditNewsViewModel>(existsNews);
 
-                var employeeData = await _unitOfWork
-                    .Employees.GetDbSet()
-                    .Include(p => p.Position)
-                    .FirstOrDefaultAsync(p => p.UserId == existsNews.CreatedUserId);
-
-                vm.Author = _mapper.Map<MiniProfileViewModel>(employeeData);
-
                 response = BaseDataResponse<EditNewsViewModel>.Success(vm);
             }
 
@@ -97,24 +100,13 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> GetAllAsync(PagingOptions  pagingOptions, FilterNewsViewModel filterNewViewModel)
         {
-            var query =  GetQuery();
+            IQueryable<News> query = GetQueryWithInclude();
+
             query = GetFilterQuery(filterNewViewModel, query);
 
             var queryVm = query.ProjectTo<EditNewsViewModel>();
 
             var pagedList = await queryVm.ToPagedListAsync(pagingOptions);
-
-            var userIds = pagedList.Items.Select(p => p.CreatedUserId).ToList();
-
-            var employeeData = _unitOfWork
-                .Employees.GetDbSet()
-                .Include(p => p.Position)
-                .Where(p => userIds.Contains(p.UserId.ToString()));
-
-            foreach (var allNewsViewModel in pagedList.Items)
-            {
-                allNewsViewModel.Author = _mapper.Map<MiniProfileViewModel>(employeeData);
-            }
 
             return BaseDataResponse<PagedList<EditNewsViewModel>>.Success(pagedList);
         }

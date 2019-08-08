@@ -36,6 +36,7 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<EmailSetting> EmailSettings { get; set; }
         public DbSet<EmailMessageHistory> EmailMessageHistories { get; set; }
         public DbSet<UserLockReason> UserLockReasons { get; set; }
+        public DbSet<UserLockReasonLog> UserLockReasonLogs { get; set; }
         public DbSet<UsefulLinkCategory> UsefulLinkCategories { get; set; }
         public DbSet<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; set; }
         public DbSet<UsefulLink> UsefulLinks { get; set; }
@@ -50,6 +51,11 @@ namespace Samr.ERP.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<User>()
+                .HasOne(a => a.Employee).WithOne(b => b.User)
+                .HasForeignKey<Employee>(e => e.UserId);
+
             //builder.Entity<Employee>().ToTable("Employees");
             //builder.Entity<Department>().ToTable("Departments");
             //builder.Entity<DepartmentLog>().ToTable("DepartmentLog");

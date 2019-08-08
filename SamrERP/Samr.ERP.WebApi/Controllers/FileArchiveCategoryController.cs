@@ -21,33 +21,33 @@ namespace Samr.ERP.WebApi.Controllers
     [Route("api/[controller]/[action]")]
     [Authorize]
     [ApiController]
-    public class FileCategoryController : ApiController
+    public class FileArchiveCategoryController : ApiController
     {
-        private readonly IFileCategoryService _fileCategoryService;
+        private readonly IFileArchiveCategoryService _fileArchiveCategoryService;
 
-        public FileCategoryController(IFileCategoryService fileCategoryService)
+        public FileArchiveCategoryController(IFileArchiveCategoryService fileArchiveCategoryService)
         {
-            _fileCategoryService = fileCategoryService;
+            _fileArchiveCategoryService = fileArchiveCategoryService;
         }
 
         [HttpGet]
         public async Task<BaseDataResponse<PagedList<EditFileCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
-            var fileCategories = await _fileCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
+            var fileCategories = await _fileArchiveCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(fileCategories);
         }
 
         [HttpGet]
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListItem()
         {
-            var listedItem = await _fileCategoryService.GetAllSelectListItemAsync();
+            var listedItem = await _fileArchiveCategoryService.GetAllSelectListItemAsync();
             return Response(listedItem);
         }
 
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<EditFileCategoryViewModel>> Get(Guid id)
         {
-            var fileCategory = await _fileCategoryService.GetByIdAsync(id);
+            var fileCategory = await _fileArchiveCategoryService.GetByIdAsync(id);
 
             return Response(fileCategory);
         }
@@ -57,7 +57,7 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _fileCategoryService.CreateAsync(editFileCategoryViewModel);
+                var result = await _fileArchiveCategoryService.CreateAsync(editFileCategoryViewModel);
                 return Response(result);
             }
 
@@ -69,12 +69,11 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _fileCategoryService.EditAsync(editFileCategoryViewModel);
+                var result = await _fileArchiveCategoryService.EditAsync(editFileCategoryViewModel);
                 return Response(result);
             }
 
             return Response(BaseDataResponse<EditFileCategoryViewModel>.Fail(null, null));
         }
-
     }
 }

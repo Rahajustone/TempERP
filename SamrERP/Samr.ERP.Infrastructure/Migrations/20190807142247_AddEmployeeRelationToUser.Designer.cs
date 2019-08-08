@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Samr.ERP.Infrastructure.Data;
@@ -9,9 +10,10 @@ using Samr.ERP.Infrastructure.Data;
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190807142247_AddEmployeeRelationToUser")]
+    partial class AddEmployeeRelationToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,7 +242,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("9a3fcddb-4680-4206-b712-4e07df82e354"),
-                            CreatedAt = new DateTime(2019, 8, 8, 11, 0, 16, 68, DateTimeKind.Local).AddTicks(7579),
+                            CreatedAt = new DateTime(2019, 8, 7, 19, 22, 46, 847, DateTimeKind.Local).AddTicks(8518),
                             CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             EnabledSSL = true,
                             IsActive = true,
@@ -1012,35 +1014,10 @@ namespace Samr.ERP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                            CreatedAt = new DateTime(2019, 8, 8, 11, 0, 16, 67, DateTimeKind.Local).AddTicks(2435),
+                            CreatedAt = new DateTime(2019, 8, 7, 19, 22, 46, 846, DateTimeKind.Local).AddTicks(2157),
                             CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             IsActive = false
                         });
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.UserLockReasonLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<Guid>("CreatedUserId");
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(32);
-
-                    b.Property<Guid>("UserLockReasonId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("UserLockReasonId");
-
-                    b.ToTable("UserLockReasonLogs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1388,19 +1365,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
                         .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.UserLockReasonLog", b =>
-                {
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.UserLockReason", "UserLockReason")
-                        .WithMany()
-                        .HasForeignKey("UserLockReasonId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618

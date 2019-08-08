@@ -18,33 +18,33 @@ namespace Samr.ERP.WebApi.Controllers
     [Route("api/[controller]/[action]")]
     [Authorize]
     [ApiController]
-    public class NewsCategoriesController : ApiController
+    public class NewsCategoryController : ApiController
     {
-        private readonly INewsCategoriesService _newsCategoriesService;
+        private readonly INewsCategoryService _newsCategoryService;
 
-        public NewsCategoriesController(INewsCategoriesService newsCategoriesService)
+        public NewsCategoryController(INewsCategoryService newsCategoryService)
         {
-            _newsCategoriesService = newsCategoriesService;
+            _newsCategoryService = newsCategoryService;
         }
 
         [HttpGet]
         public async Task<BaseDataResponse<PagedList<NewsCategoriesViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
-            var newsCategories = await _newsCategoriesService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
+            var newsCategories = await _newsCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(newsCategories);
         }
 
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<NewsCategoriesViewModel>> Get(Guid id)
         {
-            var newsCategory = await _newsCategoriesService.GetByIdAsync(id);
+            var newsCategory = await _newsCategoryService.GetByIdAsync(id);
             return Response(newsCategory);
         }
 
         [HttpGet]
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListItem()
         {
-            var listedItem = await _newsCategoriesService.GetAllSelectListItemAsync();
+            var listedItem = await _newsCategoryService.GetAllSelectListItemAsync();
             return Response(listedItem);
         }
 
@@ -53,7 +53,7 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _newsCategoriesService.CreateAsync(newsCategoriesViewModel);
+                var response = await _newsCategoryService.CreateAsync(newsCategoriesViewModel);
 
                 return response;
             }
@@ -66,7 +66,7 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _newsCategoriesService.EditAsync(newsCategoriesViewModel);
+                var response = await _newsCategoryService.EditAsync(newsCategoriesViewModel);
 
                 return response;
             }

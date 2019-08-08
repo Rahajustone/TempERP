@@ -48,6 +48,14 @@ namespace Samr.ERP.Core.Services
             return GetQuery().Include(u => u.CreatedUser);
         }
 
+        private IQueryable<FileArchive> GetQueryWithInclude()
+        {
+            return GetQuery()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .ThenInclude(p => p.Position);
+        }
+
         private IQueryable<FileArchive> FilterQuery(FilterFileArchiveViewModel filterFileArchiveViewModel, IQueryable<FileArchive> query)
         {
             if (filterFileArchiveViewModel.FromDate != null)
@@ -83,7 +91,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<EditFileArchiveViewModel>> GetByIdAsync(Guid id)
         {
-            var existsFileArchive = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
+            var existsFileArchive = await GetQueryWithInclude().FirstOrDefaultAsync(u => u.Id == id);
             if (existsFileArchive == null)
             {
                 return BaseDataResponse<EditFileArchiveViewModel>.NotFound(null); 
@@ -97,7 +105,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
         {
-            var query = GetQueryWithUser().Include(c => c.FileCategory).AsQueryable();
+            var query = GetQueryWithInclude().Include(c => c.FileCategory).AsQueryable();
 
             query = FilterQuery(filterFileArchiveViewModel, query);
 

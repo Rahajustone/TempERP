@@ -35,6 +35,14 @@ namespace Samr.ERP.Core.Services
                 .Include(c => c.UsefulLinkCategory);
         }
 
+        private IQueryable<UsefulLink> GetQueryWithInclude()
+        {
+            return GetQuery()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .ThenInclude(p => p.Position);
+        }
+
         private IQueryable<UsefulLink> GetQueryFilter(FilterUsefulLinkViewModel filterUsefulLinkViewModel, IQueryable<UsefulLink> query)
         {
             if (filterUsefulLinkViewModel.FromDate != null)
@@ -65,7 +73,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<UsefulLinkViewModel>> GetByIdAsync(Guid id)
         {
-            var existsUsefulLink = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
+            var existsUsefulLink = await GetQueryWithInclude().FirstOrDefaultAsync(u => u.Id == id);
             if (existsUsefulLink == null)
             {
                 return BaseDataResponse<UsefulLinkViewModel>.NotFound(null);
@@ -76,7 +84,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterUsefulLinkViewModel filterUsefulLinkViewModel)
         {
-            var query = GetQuery();
+            var query = GetQueryWithInclude();
             query = GetQueryFilter(filterUsefulLinkViewModel, query);
 
             var pagedList = await query.ToMappedPagedListAsync<UsefulLink, UsefulLinkViewModel>(pagingOptions);

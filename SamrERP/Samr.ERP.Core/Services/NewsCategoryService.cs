@@ -19,12 +19,12 @@ using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Services
 {
-    public class NewsCategoriesService : INewsCategoriesService
+    public class NewsCategoryService : INewsCategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public NewsCategoriesService(IUnitOfWork unitOfWork, 
+        public NewsCategoryService(IUnitOfWork unitOfWork, 
             IMapper mapper)
         {
             _unitOfWork = unitOfWork;

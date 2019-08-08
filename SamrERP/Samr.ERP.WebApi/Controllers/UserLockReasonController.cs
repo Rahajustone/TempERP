@@ -65,11 +65,11 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> Edit([FromBody] UserLockReasonViewModel positionViewModel)
+        public async Task<BaseDataResponse<UserLockReasonViewModel>> Edit([FromBody] UserLockReasonViewModel userLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
-                var responseData = await _userLockReasonService.EditAsync(positionViewModel);
+                var responseData = await _userLockReasonService.EditAsync(userLockReasonViewModel);
                 return Response(responseData);
             }
 

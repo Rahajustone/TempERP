@@ -20,12 +20,12 @@ using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Services
 {
-    public class FileCategoryService : IFileCategoryService
+    public class FileArchiveArchiveCategoryService : IFileArchiveCategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public FileCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+        public FileArchiveArchiveCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -35,11 +35,6 @@ namespace Samr.ERP.Core.Services
         {
             return _unitOfWork.FileCategories.GetDbSet().Include(p => p.CreatedUser);
         }
-
-        //private IQueryable<FileCategory> GetQuery()
-        //{
-        //    return GetQuery().Include(p => p.CreatedUser);
-        //}
 
         private IQueryable<FileCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<FileCategory> query)
         {
