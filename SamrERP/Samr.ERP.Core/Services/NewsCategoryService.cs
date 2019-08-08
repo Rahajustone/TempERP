@@ -71,18 +71,16 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
         {
-            var categorySelectList = await _unitOfWork.News
-                    .GetDbSet()
-                    .Include(p => p.NewsCategory)
-                    .GroupBy(p => p.NewsCategoryId)
-                    .Select(p =>
-                        new SelectListItemViewModel()
-                        {
-                            Id = p.Key,
-                            Name = p.First().NewsCategory.Name,
-                            ItemsCount = p.Count()
-                        }).ToListAsync();
-                
+            var categorySelectList = await _unitOfWork.NewsCategories.GetDbSet()
+                .Where(p => p.IsActive)
+                .Select(p =>
+                    new SelectListItemViewModel()
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        ItemsCount = _unitOfWork.News.GetDbSet().Count(m => m.NewsCategoryId == p.Id)
+                    }).ToListAsync();
+
             var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
             
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);

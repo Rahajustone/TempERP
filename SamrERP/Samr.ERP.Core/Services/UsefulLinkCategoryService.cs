@@ -88,14 +88,13 @@ namespace Samr.ERP.Core.Services
         {
             var categorySelectList = await _unitOfWork.UsefulLinks
                 .GetDbSet()
-                .Include(p => p.UsefulLinkCategory)
-                .GroupBy(p => p.UsefulLinkCategoryId)
+                .Where(p => p.IsActive)
                 .Select(p =>
                     new SelectListItemViewModel()
                     {
-                        Id = p.Key,
-                        Name = p.First().UsefulLinkCategory.Name,
-                        ItemsCount = p.Count()
+                        Id = p.Id,
+                        Name = p.Title,
+                        ItemsCount = _unitOfWork.UsefulLinks.GetDbSet().Count(m => m.UsefulLinkCategoryId == p.Id)
                     }).ToListAsync();
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(categorySelectList);
