@@ -19,6 +19,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<EditNationalityViewModel>> GetByIdAsync(Guid id);
         Task<BaseDataResponse<EditNationalityViewModel>> CreateAsync(EditNationalityViewModel nationalityViewModel);
         Task<BaseDataResponse<EditNationalityViewModel>> UpdateAsync(EditNationalityViewModel nationalityViewModel);
-        Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
+        Task<BaseDataResponse<PagedList<NationalityLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

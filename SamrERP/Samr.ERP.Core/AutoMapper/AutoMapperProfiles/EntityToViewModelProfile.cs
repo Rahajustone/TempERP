@@ -49,31 +49,37 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.NationalityId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Nationality, opt => opt.Ignore());
+            CreateMap<NationalityLog, NationalityLogViewModel>();
 
             CreateMap<EmployeeLockReason, EmployeeLockReasonLog>()
                 .ForMember(dst => dst.EmployeeLockReasonId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.EmployeeLockReason, opt => opt.Ignore());
+            CreateMap<EmployeeLockReasonLog, EmployeeLockReasonLogViewModel>();
 
             CreateMap<UserLockReason, UserLockReasonLog>()
                 .ForMember(dst => dst.UserLockReasonId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.UserLockReason, opt => opt.Ignore());
+            CreateMap<UserLockReasonLog, UserLockReasonLogViewModel>();
 
             CreateMap<NewsCategory, NewsCategoryLog>()
                 .ForMember(dst => dst.NewsCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.NewsCategory, opt => opt.Ignore());
+            CreateMap<NewsCategoryLog, NewsCategoryLogViewModel>();
 
             CreateMap<UsefulLinkCategory, UsefulLinkCategoryLog>()
                 .ForMember(dst => dst.UsefulLinkCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
+            CreateMap<UserLockReasonLog, UserLockReasonLogViewModel>();
 
             CreateMap<FileArchiveCategory, FileArchiveCategoryLog>()
                 .ForMember(dst => dst.FileCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.FileArchiveCategory, opt => opt.Ignore());
+            CreateMap<FileArchiveCategoryLog, FileArchiveCategoryLogViewModel>();
 
             #endregion
 
