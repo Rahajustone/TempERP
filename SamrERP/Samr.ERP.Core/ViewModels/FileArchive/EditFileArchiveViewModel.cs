@@ -12,5 +12,6 @@ namespace Samr.ERP.Core.ViewModels.FileArchive
         public string CreatedUserName { get; set; }
 
         public MiniProfileViewModel Author { get; set; }
+        public string FileName { get; set; }
     }
 }

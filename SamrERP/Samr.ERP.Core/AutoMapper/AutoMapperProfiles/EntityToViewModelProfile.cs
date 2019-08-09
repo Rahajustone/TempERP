@@ -460,6 +460,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
                         map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dst => dst.FileCategoryName,
+                    src => src.MapFrom(
+                        map => map.FileArchiveCategory.Name))
+                .ForMember(dst => dst.FileName,
+                    src => src.MapFrom(
+                        map => map.Title + "" + System.IO.Path.GetExtension(map.FilePath)))
                 .ForMember(dest => dest.Author,
                     src => src.MapFrom(
                         map => new MiniProfileViewModel

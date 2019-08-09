@@ -91,7 +91,6 @@ namespace Samr.ERP.Core.Services
             }
 
             return $"{Path.Combine(folderPath, fileName + fileExtension)}";
-
         }
 
         public async Task<string> SaveFile(string folderPath, IFormFile file)
