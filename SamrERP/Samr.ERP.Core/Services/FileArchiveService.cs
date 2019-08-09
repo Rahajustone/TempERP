@@ -73,10 +73,10 @@ namespace Samr.ERP.Core.Services
                 query = query.Where(p => p.CreatedAt.Date <= toDate);
             }
 
-            if (filterFileArchiveViewModel.ShortDescription != null)
+            if (filterFileArchiveViewModel.Title != null)
             {
-                var filterShortDesc = filterFileArchiveViewModel.ShortDescription.ToLower();
-                query = query.Where(f => EF.Functions.Like(f.Title.ToLower(), "%" + filterShortDesc + "%"));
+                var titleFilter = filterFileArchiveViewModel.Title.ToLower();
+                query = query.Where(f => EF.Functions.Like(f.Title.ToLower(), "%" + titleFilter + "%"));
             }
 
             if (filterFileArchiveViewModel.OnlyActive)
