@@ -468,9 +468,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                             FullName = $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
                             PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
                             PositionName = map.CreatedUser.Employee.Position.Name
-                        }))
-                ;
-            CreateMap<EditFileArchiveViewModel, FileArchive>();
+                        }));
+            CreateMap<EditFileArchiveViewModel, FileArchive>()
+                .ForMember( dst => dst.FilePath, opt => opt.Ignore());
             CreateMap<FileArchiveCategory, FileArchiveViewModel>()
                 .ReverseMap();
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();

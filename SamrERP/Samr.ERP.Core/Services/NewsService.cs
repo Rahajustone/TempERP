@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Org.BouncyCastle.Math.EC;
 using Remotion.Linq.Clauses;
+using Samr.ERP.Core.Auth;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -112,11 +113,11 @@ namespace Samr.ERP.Core.Services
         {
             var query = GetQueryWithInclude();
 
-            // TODO
-            //var result = await _userManager.IsInRoleAsync(_userProvider.CurrentUser, "Admin");
+            //// TODO
+            //var result = await _userManager.IsInRoleAsync(_userProvider.CurrentUser, Roles.NewsCreate);
             //if (!result)
             //{
-            //    query = query.Where(p => p.PublishAt  <= DateTime.Now);
+            //    query = query.Where(p => p.PublishAt <= DateTime.Now);
             //}
 
             query = GetFilterQuery(filterNewViewModel, query);
