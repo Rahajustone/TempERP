@@ -33,7 +33,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<UserLockReason> GetQuery()
         {
-            return _unitOfWork.UserLockReasons.GetDbSet();
+            return _unitOfWork.UserLockReasons.GetDbSet().OrderByDescending( p => p.CreatedAt);
         }
 
         private IQueryable<UserLockReason> GetQueryWithUser()
@@ -154,7 +154,9 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<UserLockReasonLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.UserLockReasonLogs.GetDbSet().Where(p => p.UserLockReasonId == id);
+            var query = _unitOfWork.UserLockReasonLogs.GetDbSet()
+                .Where(p => p.UserLockReasonId == id)
+                .OrderByDescending( p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<UserLockReasonLogViewModel>();
 

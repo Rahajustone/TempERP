@@ -35,7 +35,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<Department> GetQueryWithUser()
         {
-            return _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser).OrderByDescending(p => p.CreatedAt);
         }
 
         private IQueryable<Department> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Department> query)
@@ -163,7 +163,9 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<DepartmentLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.DepartmentLogs.GetDbSet().Where(d => d.DepartmentId == id);
+            var query = _unitOfWork.DepartmentLogs.GetDbSet()
+                .Where(d => d.DepartmentId == id)
+                .OrderByDescending( p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<DepartmentLogViewModel>();
 

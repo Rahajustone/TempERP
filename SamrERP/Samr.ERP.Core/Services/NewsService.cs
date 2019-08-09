@@ -48,14 +48,13 @@ namespace Samr.ERP.Core.Services
         private IQueryable<News> GetQuery()
         {
             return _unitOfWork.News.GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
                 .Include(n => n.NewsCategory);
         }
 
         private IQueryable<News> GetQueryWithInclude()
         {
-            return _unitOfWork.News.GetDbSet()
-                .OrderByDescending(p => p.CreatedAt)
-                .Include(n => n.NewsCategory)
+            return GetQuery()
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
                 .ThenInclude(p => p.Position);

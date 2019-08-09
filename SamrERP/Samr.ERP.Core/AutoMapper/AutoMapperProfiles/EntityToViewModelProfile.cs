@@ -359,7 +359,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedAt.ToShortDateString()))
                 .ForMember(dst => dst.PublishAt,
                     src => src.MapFrom(
-                        map => map.PublishAt.ToStringFormatCustom()))
+                        map => map.PublishAt.ToStringCustomFormat()))
                 .ForMember(dest => dest.Author, 
                     src => src.MapFrom(
                         map => new MiniProfileViewModel

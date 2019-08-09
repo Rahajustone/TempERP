@@ -33,7 +33,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<Nationality> GetQuery()
         {
-            return _unitOfWork.Nationalities.GetDbSet();
+            return _unitOfWork.Nationalities.GetDbSet().OrderByDescending( p => p.CreatedAt);
         }
 
         private IQueryable<Nationality> GetQueryWithUser()
@@ -158,7 +158,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<NationalityLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.NationalityLogs.GetDbSet().Where(p => p.NationalityId == id);
+            var query = _unitOfWork.NationalityLogs.GetDbSet().OrderByDescending( p => p.CreatedAt).Where(p => p.NationalityId == id);
 
             var queryVm = query.ProjectTo<NationalityLogViewModel>();
 

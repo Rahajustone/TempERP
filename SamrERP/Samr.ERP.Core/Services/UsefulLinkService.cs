@@ -34,6 +34,7 @@ namespace Samr.ERP.Core.Services
         private IQueryable<UsefulLink> GetQuery()
         {
             return _unitOfWork.UsefulLinks.GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
                 .Include(p => p.CreatedUser)
                 .Include(c => c.UsefulLinkCategory);
         }
@@ -154,7 +155,9 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.UserLockReasonLogs.GetDbSet().Where(p => p.UserLockReasonId == id);
+            var query = _unitOfWork.UserLockReasonLogs.GetDbSet()
+                .Where(p => p.UserLockReasonId == id)
+                .OrderByDescending( p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<UsefulLinkCategoryLogViewModel>();
 

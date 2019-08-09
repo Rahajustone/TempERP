@@ -33,9 +33,9 @@ namespace Samr.ERP.Core.Services
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        private DbSet<UsefulLinkCategory> GetQuery()
+        private IQueryable<UsefulLinkCategory> GetQuery()
         {
-            return _unitOfWork.UsefulLinkCategories.GetDbSet();
+            return _unitOfWork.UsefulLinkCategories.GetDbSet().OrderByDescending( p => p.CreatedAt);
         }
 
         private IQueryable<UsefulLinkCategory> GetQueryWithUser()
@@ -89,6 +89,7 @@ namespace Samr.ERP.Core.Services
             var categorySelectList = await _unitOfWork.UsefulLinkCategories
                 .GetDbSet()
                 .Where(p => p.IsActive)
+                .OrderByDescending( p => p.CreatedAt)
                 .Select(p =>
                     new SelectListItemViewModel()
                     {
@@ -159,7 +160,9 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.UsefulLinkCategoryLogs.GetDbSet().Where(p => p.UsefulLinkCategoryId == id);
+            var query = _unitOfWork.UsefulLinkCategoryLogs.GetDbSet()
+                .Where(p => p.UsefulLinkCategoryId == id)
+                .OrderByDescending( p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<UsefulLinkCategoryLogViewModel>();
 

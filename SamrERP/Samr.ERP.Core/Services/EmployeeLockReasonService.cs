@@ -35,7 +35,8 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<EmployeeLockReason> GetQuery()
         {
-            return _unitOfWork.EmployeeLockReasons.GetDbSet();
+            return _unitOfWork.EmployeeLockReasons.GetDbSet()
+                .OrderByDescending( p => p.CreatedAt);
         }
 
         private IQueryable<EmployeeLockReason> GetQueryWithUser()

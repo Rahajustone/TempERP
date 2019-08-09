@@ -58,7 +58,7 @@ namespace Samr.ERP.Core.Stuff
             return target.ToString("dd-MM-yyyy");
         }
 
-        public static string ToStringFormatCustom(this DateTime target)
+        public static string ToStringCustomFormat(this DateTime target)
         {
             return target.ToString("dd.MM.yyyy HH:mm");
         }

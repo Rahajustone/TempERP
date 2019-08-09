@@ -33,9 +33,10 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
             _userProvider = userProvider;
         }
-        private DbSet<Notification> GetQuery()
+        private IQueryable<Notification> GetQuery()
         {
-            return _unitOfWork.Notifications.GetDbSet();
+            return _unitOfWork.Notifications.GetDbSet()
+                .OrderByDescending( p => p.CreatedAt);
         }
 
         public async Task<BaseDataResponse<NotificationSystemViewModel>> CreateAsync(NotificationSystemViewModel notificationSystemViewModel)
@@ -52,8 +53,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetSentAsync()
         {
-            var getSentMessage = await _unitOfWork.Notifications
-                .GetDbSet()
+            var getSentMessage = await GetQuery()
                 .Where(m => m.FromUserId == _userProvider.CurrentUser.Id)
                 .ToListAsync();
 
@@ -64,8 +64,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetReceivedAsync()
         {
-            var getReceivedMessage = await _unitOfWork.Notifications
-                .GetDbSet()
+            var getReceivedMessage = await GetQuery()
                 .Where(m => m.FromUserId != _userProvider.CurrentUser.Id)
                 .ToListAsync();
 

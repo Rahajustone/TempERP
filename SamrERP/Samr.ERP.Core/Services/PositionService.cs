@@ -31,7 +31,9 @@ namespace Samr.ERP.Core.Services
         }
         private IQueryable<Position> GetQueryWithUser()
         {
-            return _unitOfWork.Positions.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.Positions.GetDbSet()
+                .OrderByDescending( p => p.CreatedAt)
+                .Include(p => p.CreatedUser);
         }
 
         private IQueryable<Position> FilterQuery(FilterPositionViewModel filterPosition, IQueryable<Position> query)
@@ -166,7 +168,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<PositionLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.PositionLogs.GetDbSet().Where(d => d.DepartmentId == id);
+            var query = _unitOfWork.PositionLogs.GetDbSet().Where(d => d.DepartmentId == id).OrderByDescending(p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<PositionLogViewModel>();
 

@@ -72,6 +72,7 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
         {
             var categorySelectList = await _unitOfWork.NewsCategories.GetDbSet()
+                .OrderByDescending( p => p.CreatedAt)
                 .Where(p => p.IsActive)
                 .Select(p =>
                     new SelectListItemViewModel()

@@ -34,7 +34,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<FileArchiveCategory> GetQuery()
         {
-            return _unitOfWork.FileArchiveCategories.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.FileArchiveCategories.GetDbSet().Include(p => p.CreatedUser).OrderByDescending( p => p.CreatedAt);
         }
 
         private IQueryable<FileArchiveCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<FileArchiveCategory> query)
@@ -90,8 +90,6 @@ namespace Samr.ERP.Core.Services
                         Name = p.Name,
                         ItemsCount = _unitOfWork.FileArchives.GetDbSet().Count(m =>m.FileCategoryId == p.Id )
                     }).ToListAsync();
-
-
 
             var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
 
@@ -156,7 +154,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.UsefulLinkCategoryLogs.GetDbSet().Where(p => p.UsefulLinkCategoryId == id);
+            var query = _unitOfWork.UsefulLinkCategoryLogs.GetDbSet().Where(p => p.UsefulLinkCategoryId == id).OrderByDescending(p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<FileArchiveCategoryLogViewModel>();
 
