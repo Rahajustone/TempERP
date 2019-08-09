@@ -63,14 +63,14 @@ namespace Samr.ERP.Core.Services
         {
             if (filterFileArchiveViewModel.FromDate != null)
             {
-                var fromDate = Convert.ToDateTime(filterFileArchiveViewModel.FromDate + " 00:00");
-                query = query.Where(p => p.CreatedAt >= fromDate);
+                var fromDate = Convert.ToDateTime(filterFileArchiveViewModel.FromDate);
+                query = query.Where(p => p.CreatedAt.Date >= fromDate);
             }
 
             if (filterFileArchiveViewModel.ToDate != null)
             {
-                var toDate = Convert.ToDateTime(filterFileArchiveViewModel.ToDate + " 23:59");
-                query = query.Where(p => p.CreatedAt <= toDate);
+                var toDate = Convert.ToDateTime(filterFileArchiveViewModel.ToDate);
+                query = query.Where(p => p.CreatedAt.Date <= toDate);
             }
 
             if (filterFileArchiveViewModel.ShortDescription != null)

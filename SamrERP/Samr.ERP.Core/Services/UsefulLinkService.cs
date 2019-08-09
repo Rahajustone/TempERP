@@ -51,14 +51,14 @@ namespace Samr.ERP.Core.Services
         {
             if (filterUsefulLinkViewModel.FromDate != null)
             {
-                var fromDate = Convert.ToDateTime(filterUsefulLinkViewModel.FromDate + " 00:00");
-                query = query.Where(p => p.CreatedAt >= fromDate);
+                var fromDate = Convert.ToDateTime(filterUsefulLinkViewModel.FromDate);
+                query = query.Where(p => p.CreatedAt.Date >= fromDate);
             }
 
             if (filterUsefulLinkViewModel.ToDate != null)
             {
-                var toDate = Convert.ToDateTime(filterUsefulLinkViewModel.ToDate + " 23:59");
-                query = query.Where(p => p.CreatedAt <= toDate);
+                var toDate = Convert.ToDateTime(filterUsefulLinkViewModel.ToDate);
+                query = query.Where(p => p.CreatedAt.Date <= toDate);
             }
 
             if (filterUsefulLinkViewModel.Title != null)
