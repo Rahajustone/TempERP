@@ -84,9 +84,9 @@ namespace Samr.ERP.Core.Services
                 query = query.Where(n => n.IsActive);
             }
 
-            if (!filterFileArchiveViewModel.FileCategoryId.IsEmpty())
+            if (!filterFileArchiveViewModel.CategoryId.IsEmpty())
             {
-                query = query.Where(f => f.FileCategoryId == filterFileArchiveViewModel.FileCategoryId);
+                query = query.Where(f => f.FileCategoryId == filterFileArchiveViewModel.CategoryId);
             }
 
             return query;

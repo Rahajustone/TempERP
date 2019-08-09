@@ -460,6 +460,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
                         map => map.CreatedAt.ToShortDateString()))
+                .ForMember(dst => dst.CategoryId,
+                    src => src.MapFrom(
+                        map => map.FileCategoryId))
                 .ForMember(dst => dst.FileCategoryName,
                     src => src.MapFrom(
                         map => map.FileArchiveCategory.Name))
@@ -476,6 +479,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                             PositionName = map.CreatedUser.Employee.Position.Name
                         }));
             CreateMap<EditFileArchiveViewModel, FileArchive>()
+                .ForMember(dst => dst.FileCategoryId, 
+                    src => src.MapFrom(
+                    map => map.CategoryId ))
                 .ForMember( dst => dst.FilePath, opt => opt.Ignore());
             CreateMap<FileArchiveCategory, FileArchiveViewModel>()
                 .ReverseMap();
