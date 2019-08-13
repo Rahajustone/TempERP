@@ -16,7 +16,6 @@ namespace Samr.ERP.Infrastructure.Entities
         public FileArchiveCategory FileArchiveCategory { get; set; }
 
         [Required]
-        [StringLength(64)]
         public string FilePath { get; set; }
 
         [Required]

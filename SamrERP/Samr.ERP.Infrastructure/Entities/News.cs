@@ -16,7 +16,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public NewsCategory NewsCategory { get; set; }
 
         [Required]
-        [StringLength(64)]
+        [StringLength(256)]
         public string Title { get; set; }
 
         [Required]

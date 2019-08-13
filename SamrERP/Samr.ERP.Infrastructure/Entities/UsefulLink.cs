@@ -20,7 +20,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public string Url { get; set; }
 
         [Required]
-        [StringLength(128)]
+        [StringLength(256)]
         public string Title { get; set; }
         
         [StringLength(512)]

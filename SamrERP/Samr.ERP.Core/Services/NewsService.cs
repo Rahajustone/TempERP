@@ -49,7 +49,7 @@ namespace Samr.ERP.Core.Services
         private IQueryable<News> GetQuery()
         {
             return _unitOfWork.News.GetDbSet()
-                .OrderByDescending(p => p.CreatedAt)
+                .OrderByDescending(p => p.PublishAt)
                 .Include(n => n.NewsCategory);
         }
 
@@ -141,6 +141,10 @@ namespace Samr.ERP.Core.Services
             else
             {
                 var news = _mapper.Map<News>(newsViewModel);
+                if ((int)news.PublishAt.TimeOfDay.TotalSeconds == 0)
+                {
+                   news.PublishAt = news.PublishAt.Add(DateTime.Now.TimeOfDay);
+                }
 
                 if (newsViewModel.ImageFile != null)
                 {

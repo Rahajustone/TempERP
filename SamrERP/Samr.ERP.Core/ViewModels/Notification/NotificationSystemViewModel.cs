@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Samr.ERP.Core.ViewModels.Employee;
 
 namespace Samr.ERP.Core.ViewModels.Notification
 {
-    public class NotificationSystemViewModel
+    public class NotificationSystemViewModel : CreateMessageViewModel
     {
-        public string Message { get; set; }
-        public bool IsViewed { get; set; }
+        public Guid Id { get; set; }
+        public Guid? SenderUserId { get; set; }
+        public string ReadDate { get; set; }
+        public string CreatedAt { get; set; }
 
-        public Guid? FromUserId { get; set; }
-        public Guid? ToUserId { get; set; }
-
-        public Guid? NotificationTypeId { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-        public bool IsActive { get; set; }
+        public MiniProfileViewModel User { get; set; }
     }
 }

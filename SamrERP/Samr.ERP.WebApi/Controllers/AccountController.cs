@@ -241,9 +241,9 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListUserItem()
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> UsersSelectListItems()
         {
-            var response = await _userService.GetAllSelectListUserItemAsync();
+            var response = await _userService.UsersSelectListItemsAsync();
 
             return Response(response);
         }

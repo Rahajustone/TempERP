@@ -139,12 +139,14 @@ namespace Samr.ERP.Core.Services
             return users;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListUserItemAsync()
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> UsersSelectListItemsAsync()
         {
-            var users = await _unitOfWork.Employees.GetDbSet()
-                .Where(e => e.UserId.HasValue)
-                .Where(u => !(u.User.LockUserId.HasValue))
+            var users = await _unitOfWork.Users.GetDbSet()
+                .Where(p => p.Id != _userProvider.CurrentUser.Id)
+                .Where(u => !(u.LockUserId.HasValue))
+                .Include(e => e.Employee)
                 .ToListAsync();
+
             var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(users);
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);

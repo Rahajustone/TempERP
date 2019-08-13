@@ -101,6 +101,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<LockUserViewModel, User>()
                 .ReverseMap();
 
+            CreateMap<User, SelectListItemViewModel>()
+                .ForMember(dst => dst.Name, src => src.MapFrom(
+                    map => map.Employee.FullName()  + $" ({map.Employee.Phone})"));
+
             CreateMap<Employee, GetEmployeeDataViewModel>()
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
@@ -334,13 +338,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ReverseMap();
-
-            CreateMap<Employee, SelectListItemViewModel>()
-                .ForMember(dst => dst.Id, src => src.MapFrom(
-                    map => map.UserId))
-                .ForMember(dst => dst.Name, src => src.MapFrom(
-                    map => $"{map.FullName()}" + "(" + $"{map.Phone}" + ")"))
-                .ReverseMap();
             #endregion
 
             CreateMap<NewsViewModel, News>()
@@ -356,7 +353,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.ToShortName()))
                 .ForMember(dst => dst.CreatedAt, 
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
+                        map => map.CreatedAt.ToStringCustomFormat()))
                 .ForMember(dst => dst.PublishAt,
                     src => src.MapFrom(
                         map => map.PublishAt.ToStringCustomFormat()))
@@ -481,11 +478,21 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap();
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
 
-            CreateMap<NotificationSystemViewModel, Notification>()
-            .ReverseMap();
-            CreateMap<CreateMessageViewModel, Notification>()
-                .ForMember(dst => dst.NotificationType, opt => opt.Ignore())
-                .ReverseMap();
+            CreateMap<Notification, NotificationSystemViewModel>()
+                .ForMember(dest => dest.User,
+                    src => src.MapFrom(
+                        map => new MiniProfileViewModel
+                        {
+                            EmployeeId = map.CreatedUser.Employee.Id.ToString(),
+                            FullName =
+                                $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
+                            PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
+                            PositionName = map.CreatedUser.Employee.Position.Name
+                        }))
+                .ForMember(dst => dst.ReadDate,
+                    src => src.MapFrom(
+                        map => map.ReadDate.HasValue ? map.ReadDate.Value.ToShortDateString() : null));
+            CreateMap<CreateMessageViewModel, Notification>();
         }
     }
 }

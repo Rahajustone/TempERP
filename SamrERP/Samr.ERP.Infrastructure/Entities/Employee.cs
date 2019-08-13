@@ -92,6 +92,10 @@ namespace Samr.ERP.Infrastructure.Entities
         public string PhotoPath { get; set; }
         public string PassportScanPath { get; set; }
 
-        public string FullName() => $"{LastName} {FirstName} {MiddleName}";
+        public string FullName()
+        {
+            var fullName = $"{LastName} {FirstName}";
+            return !string.IsNullOrEmpty(MiddleName) ? $"{fullName} {MiddleName}" : $"{fullName}";
+        }
     }
 }

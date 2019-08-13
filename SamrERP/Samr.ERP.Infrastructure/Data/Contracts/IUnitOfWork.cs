@@ -37,7 +37,6 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<FileArchiveCategory> FileArchiveCategories { get; }
         IRepository<FileArchiveCategoryLog> FileArchiveCategoryLogs { get; }
         IRepository<FileArchive> FileArchives { get; }
-        IRepository<NotificationType> NotificationTypes { get; }
         IRepository<Notification> Notifications { get; }
         IRepository<ActiveUserToken> ActiveUserTokens { get; }
         IRepository<EmployeeLockReasonLog> EmployeeLockReasonLog { get; }

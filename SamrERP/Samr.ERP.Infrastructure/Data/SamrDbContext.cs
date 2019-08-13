@@ -44,7 +44,6 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<FileArchiveCategory> FileArchiveCategories { get; set; }
         public DbSet<FileArchiveCategoryLog> FileArchiveCategoryLogs { get; set; }
         public DbSet<FileArchive> FileArchives { get; set; }
-        public DbSet<NotificationType> NotificationTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ActiveUserToken> ActiveUserTokens { get; set; }
 

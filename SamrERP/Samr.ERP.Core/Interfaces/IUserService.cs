@@ -33,6 +33,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<IEnumerable<GroupedUserRolesViewModel>>> GetUserRolesAsync(Guid id);
         Task<BaseResponse> SetUserRolesAsync(SetUserRolesViewModel model);
         Task ClearUserRefreshToken(Guid userId);
-        Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListUserItemAsync();
+        Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> UsersSelectListItemsAsync();
     }
 }

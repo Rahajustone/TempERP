@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http.Features;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
-using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Notification;
@@ -36,71 +34,102 @@ namespace Samr.ERP.Core.Services
         private IQueryable<Notification> GetQuery()
         {
             return _unitOfWork.Notifications.GetDbSet()
+                .Include( u => u.CreatedUser)
                 .OrderByDescending( p => p.CreatedAt);
         }
 
-        public async Task<BaseDataResponse<NotificationSystemViewModel>> CreateAsync(NotificationSystemViewModel notificationSystemViewModel)
+        private IQueryable<Notification> FilterQuery(FilterNotificationViewModel fileFilterNotificationViewModel, IQueryable<Notification> query)
+        {
+            if (fileFilterNotificationViewModel.FromDate != null)
+            {
+                var fromDate = Convert.ToDateTime(fileFilterNotificationViewModel.FromDate);
+                query = query.Where(p => p.CreatedAt.Date >= fromDate);
+            }
+
+            if (fileFilterNotificationViewModel.ToDate != null)
+            {
+                var toDate = Convert.ToDateTime(fileFilterNotificationViewModel.ToDate);
+                query = query.Where(p => p.CreatedAt.Date <= toDate);
+            }
+
+            if (fileFilterNotificationViewModel.Title != null)
+            {
+                var titleFilter = fileFilterNotificationViewModel.Title.ToLower();
+                query = query.Where(f => EF.Functions.Like(f.Title.ToLower() + " " + f.CreatedUser.Employee.FullName().ToLower(), "%" + titleFilter + "%"));
+            }
+
+            return query;
+        }
+
+        public async Task<BaseDataResponse<NotificationSystemViewModel>> SendMessageAsync(CreateMessageViewModel notificationSystemViewModel)
         {
             var notification = _mapper.Map<Notification>(notificationSystemViewModel);
+            notification.SenderUserId = _userProvider.CurrentUser.Id;
+
             _unitOfWork.Notifications.Add(notification);
 
             await _unitOfWork.CommitAsync();
 
             NotifyMessage?.Invoke(this, EventArgs.Empty);
 
-            return BaseDataResponse<NotificationSystemViewModel>.Success(_mapper.Map<NotificationSystemViewModel>(notification));
+            var createdNotification = await GetSentMessageAsync(notification.Id);
+
+            return createdNotification;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetSentAsync()
+        public async Task<BaseDataResponse<PagedList<NotificationSystemViewModel>>> GetReceivedMessagesAsync(PagingOptions pagingOptions, FilterNotificationViewModel fileFilterNotificationViewModel)
         {
-            var getSentMessage = await GetQuery()
-                .Where(m => m.FromUserId == _userProvider.CurrentUser.Id)
-                .ToListAsync();
+            var query = GetQuery().Where(m => m.ReceiverUserId == _userProvider.CurrentUser.Id);
 
-            var vm = _mapper.Map<IEnumerable<NotificationSystemViewModel>>(getSentMessage);
+            query = FilterQuery(fileFilterNotificationViewModel, query);
+            var queryVm = query.ProjectTo<NotificationSystemViewModel>();
+            var pagedList = await queryVm.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<IEnumerable<NotificationSystemViewModel>>.Success(vm);
+            return BaseDataResponse<PagedList<NotificationSystemViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<IEnumerable<NotificationSystemViewModel>>> GetReceivedAsync()
+        public async Task<BaseDataResponse<PagedList<NotificationSystemViewModel>>> GetSentMessagesAsync(PagingOptions pagingOptions, FilterNotificationViewModel fileFilterNotificationViewModel)
         {
-            var getReceivedMessage = await GetQuery()
-                .Where(m => m.FromUserId != _userProvider.CurrentUser.Id)
-                .ToListAsync();
+            var query = GetQuery().Where(m => m.SenderUserId == _userProvider.CurrentUser.Id);
 
-            var vm = _mapper.Map<IEnumerable<NotificationSystemViewModel>>(getReceivedMessage);
+            query = FilterQuery(fileFilterNotificationViewModel, query);
 
-            return BaseDataResponse<IEnumerable<NotificationSystemViewModel>>.Success(vm);
+            var queryVm = query.ProjectTo<NotificationSystemViewModel>();
+
+            var pagedList = await queryVm.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<NotificationSystemViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<CreateMessageViewModel>> CreateMessageAsync(CreateMessageViewModel createMessageViewModel)
+        public async Task<BaseDataResponse<NotificationSystemViewModel>> GetReceivedMessageAsync(Guid id)
         {
-            createMessageViewModel.FromUserId = _userProvider.CurrentUser.Id;
+            var messageExists = await _unitOfWork.Notifications.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Where( p => p.ReceiverUserId == _userProvider.CurrentUser.Id)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            var message = _mapper.Map<Notification>(createMessageViewModel);
-            _unitOfWork.Notifications.Add(message);
-
-            await _unitOfWork.CommitAsync();
-
-            //NotifyMessage?.Invoke(this, EventArgs.Empty);
-
-            return BaseDataResponse<CreateMessageViewModel>.Success(_mapper.Map<CreateMessageViewModel>(message));
-        }
-
-        public async Task<BaseResponse> MarkThemAsReadAsync(Guid id)
-        {
-            var message = await _unitOfWork.Notifications.GetDbSet().FirstOrDefaultAsync(m => m.Id == id);
-
-            if (message == null)
+            if (messageExists != null)
             {
-                return  BaseResponse.Fail(null);
+                if (!(messageExists.ReadDate.HasValue))
+                {
+                    messageExists.ReadDate = DateTime.Now;
+                    await _unitOfWork.CommitAsync();
+                }
+
+                return BaseDataResponse<NotificationSystemViewModel>.Success(_mapper.Map<NotificationSystemViewModel>(messageExists));
             }
 
-            message.IsViewed = true;
+            return  BaseDataResponse<NotificationSystemViewModel>.NotFound(null);
+        }
 
-            await _unitOfWork.CommitAsync();
-
-            return BaseResponse.Success();
+        public async Task<BaseDataResponse<NotificationSystemViewModel>> GetSentMessageAsync(Guid id)
+        {
+            var messageExists = await _unitOfWork.Notifications.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Where(p => p.SenderUserId == _userProvider.CurrentUser.Id)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            
+            return BaseDataResponse<NotificationSystemViewModel>.Success(_mapper.Map<NotificationSystemViewModel>(messageExists));
         }
     }
 }
