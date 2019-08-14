@@ -21,6 +21,7 @@ namespace Samr.ERP.Infrastructure.Data
         }
 
         public DbSet<Employee> Employees { get;set; }
+        public DbSet<EmployeeLog> EmployeeLogs { get;set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<DepartmentLog> DepartmentLogs { get; set; }
         public DbSet<Position> Positions { get; set; }

@@ -441,5 +441,10 @@ namespace Samr.ERP.Core.Services
 
             return _mapper.Map<IList<ExportExcelViewModel>>(all);
         }
+
+        private async Task AddLog()
+        {
+            
+        }
     }
 }

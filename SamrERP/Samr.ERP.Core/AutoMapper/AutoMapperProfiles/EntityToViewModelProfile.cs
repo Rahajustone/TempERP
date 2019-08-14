@@ -51,6 +51,11 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.Nationality, opt => opt.Ignore());
             CreateMap<NationalityLog, NationalityLogViewModel>();
 
+            CreateMap<Employee, EmployeeLog>()
+                .ForMember(dst => dst.EmployeeId, src => src.MapFrom(map => map.Id))
+                .ForMember(dst => dst.Id, opt => opt.Ignore())
+                .ForMember(dst => dst.Employee, opt => opt.Ignore());
+
             CreateMap<EmployeeLockReason, EmployeeLockReasonLog>()
                 .ForMember(dst => dst.EmployeeLockReasonId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
