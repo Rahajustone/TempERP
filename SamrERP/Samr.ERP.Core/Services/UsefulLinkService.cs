@@ -152,20 +152,5 @@ namespace Samr.ERP.Core.Services
 
             return response;
         }
-
-        public async Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
-        {
-            var query = _unitOfWork.UserLockReasonLogs.GetDbSet()
-                .Where(p => p.UserLockReasonId == id)
-                .OrderByDescending( p => p.CreatedAt);
-
-            var queryVm = query.ProjectTo<UsefulLinkCategoryLogViewModel>();
-
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
-
-            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
-
-            return BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>.Success(pagedList);
-        }
     }
 }

@@ -15,6 +15,7 @@ using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
 using Samr.ERP.Core.ViewModels.Handbook.FileArchiveCategory;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
+using Samr.ERP.Core.ViewModels.Handbook.UsefulLinkCategory;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Core.ViewModels.Message;
 using Samr.ERP.Core.ViewModels.News;
@@ -37,19 +38,28 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Department, opt => opt.Ignore());
-            CreateMap<DepartmentLog, DepartmentLogViewModel>();
+            CreateMap<DepartmentLog, DepartmentLogViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName));
 
             CreateMap<Position, PositionLog>()
                 .ForMember(dst => dst.PositionId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Position, opt => opt.Ignore());
-            CreateMap<PositionLog, PositionLogViewModel>();
+            CreateMap<PositionLog, PositionLogViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName));
 
             CreateMap<Nationality, NationalityLog>()
                 .ForMember(dst => dst.NationalityId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Nationality, opt => opt.Ignore());
-            CreateMap<NationalityLog, NationalityLogViewModel>();
+            CreateMap<NationalityLog, NationalityLogViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName));
 
             CreateMap<Employee, EmployeeLog>()
                 .ForMember(dst => dst.EmployeeId, src => src.MapFrom(map => map.Id))
@@ -60,31 +70,43 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.EmployeeLockReasonId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.EmployeeLockReason, opt => opt.Ignore());
-            CreateMap<EmployeeLockReasonLog, EmployeeLockReasonLogViewModel>();
+            CreateMap<EmployeeLockReasonLog, EmployeeLockReasonLogViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName)); ;
 
             CreateMap<UserLockReason, UserLockReasonLog>()
                 .ForMember(dst => dst.UserLockReasonId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.UserLockReason, opt => opt.Ignore());
-            CreateMap<UserLockReasonLog, UserLockReasonLogViewModel>();
+            CreateMap<UserLockReasonLog, UserLockReasonLogViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName));
 
             CreateMap<NewsCategory, NewsCategoryLog>()
                 .ForMember(dst => dst.NewsCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.NewsCategory, opt => opt.Ignore());
-            CreateMap<NewsCategoryLog, NewsCategoryLogViewModel>();
+            CreateMap<NewsCategoryLog, NewsCategoryLogViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName));
 
             CreateMap<UsefulLinkCategory, UsefulLinkCategoryLog>()
                 .ForMember(dst => dst.UsefulLinkCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
-            CreateMap<UserLockReasonLog, UserLockReasonLogViewModel>();
+            CreateMap<UsefulLinkCategoryLog, UsefulLinkCategoryLogViewModel>();
 
             CreateMap<FileArchiveCategory, FileArchiveCategoryLog>()
                 .ForMember(dst => dst.FileCategoryId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.FileArchiveCategory, opt => opt.Ignore());
-            CreateMap<FileArchiveCategoryLog, FileArchiveCategoryLogViewModel>();
+            CreateMap<FileArchiveCategoryLog, FileArchiveCategoryLogViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName));
 
             #endregion
 

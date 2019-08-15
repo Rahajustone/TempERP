@@ -154,7 +154,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.UsefulLinkCategoryLogs.GetDbSet().Where(p => p.UsefulLinkCategoryId == id).OrderByDescending(p => p.CreatedAt);
+            var query = _unitOfWork.FileArchiveCategoryLogs.GetDbSet().Where(p => p.FileCategoryId == id).OrderByDescending(p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<FileArchiveCategoryLogViewModel>();
 
