@@ -498,7 +498,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.ReadDate.HasValue ? map.ReadDate.Value.ToStringCustomFormat() : null))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<Notification, SenderMessageViewModel>()
                 .IncludeBase<Notification, GetSenderMessageViewModel>()
