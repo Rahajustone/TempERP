@@ -49,17 +49,20 @@ namespace Samr.ERP.Core.Services
 
         public async Task<Boolean> TokenActive(string token)
         {
-            if (_cache.TryGetValue(ActiveTokenCacheName, out HashSet<string> activeTokens))
-                return activeTokens.Contains(token);
-            var tokenExist = await _unitOfWork.ActiveUserTokens.AnyAsync(p => p.Token == token);
-            if (tokenExist)
+            if (!_cache.TryGetValue(ActiveTokenCacheName, out HashSet<string> activeTokens))
+                activeTokens = new HashSet<string>();
+
+            if (!activeTokens.Contains(token))
             {
-                if (activeTokens == null) activeTokens = new HashSet<string>();
-                activeTokens.Add(token);
-                _cache.Set(ActiveTokenCacheName, activeTokens,
-                    new MemoryCacheEntryOptions().SetPriority(CacheItemPriority.NeverRemove));
+                var tokenExist = await _unitOfWork.ActiveUserTokens.AnyAsync(p => p.Token == token);
+                if (tokenExist)
+                {
+                    activeTokens.Add(token);
+                    _cache.Set(ActiveTokenCacheName, activeTokens,
+                        new MemoryCacheEntryOptions().SetPriority(CacheItemPriority.NeverRemove));
+                }
             }
-            return activeTokens != null && activeTokens.Contains(token);
+            return activeTokens.Contains(token);
         }
 
         public void DeactivateTokenByUserId(Guid userId)
