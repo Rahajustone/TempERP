@@ -69,7 +69,7 @@ namespace Samr.ERP.Core.Stuff
 
             if (middleName != null)
             {
-                fullName = middleName + " " + middleName;
+                fullName += " " + middleName;
             }
 
             return fullName;
