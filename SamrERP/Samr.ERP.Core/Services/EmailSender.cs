@@ -18,7 +18,10 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSettingService _emailSettingService;
         private readonly UserProvider _userProvider;
-        private readonly EmailSetting _emailSetting;
+        private EmailSetting _defaultEmailSetting;
+
+        private EmailSetting DefaultEmailSetting => _defaultEmailSetting ?? (_defaultEmailSetting = _emailSettingService.GetDefaultEmailSetting());
+
         public EmailSender(
             IUnitOfWork unitOfWork,
             IEmailSettingService emailSettingService,
@@ -28,8 +31,7 @@ namespace Samr.ERP.Core.Services
             _unitOfWork = unitOfWork;
             _emailSettingService = emailSettingService;
             _userProvider = userProvider;
-
-            _emailSetting = _emailSettingService.GetDefaultEmailSetting();
+            
         }
 
 
@@ -45,7 +47,7 @@ namespace Samr.ERP.Core.Services
             var emailMessageHistory = new EmailMessageHistory()
             {
                 RecieverUserId = destUser.Id,
-                EmailSettingId = _emailSetting.Id,
+                EmailSettingId = DefaultEmailSetting.Id,
                 Subject = subject,
                 Message = message,
                 RecieverEMail = destUser.Email
@@ -71,7 +73,7 @@ public async Task SendEmailAsync(string email, string subject, string message)
 {
     var emailMessage = new MimeMessage();
 
-    emailMessage.From.Add(new MailboxAddress(_emailSetting.SenderName, _emailSetting.Sender));
+    emailMessage.From.Add(new MailboxAddress(DefaultEmailSetting.SenderName, DefaultEmailSetting.Sender));
     emailMessage.To.Add(new MailboxAddress(email));
 
     emailMessage.Subject = subject;
@@ -82,8 +84,8 @@ public async Task SendEmailAsync(string email, string subject, string message)
 
     using (var client = new SmtpClient())
     {
-        await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, _emailSetting.EnabledSSL);
-        await client.AuthenticateAsync(_emailSetting.Sender, _emailSetting.Password);
+        await client.ConnectAsync(DefaultEmailSetting.MailServer, DefaultEmailSetting.MailPort, DefaultEmailSetting.EnabledSSL);
+        await client.AuthenticateAsync(DefaultEmailSetting.Sender, DefaultEmailSetting.Password);
         await client.SendAsync(emailMessage);
 
         await client.DisconnectAsync(true);
