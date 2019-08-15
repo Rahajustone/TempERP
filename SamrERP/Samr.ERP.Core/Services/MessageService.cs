@@ -53,12 +53,6 @@ namespace Samr.ERP.Core.Services
                 query = query.Where(p => p.CreatedAt.Date <= toDate);
             }
 
-            if (fileFilterMessageViewModel.Title != null)
-            {
-                var titleFilter = fileFilterMessageViewModel.Title.ToLower();
-                query = query.Where(f => EF.Functions.Like(f.Title.ToLower() + " " + f.CreatedUser.Employee.FullName().ToLower(), "%" + titleFilter + "%"));
-            }
-
             return query;
         }
 
@@ -85,6 +79,15 @@ namespace Samr.ERP.Core.Services
                 .Where(m => m.ReceiverUserId == _userProvider.CurrentUser.Id);
 
             query = FilterQuery(fileFilterMessageViewModel, query);
+            
+            if (fileFilterMessageViewModel.Title != null)
+            {
+                var titleFilter = fileFilterMessageViewModel.Title.ToLower();
+
+                query = query.Where(f => EF.Functions.Like(
+                    string.Concat(f.Title.ToLower(), Extension.FullNameToString(f.SenderUser.Employee.LastName, f.SenderUser.Employee.FirstName, f.SenderUser.Employee.MiddleName))
+                    , "%" + titleFilter + "%"));
+            }
             var queryVm = query.ProjectTo<ReceiverMessageViewModel>();
 
             var pagedList = await queryVm.ToPagedListAsync(pagingOptions);
@@ -105,6 +108,15 @@ namespace Samr.ERP.Core.Services
                 .Where(m => m.SenderUserId == _userProvider.CurrentUser.Id);
 
             query = FilterQuery(fileFilterMessageViewModel, query);
+
+            if (fileFilterMessageViewModel.Title != null)
+            {
+                var titleFilter = fileFilterMessageViewModel.Title.ToLower();
+
+                query = query.Where(f => EF.Functions.Like(
+                    string.Concat(f.Title.ToLower(), Extension.FullNameToString(f.ReceiverUser.Employee.LastName, f.ReceiverUser.Employee.FirstName, f.ReceiverUser.Employee.MiddleName))
+                    , "%" + titleFilter + "%"));
+            }
 
             var queryVm = query.ProjectTo<SenderMessageViewModel>();
 
