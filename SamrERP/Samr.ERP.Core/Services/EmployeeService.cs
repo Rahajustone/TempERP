@@ -225,7 +225,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.Users.Update(existsUser);
                 }
-
+                 
                 var checkEmailUnique = await _unitOfWork.Employees
                     .GetDbSet()
                     .AnyAsync(e => e.Id != editEmployeeViewModel.Id
@@ -237,6 +237,7 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
+                    await AddToLog(employeExists);
                     var employee = _mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employeExists);
                     if (editEmployeeViewModel.Photo != null)
                     {
@@ -262,7 +263,7 @@ namespace Samr.ERP.Core.Services
                 return BaseResponse.NotFound();
 
             var employee = await _unitOfWork.Employees.All().FirstOrDefaultAsync(x => x.UserId == _userProvider.CurrentUser.Id);
-             
+
             employee.Email = editUserDetailsView.Email;
             employee.FactualAddress = editUserDetailsView.FactualAddress;
 
@@ -390,6 +391,7 @@ namespace Samr.ERP.Core.Services
                 }
                 else
                 {
+                    await AddToLog(existEmployee);
                     var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
 
                     if (editPassportDataEmployeeViewModel.PassportScan != null)
@@ -442,9 +444,15 @@ namespace Samr.ERP.Core.Services
             return _mapper.Map<IList<ExportExcelViewModel>>(all);
         }
 
-        private async Task AddLog()
+        private async Task AddToLog(Employee employee, bool commit = false)
         {
-            
+            if (employee != null)
+            {
+                var employeeLog = _mapper.Map<EmployeeLog>(employee);
+
+                _unitOfWork.EmployeeLogs.Add(employeeLog);
+                if (commit) await _unitOfWork.CommitAsync();
+            }
         }
     }
 }

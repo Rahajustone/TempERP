@@ -103,5 +103,20 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<EmailSettingViewModel>>
                 .Success(_unitOfWork.EmailSettings.GetAll().Select(p => _mapper.Map<EmailSettingViewModel>(p)));
         }
+
+        public async Task<BaseResponse> Delete(Guid id)
+        {
+            var emailSetting = await _unitOfWork.EmailSettings.GetByIdAsync(id);
+            if (emailSetting != null)
+            {
+                _unitOfWork.EmailSettings.Delete(id);
+
+                await _unitOfWork.CommitAsync();
+
+                return BaseResponse.Success();
+            }
+
+            return BaseResponse.NotFound();
+        }
     }
 }
