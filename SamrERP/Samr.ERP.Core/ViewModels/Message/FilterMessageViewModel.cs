@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Samr.ERP.Core.ViewModels.Notification
+namespace Samr.ERP.Core.ViewModels.Message
 {
-    public class FilterNotificationViewModel
+    public class FilterMessageViewModel
     {
         public string Title { get; set; }
         public DateTime? FromDate{ get; set; }

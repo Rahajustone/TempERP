@@ -16,8 +16,8 @@ using Samr.ERP.Core.ViewModels.Handbook.FileArchiveCategory;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
 using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
+using Samr.ERP.Core.ViewModels.Message;
 using Samr.ERP.Core.ViewModels.News;
-using Samr.ERP.Core.ViewModels.Notification;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
@@ -214,7 +214,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 //map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => $"{map.LastName} {map.FirstName} {map.MiddleName}"))
+                        map => Extension.FullNameToString(map.LastName, map.FirstName, map.MiddleName)))
                 .ForMember(dst => dst.HasAccount, src => src.MapFrom(
                     map => map.UserId.HasValue))
                 .ReverseMap()
@@ -250,10 +250,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Employee, GetEmployeeViewModel>()
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => $"{map.LastName} {map.FirstName} {map.MiddleName}"))
+                        map => Extension.FullNameToString(map.LastName, map.FirstName, map.MiddleName)))
                 .ForMember(dst => dst.MiddleName,
                 src => src.MapFrom(
-                        map => $"{ map.MiddleName }"))
+                        map =>  map.MiddleName ))
                 .ForMember(dst => dst.Department,
                     src => src.MapFrom(
                         map => map.Position.Department.Name))
@@ -362,7 +362,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => new MiniProfileViewModel
                         {
                             EmployeeId = map.CreatedUser.Employee.Id.ToString(),
-                            FullName = $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
+                            FullName = Extension.FullNameToString(map.CreatedUser.Employee.LastName, map.CreatedUser.Employee.FirstName, map.CreatedUser.Employee.MiddleName),
                             PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
                             PositionName = map.CreatedUser.Employee.Position.Name
                         }))
@@ -432,7 +432,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => new MiniProfileViewModel
                         {
                             EmployeeId = map.CreatedUser.Employee.Id.ToString(),
-                            FullName = $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
+                            FullName = Extension.FullNameToString(map.CreatedUser.Employee.LastName, map.CreatedUser.Employee.FirstName,map.CreatedUser.Employee.MiddleName),
                             PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
                             PositionName = map.CreatedUser.Employee.Position.Name
                         }))
@@ -468,7 +468,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => new MiniProfileViewModel
                         {
                             EmployeeId = map.CreatedUser.Employee.Id.ToString(),
-                            FullName = $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
+                            FullName = Extension.FullNameToString(map.CreatedUser.Employee.LastName, map.CreatedUser.Employee.FirstName, map.CreatedUser.Employee.MiddleName),
                             PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
                             PositionName = map.CreatedUser.Employee.Position.Name
                         }));
@@ -478,21 +478,46 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap();
             CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
 
-            CreateMap<Notification, NotificationSystemViewModel>()
+            CreateMap<Notification, GetSenderMessageViewModel>()
                 .ForMember(dest => dest.User,
                     src => src.MapFrom(
                         map => new MiniProfileViewModel
                         {
-                            EmployeeId = map.CreatedUser.Employee.Id.ToString(),
-                            FullName =
-                                $"{map.CreatedUser.Employee.LastName} {map.CreatedUser.Employee.FirstName} {map.CreatedUser.Employee.MiddleName}",
-                            PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
-                            PositionName = map.CreatedUser.Employee.Position.Name
+                            EmployeeId = map.ReceiverUser.Employee.Id.ToString(),
+                            PhotoPath = map.ReceiverUser.Employee.PhotoPath,
+                            FullName = Extension.FullNameToString(map.ReceiverUser.Employee.LastName, map.ReceiverUser.Employee.FirstName, map.ReceiverUser.Employee.MiddleName),
+                            PositionName = map.ReceiverUser.Employee.Position.Name
                         }))
                 .ForMember(dst => dst.ReadDate,
                     src => src.MapFrom(
-                        map => map.ReadDate.HasValue ? map.ReadDate.Value.ToShortDateString() : null));
+                        map => map.ReadDate.HasValue ? map.ReadDate.Value.ToStringCustomFormat() : null))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToShortDateString()));
+
+            CreateMap<Notification, SenderMessageViewModel>()
+                .IncludeBase<Notification, GetSenderMessageViewModel>()
+                .ForMember(dst => dst.Body, opt => opt.Ignore());
+
+            CreateMap<Notification, GetReceiverMessageViewModel>()
+                .IncludeBase<Notification, GetSenderMessageViewModel>()
+                .ForMember(dest => dest.User,
+                    src => src.MapFrom(
+                        map => new MiniProfileViewModel
+                        {
+                            EmployeeId = map.SenderUser.Employee.Id.ToString(),
+                            PhotoPath = map.SenderUser.Employee.PhotoPath,
+                            FullName = Extension.FullNameToString(map.SenderUser.Employee.LastName,
+                                map.SenderUser.Employee.FirstName, map.SenderUser.Employee.MiddleName),
+                            PositionName = map.SenderUser.Employee.Position.Name
+                        }));
+            CreateMap<Notification, ReceiverMessageViewModel>()
+                .IncludeBase<Notification, GetReceiverMessageViewModel>()
+                .ForMember(dst => dst.Body, opt => opt.Ignore());
+
             CreateMap<CreateMessageViewModel, Notification>();
+
+            CreateMap<User, MiniProfileViewModel>();
         }
     }
 }

@@ -9,7 +9,7 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
-using Samr.ERP.Core.ViewModels.Notification;
+using Samr.ERP.Core.ViewModels.Message;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -18,45 +18,45 @@ namespace Samr.ERP.WebApi.Controllers
     [Authorize]
     public class MessageController : ApiController
     {
-        private readonly INotificationService _notificationService;
+        private readonly IMessageService _messageService;
 
-        public MessageController(INotificationService notificationService, HubEvent.HubEvent hubEvent)
+        public MessageController(IMessageService messageService, HubEvent.HubEvent hubEvent)
         {
-            _notificationService = notificationService;
+            _messageService = messageService;
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<NotificationSystemViewModel>>> GetReceivedMessages([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterNotificationViewModel filterNotificationViewModel)
+        public async Task<BaseDataResponse<PagedList<ReceiverMessageViewModel>>> GetReceivedMessages([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterMessageViewModel filterMessageViewModel)
         {
-            var response = await _notificationService.GetReceivedMessagesAsync(pagingOptions, filterNotificationViewModel);
+            var response = await _messageService.GetReceivedMessagesAsync(pagingOptions, filterMessageViewModel);
             return Response(response);
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<NotificationSystemViewModel>>> GetSentMessages([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterNotificationViewModel filterNotificationViewModel)
+        public async Task<BaseDataResponse<PagedList<SenderMessageViewModel>>> GetSentMessages([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterMessageViewModel filterMessageViewModel)
         {
-            var response = await _notificationService.GetSentMessagesAsync(pagingOptions, filterNotificationViewModel);
+            var response = await _messageService.GetSentMessagesAsync(pagingOptions, filterMessageViewModel);
             return Response(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<NotificationSystemViewModel>> GetReceivedMessage(Guid id)
+        public async Task<BaseDataResponse<GetReceiverMessageViewModel>> GetReceivedMessage(Guid id)
         {
-            var response = await _notificationService.GetReceivedMessageAsync(id);
+            var response = await _messageService.GetReceivedMessageAsync(id);
             return Response(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<NotificationSystemViewModel>> GetSentMessage(Guid id)
+        public async Task<BaseDataResponse<GetSenderMessageViewModel>> GetSentMessage(Guid id)
         {
-            var response = await _notificationService.GetSentMessageAsync(id);
+            var response = await _messageService.GetSentMessageAsync(id);
             return Response(response);
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<NotificationSystemViewModel>> Create([FromBody]CreateMessageViewModel messageViewModel)
+        public async Task<BaseDataResponse<GetSenderMessageViewModel>> Create([FromBody]CreateMessageViewModel messageViewModel)
         {
-            var response = await _notificationService.SendMessageAsync(messageViewModel);
+            var response = await _messageService.SendMessageAsync(messageViewModel);
             return Response(response);
         }
     }

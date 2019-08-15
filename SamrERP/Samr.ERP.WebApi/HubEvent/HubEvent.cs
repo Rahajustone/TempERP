@@ -20,7 +20,7 @@ namespace Samr.ERP.WebApi.HubEvent
         {
             _hubContext = hubContext;
 
-            NotificationService.NotifyMessage += OnNotify;
+            MessageService.NotifyMessage += OnNotify;
         }
 
 
