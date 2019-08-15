@@ -168,7 +168,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<PositionLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
         {
-            var query = _unitOfWork.PositionLogs.GetDbSet().Where(d => d.DepartmentId == id).OrderByDescending(p => p.CreatedAt);
+            var query = _unitOfWork.PositionLogs.GetDbSet().Include(p => p.CreatedUser).Where(d => d.PositionId == id).OrderByDescending(p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<PositionLogViewModel>();
 

@@ -16,6 +16,7 @@ using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Extensions;
 using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
@@ -143,6 +144,7 @@ namespace Samr.ERP.Core.Services
         {
             var users = await _unitOfWork.Users.GetDbSet()
                 .Where(p => p.Id != _userProvider.CurrentUser.Id)
+                .Where( p => p.Id != GuidExtensions.FULL_GUID)
                 .Where(u => !(u.LockUserId.HasValue))
                 .Include(e => e.Employee)
                 .ToListAsync();
