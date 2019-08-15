@@ -16,6 +16,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<EmailSettingViewModel>> CreateAsync(EmailSettingViewModel emailSettingView);
         Task<BaseDataResponse<EmailSettingViewModel>> GetByIdAsync(Guid id);
         BaseDataResponse<IEnumerable<EmailSettingViewModel>> GetAll();
-        Task<BaseResponse> Remove(Guid id);
+        Task<BaseResponse> Delete(Guid id);
     }
 }

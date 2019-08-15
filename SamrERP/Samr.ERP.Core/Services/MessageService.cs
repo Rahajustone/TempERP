@@ -130,7 +130,7 @@ namespace Samr.ERP.Core.Services
 
             if (messageExists != null)
             {
-                if (!messageExists.ReadDate.HasValue && _userProvider.CurrentUser.Id == messageExists.ReceiverUserId)
+                if (!messageExists.ReadDate.HasValue)
                 {
                     messageExists.ReadDate = DateTime.Now;
                     await _unitOfWork.CommitAsync();
