@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Samr.ERP.Infrastructure.Data;
@@ -9,9 +10,10 @@ using Samr.ERP.Infrastructure.Data;
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190814145625_FixNotification")]
+    partial class FixNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,7 +242,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("9a3fcddb-4680-4206-b712-4e07df82e354"),
-                            CreatedAt = new DateTime(2019, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2019, 8, 14, 19, 56, 25, 196, DateTimeKind.Local).AddTicks(4763),
                             CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             EnabledSSL = true,
                             IsActive = true,
@@ -390,101 +392,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasIndex("EmployeeLockReasonId");
 
                     b.ToTable("EmployeeLockReasonLogs");
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreatedAt");
-
-                    b.Property<Guid>("CreatedUserId");
-
-                    b.Property<DateTime>("DateOfBirth");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(128);
-
-                    b.Property<Guid>("EmployeeId");
-
-                    b.Property<Guid?>("EmployeeLockReasonId");
-
-                    b.Property<string>("FactualAddress")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(32);
-
-                    b.Property<Guid>("GenderId");
-
-                    b.Property<DateTime>("HireDate");
-
-                    b.Property<string>("ImageName")
-                        .HasMaxLength(32);
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(32);
-
-                    b.Property<DateTime?>("LockDate");
-
-                    b.Property<Guid?>("LockUserId");
-
-                    b.Property<string>("MiddleName")
-                        .HasMaxLength(32);
-
-                    b.Property<Guid?>("NationalityId");
-
-                    b.Property<string>("PassportAddress")
-                        .HasMaxLength(256);
-
-                    b.Property<DateTime?>("PassportIssueDate");
-
-                    b.Property<string>("PassportIssuer")
-                        .HasMaxLength(64);
-
-                    b.Property<string>("PassportNumber")
-                        .HasMaxLength(32);
-
-                    b.Property<string>("PassportScanPath");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(9);
-
-                    b.Property<string>("PhotoPath");
-
-                    b.Property<Guid>("PositionId");
-
-                    b.Property<Guid?>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("EmployeeLockReasonId");
-
-                    b.HasIndex("GenderId");
-
-                    b.HasIndex("LockUserId");
-
-                    b.HasIndex("NationalityId");
-
-                    b.HasIndex("PositionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("EmployeeLogs");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.FileArchive", b =>
@@ -1093,7 +1000,7 @@ namespace Samr.ERP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
-                            CreatedAt = new DateTime(2019, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2019, 8, 14, 19, 56, 25, 195, DateTimeKind.Local).AddTicks(4721),
                             CreatedUserId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             IsActive = false
                         });
@@ -1277,45 +1184,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("EmployeeLockReasonId")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.EmployeeLog", b =>
-                {
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.EmployeeLockReason", "EmployeeLockReason")
-                        .WithMany()
-                        .HasForeignKey("EmployeeLockReasonId");
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.Gender", "Gender")
-                        .WithMany()
-                        .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "LockUser")
-                        .WithMany()
-                        .HasForeignKey("LockUserId");
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.Nationality", "Nationality")
-                        .WithMany()
-                        .HasForeignKey("NationalityId");
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.Position", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.FileArchive", b =>

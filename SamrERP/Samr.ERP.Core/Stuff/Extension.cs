@@ -63,6 +63,18 @@ namespace Samr.ERP.Core.Stuff
             return target.ToString("dd.MM.yyyy HH:mm");
         }
 
+        public static string FullNameToString(string lastName, string firstName, string middleName)
+        {
+            string fullName = lastName + " " + firstName;
+
+            if (middleName != null)
+            {
+                fullName = fullName + " " + middleName;
+            }
+
+            return fullName;
+        }
+
         public static async Task<PagedList<T>> ToPagedListAsync<T>(this IQueryable<T> source, PagingOptions pagingOptions)
         {
             var count = await source.CountAsync();

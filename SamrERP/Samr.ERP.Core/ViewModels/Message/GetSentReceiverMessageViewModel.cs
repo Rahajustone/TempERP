@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using Samr.ERP.Core.ViewModels.Employee;
 
-namespace Samr.ERP.Core.ViewModels.Notification
+namespace Samr.ERP.Core.ViewModels.Message
 {
-    public class NotificationSystemViewModel : CreateMessageViewModel
+    public class GetSenderMessageViewModel : CreateMessageViewModel
     {
         public Guid Id { get; set; }
         public Guid? SenderUserId { get; set; }

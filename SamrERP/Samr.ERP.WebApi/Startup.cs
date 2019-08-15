@@ -85,7 +85,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IUsefulLinkService, UsefulLinkService>();
             services.AddScoped<IFileArchiveCategoryService, FileArchiveCategoryService>();
             services.AddScoped<IFileArchiveService, FileArchiveService>();
-            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IMessageService, MessageService>();
             services.AddSingleton<HubEvent.HubEvent>();
             services.AddScoped(typeof(IHistoryService<,>),
                 typeof(HistoryService<,>));
@@ -207,7 +207,7 @@ namespace Samr.ERP.WebApi
 
            
 
-            //NotificationService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
+            //MessageService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
             DbInitializer.AddRolesToSystemUser(userManager,roleManager);
         }
 

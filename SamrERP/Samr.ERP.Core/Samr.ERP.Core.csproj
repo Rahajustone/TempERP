@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Models\RequestModels\" />
+    <Folder Include="ViewModels\Notification\" />
   </ItemGroup>
 
 </Project>
