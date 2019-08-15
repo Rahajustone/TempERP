@@ -42,10 +42,17 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(_emailSettingService.GetAll());
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<BaseDataResponse<EmailSettingViewModel>> GetById(Guid id)
         {
             return Response(await _emailSettingService.GetByIdAsync(id));
+        }
+
+        [HttpPost("{id}")]
+        public async Task<BaseResponse> Delete(Guid id)
+        {
+            var response = await _emailSettingService.Delete(id);
+            return Response(response);
         }
     }
 }
