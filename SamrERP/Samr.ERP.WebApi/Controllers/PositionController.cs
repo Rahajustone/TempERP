@@ -72,8 +72,8 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<EditPositionViewModel>.Fail(null, null));
         }
 
-        [HttpGet]
-        public async Task<BaseDataResponse<PagedList<PositionLogViewModel>>> GetAllLog([FromQuery]Guid id, [FromQuery]PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        [HttpGet("{id}")]
+        public async Task<BaseDataResponse<PagedList<PositionLogViewModel>>> GetAllLog(Guid id, [FromQuery]PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
         {
             var position = await _positionService.GetAllLogAsync(id, pagingOptions, sortRule);
             return Response(position);
