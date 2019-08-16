@@ -31,7 +31,7 @@ namespace Samr.ERP.Core.Services
 
         public EmailSetting GetDefaultEmailSetting()
         {
-            return _unitOfWork.EmailSettings.All().FirstOrDefault(p => p.IsActive && p.IsDefault);
+            return _unitOfWork.EmailSettings.All().OrderByDescending(p=>p.IsDefault).FirstOrDefault(p => p.IsActive);
         }
 
         public async Task<BaseDataResponse<EmailSettingViewModel>> CreateAsync(EmailSettingViewModel emailSettingView)
