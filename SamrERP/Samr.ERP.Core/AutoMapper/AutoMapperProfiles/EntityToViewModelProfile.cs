@@ -31,8 +31,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
         public EntityToViewModelProfile()
         {
             CreateMap(typeof(Source<>), typeof(Destination<>));
-            
+
             #region Log
+
+            CreateMap<EmailMessageHistory, EmailMessageHistoryLogViewModel>()
+                .ForMember(dst => dst.RecieverUser,
+                    src => src.MapFrom(map =>
+                        map.RecieverUser.Employee.LastName + " " + map.RecieverUser.Employee.FirstName));
 
             CreateMap<Department, DepartmentLog>()
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
