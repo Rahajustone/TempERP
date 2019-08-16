@@ -31,7 +31,7 @@ namespace Samr.ERP.Core.Services
             _unitOfWork = unitOfWork;
             _emailSettingService = emailSettingService;
             _userProvider = userProvider;
-            
+
         }
 
 
@@ -54,9 +54,9 @@ namespace Samr.ERP.Core.Services
             };
             if (_userProvider.CurrentUser == null)
             {
-                var firstUser =await _unitOfWork.Users.All().FirstAsync();
+                var firstUser = await _unitOfWork.Users.All().FirstAsync();
                 emailMessageHistory.CreatedUserId = firstUser.Id;
-                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false); 
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
             }
             else
             {
@@ -64,33 +64,33 @@ namespace Samr.ERP.Core.Services
 
             }
 
-    _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
+            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
 
             await _unitOfWork.CommitAsync();
-}
+        }
 
-public async Task SendEmailAsync(string email, string subject, string message)
-{
-    var emailMessage = new MimeMessage();
+        public async Task SendEmailAsync(string email, string subject, string message)
+        {
+            var emailMessage = new MimeMessage();
 
-    emailMessage.From.Add(new MailboxAddress(DefaultEmailSetting.SenderName, DefaultEmailSetting.Sender));
-    emailMessage.To.Add(new MailboxAddress(email));
+            emailMessage.From.Add(new MailboxAddress(DefaultEmailSetting.SenderName, DefaultEmailSetting.Sender));
+            emailMessage.To.Add(new MailboxAddress(email));
 
-    emailMessage.Subject = subject;
-    emailMessage.Body = new TextPart(TextFormat.Text)
-    {
-        Text = message
-    };
+            emailMessage.Subject = subject;
+            emailMessage.Body = new TextPart(TextFormat.Text)
+            {
+                Text = message
+            };
 
-    using (var client = new SmtpClient())
-    {
-        await client.ConnectAsync(DefaultEmailSetting.MailServer, DefaultEmailSetting.MailPort, DefaultEmailSetting.EnabledSSL);
-        await client.AuthenticateAsync(DefaultEmailSetting.Sender, DefaultEmailSetting.Password);
-        await client.SendAsync(emailMessage);
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync(DefaultEmailSetting.MailServer, DefaultEmailSetting.MailPort, DefaultEmailSetting.EnabledSSL);
+                await client.AuthenticateAsync(DefaultEmailSetting.Sender, DefaultEmailSetting.Password);
+                await client.SendAsync(emailMessage);
 
-        await client.DisconnectAsync(true);
-    }
-}
+                await client.DisconnectAsync(true);
+            }
+        }
 
     }
 }
