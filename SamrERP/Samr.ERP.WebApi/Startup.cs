@@ -80,7 +80,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<INewsService, NewsService>();
             services.AddScoped<INewsCategoryService, NewsCategoryService>();
-            services.AddScoped<IEmailSettingService, EmailSettingSettingService>();
+            services.AddScoped<IEmailSettingService, EmailSettingService>();
             services.AddScoped<IUserLockReasonService, UserLockReasonService>();
             services.AddScoped<IGenderService, GenderService>();
             services.AddScoped<IUsefulLinkCategoryService, UsefulLinkCategoryService>();

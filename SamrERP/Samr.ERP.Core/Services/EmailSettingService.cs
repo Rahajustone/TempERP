@@ -15,12 +15,12 @@ using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Services
 {
-    public class EmailSettingSettingService : IEmailSettingService
+    public class EmailSettingService : IEmailSettingService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public EmailSettingSettingService(
+        public EmailSettingService(
             IUnitOfWork unitOfWork,
             IMapper mapper
             )
