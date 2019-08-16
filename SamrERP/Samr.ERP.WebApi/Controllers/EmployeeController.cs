@@ -228,6 +228,11 @@ namespace Samr.ERP.WebApi.Controllers
             return NotFound("employee not found");
         }
 
-
+        [HttpGet("{id}")]
+        public async Task<BaseDataResponse<PagedList<EmployeeLogViewModel>>> GetAllLog(Guid id, [FromQuery]PagingOptions pagingOptions, [FromQuery] SortRule sortRule)
+        {
+            var employeeLogs = await _employeeService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(employeeLogs);
+        }
     }
 }

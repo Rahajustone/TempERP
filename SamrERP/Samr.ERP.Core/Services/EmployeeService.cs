@@ -225,7 +225,7 @@ namespace Samr.ERP.Core.Services
 
                     _unitOfWork.Users.Update(existsUser);
                 }
-                 
+
                 var checkEmailUnique = await _unitOfWork.Employees
                     .GetDbSet()
                     .AnyAsync(e => e.Id != editEmployeeViewModel.Id
@@ -315,14 +315,14 @@ namespace Samr.ERP.Core.Services
 
             if (employee?.EmployeeLockReasonId == null) return BaseResponse.NotFound();
 
-            
+
             employee.LockUserId = null;
             employee.EmployeeLockReasonId = null;
             employee.LockDate = null;
 
             if (employee.User != null)
             {
-                _userService.UnlockUser(employee.User); 
+                _userService.UnlockUser(employee.User);
             }
             await _unitOfWork.CommitAsync();
 
@@ -382,10 +382,10 @@ namespace Samr.ERP.Core.Services
             if (existEmployee != null)
             {
                 var passportNumberUnique = await _unitOfWork.Employees.GetDbSet()
-                    .AnyAsync(e => e.Id != editPassportDataEmployeeViewModel.EmployeeId 
+                    .AnyAsync(e => e.Id != editPassportDataEmployeeViewModel.EmployeeId
                                    && e.PassportNumber.ToLower() == editPassportDataEmployeeViewModel.PassportNumber.ToLower());
 
-                if (passportNumberUnique) 
+                if (passportNumberUnique)
                 {
                     response = BaseResponse.Fail(new ErrorModel("Passport number must be unique"));
                 }
@@ -416,7 +416,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<EmployeeInfoTokenViewModel> GetEmployeeInfo(Guid id)
         {
-            var emp = await _unitOfWork.Employees.GetDbSet().Include( p => p.Position).FirstOrDefaultAsync(
+            var emp = await _unitOfWork.Employees.GetDbSet().Include(p => p.Position).FirstOrDefaultAsync(
                 e => e.UserId == id);
             var vm = _mapper.Map<EmployeeInfoTokenViewModel>(emp);
 
@@ -437,7 +437,7 @@ namespace Samr.ERP.Core.Services
 
             var queryVm = query.ProjectTo<ExportExcelViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName );
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
 
             var all = await orderedQuery.ToListAsync();
 
@@ -453,6 +453,35 @@ namespace Samr.ERP.Core.Services
                 _unitOfWork.EmployeeLogs.Add(employeeLog);
                 if (commit) await _unitOfWork.CommitAsync();
             }
+        }
+
+        public async Task<BaseDataResponse<PagedList<EmployeeLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.EmployeeLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(p => p.LockUser)
+                .Include(p => p.User)
+                .Where(e => e.EmployeeId == id);
+                //.OrderByDescending(p => p.CreatedAt);
+
+            var queryVm = query.ProjectTo<EmployeeLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FirstName);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            foreach (var allEmployeeViewModel in pagedList.Items)
+            {
+                if (allEmployeeViewModel.PhotoPath != null)
+                {
+                    allEmployeeViewModel.PhotoPath =
+                        FileService.GetDownloadAction(FileService.GetResizedPath(allEmployeeViewModel.PhotoPath));
+                }
+            }
+
+            return BaseDataResponse<PagedList<EmployeeLogViewModel>>.Success(pagedList);
         }
     }
 }
