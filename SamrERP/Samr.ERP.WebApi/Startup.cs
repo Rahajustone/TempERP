@@ -201,7 +201,7 @@ namespace Samr.ERP.WebApi
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<NotificationHub>("Hubs/ListenMessages");
+                routes.MapHub<NotificationHub>("/Hubs/ListenMessages");
             });
 
             app.UseMvc(routes =>
