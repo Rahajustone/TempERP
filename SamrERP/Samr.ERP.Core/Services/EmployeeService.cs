@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -212,6 +213,19 @@ namespace Samr.ERP.Core.Services
             }
             else
             {
+
+                var checkEmailUnique = await _unitOfWork.Employees
+                    .GetDbSet()
+                    .AnyAsync(e => e.Id != editEmployeeViewModel.Id
+                                   && e.Email.ToLower() == editEmployeeViewModel.Email.ToLower());
+                if (checkEmailUnique)
+                {
+                    return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
+                }
+
+                if (await _unitOfWork.Employees.AnyAsync(p => p.Id != editEmployeeViewModel.Id && p.Phone == editEmployeeViewModel.Phone))
+                    return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.PhoneMustBeUnique));
+
                 var existsUser = await _unitOfWork
                     .Employees
                     .GetDbSet()
@@ -226,29 +240,17 @@ namespace Samr.ERP.Core.Services
                     _unitOfWork.Users.Update(existsUser);
                 }
 
-                var checkEmailUnique = await _unitOfWork.Employees
-                    .GetDbSet()
-                    .AnyAsync(e => e.Id != editEmployeeViewModel.Id
-                                   && e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower()
-                                   && e.Email.ToLower() == editEmployeeViewModel.Email.ToLower());
-                if (checkEmailUnique)
+                await AddToLog(employeExists);
+                var employee = _mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employeExists);
+                if (editEmployeeViewModel.Photo != null)
                 {
-                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Duplicate phone number and Email!"));
+                    employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
                 }
-                else
-                {
-                    await AddToLog(employeExists);
-                    var employee = _mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employeExists);
-                    if (editEmployeeViewModel.Photo != null)
-                    {
-                        employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
-                    }
-                    _unitOfWork.Employees.Update(employee);
+                _unitOfWork.Employees.Update(employee);
 
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
-                }
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
             }
 
             return dataResponse;

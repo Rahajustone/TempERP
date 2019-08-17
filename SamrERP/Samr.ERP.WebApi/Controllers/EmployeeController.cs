@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
@@ -150,7 +151,6 @@ namespace Samr.ERP.WebApi.Controllers
 
                 return Response(response);
             }
-
             return Response(BaseResponse.Fail());
         }
 
