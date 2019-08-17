@@ -30,6 +30,7 @@ namespace Samr.ERP.WebApi.HubEvent
         {
             Debug.WriteLine("i am here");
             await _hubContext.Clients.All.SendAsync("MessageReceived", sender, userId);
+            await _hubContext.Clients.User(userId).SendAsync("MessageReceived", sender, userId);
         }
     }
 }
