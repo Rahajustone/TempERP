@@ -40,6 +40,11 @@ namespace Samr.ERP.Core.Services
             }
             else
             {
+                if (_cache.TryGetValue(ActiveTokenCacheName, out HashSet<string> activeTokens))
+                {
+                    activeTokens.Remove(userToken.Token);
+                    _cache.Set(ActiveTokenCacheName, activeTokens);
+                }
                 userToken.Token = token;
                 _unitOfWork.ActiveUserTokens.Update(userToken);
             }
