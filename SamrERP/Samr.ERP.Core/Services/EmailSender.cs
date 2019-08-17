@@ -64,7 +64,7 @@ namespace Samr.ERP.Core.Services
 
             }
 
-            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
+            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
 
             await _unitOfWork.CommitAsync();
         }
@@ -73,7 +73,7 @@ namespace Samr.ERP.Core.Services
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress(DefaultEmailSetting.SenderName, DefaultEmailSetting.Sender));
+            emailMessage.From.Add(new MailboxAddress(_emailSetting.SenderName, _emailSetting.Sender));
             emailMessage.To.Add(new MailboxAddress(email));
 
             emailMessage.Subject = subject;
@@ -84,8 +84,8 @@ namespace Samr.ERP.Core.Services
 
             using (var client = new SmtpClient())
             {
-                await client.ConnectAsync(DefaultEmailSetting.MailServer, DefaultEmailSetting.MailPort, DefaultEmailSetting.EnabledSSL);
-                await client.AuthenticateAsync(DefaultEmailSetting.Sender, DefaultEmailSetting.Password);
+                await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, _emailSetting.EnabledSSL);
+                await client.AuthenticateAsync(_emailSetting.Sender, _emailSetting.Password);
                 await client.SendAsync(emailMessage);
 
                 await client.DisconnectAsync(true);

@@ -10,7 +10,6 @@ namespace Samr.ERP.Infrastructure.Entities
 {
     public class EmailMessageHistory:CreatableByUserBaseObject,ICreatable
     {
-        
         public Guid RecieverUserId { get; set; }
         [ForeignKey(nameof(RecieverUserId))]
         public User RecieverUser { get; set; }
