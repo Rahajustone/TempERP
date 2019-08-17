@@ -31,8 +31,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
         public EntityToViewModelProfile()
         {
             CreateMap(typeof(Source<>), typeof(Destination<>));
-            
+
             #region Log
+
+            CreateMap<EmailMessageHistory, EmailMessageHistoryLogViewModel>()
+                .ForMember(dst => dst.RecieverUser,
+                    src => src.MapFrom(map =>
+                        map.RecieverUser.Employee.LastName + " " + map.RecieverUser.Employee.FirstName));
 
             CreateMap<Department, DepartmentLog>()
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
@@ -65,6 +70,22 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.EmployeeId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Employee, opt => opt.Ignore());
+            CreateMap<EmployeeLog, EmployeeLogViewModel>()
+                .ForMember(dst => dst.Position,
+                    src => src.MapFrom(
+                        map => map.Position.Name))
+                .ForMember(dst => dst.Department,
+                    src => src.MapFrom(
+                        map => map.Position.Department.Name))
+                .ForMember(dst => dst.HasUser,
+                    src => src.MapFrom(
+                        map => map.User != null))
+                .ForMember(dst => dst.HasAccount, src => src.MapFrom(
+                    map => map.UserId.HasValue))
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(map =>
+                        map.CreatedUser == null ? string.Empty : map.CreatedUser.UserName));
+
 
             CreateMap<EmployeeLockReason, EmployeeLockReasonLog>()
                 .ForMember(dst => dst.EmployeeLockReasonId, src => src.MapFrom(map => map.Id))
@@ -242,8 +263,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
                         map => Extension.FullNameToString(map.LastName, map.FirstName, map.MiddleName)))
-                .ForMember(dst => dst.HasAccount, src => src.MapFrom(
-                    map => map.UserId.HasValue))
+                //.ForMember(dst => dst.HasAccount, src => src.MapFrom(
+                //    map => map.UserId.HasValue))
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
             //map.FullName()));

@@ -30,5 +30,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<IList<ExportExcelViewModel>> ExportToExcelAsync(FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
         Task<GetEmployeeCardTemplateViewModel> GetEmployeeCardByIdAsync(Guid id);
         Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
+        Task<BaseDataResponse<PagedList<EmployeeLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

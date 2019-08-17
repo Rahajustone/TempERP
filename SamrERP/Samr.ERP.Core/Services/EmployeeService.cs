@@ -456,5 +456,34 @@ namespace Samr.ERP.Core.Services
                 if (commit) await _unitOfWork.CommitAsync();
             }
         }
+
+        public async Task<BaseDataResponse<PagedList<EmployeeLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.EmployeeLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(p => p.LockUser)
+                .Include(p => p.User)
+                .Where(e => e.EmployeeId == id);
+                //.OrderByDescending(p => p.CreatedAt);
+
+            var queryVm = query.ProjectTo<EmployeeLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FirstName);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            foreach (var allEmployeeViewModel in pagedList.Items)
+            {
+                if (allEmployeeViewModel.PhotoPath != null)
+                {
+                    allEmployeeViewModel.PhotoPath =
+                        FileService.GetDownloadAction(FileService.GetResizedPath(allEmployeeViewModel.PhotoPath));
+                }
+            }
+
+            return BaseDataResponse<PagedList<EmployeeLogViewModel>>.Success(pagedList);
+        }
     }
 }

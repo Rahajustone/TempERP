@@ -88,6 +88,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IFileArchiveCategoryService, FileArchiveCategoryService>();
             services.AddScoped<IFileArchiveService, FileArchiveService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IEmailMessageHistoryService, EmailMessageHistoryService>();
             services.AddSingleton<HubEvent.HubEvent>();
             services.AddScoped(typeof(IHistoryService<,>),
                 typeof(HistoryService<,>));
