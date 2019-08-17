@@ -198,10 +198,12 @@ namespace Samr.ERP.WebApi
             app.UseMiddleware<TokenManagerMiddleware>();
 
             app.UseSwaggerDocumentation();
+
             app.UseSignalR(routes =>
             {
-                routes.MapHub<NotificationHub>("/ReceiveMessage");
+                routes.MapHub<NotificationHub>("/ListenMessages");
             });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

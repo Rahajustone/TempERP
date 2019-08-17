@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Infrastructure.Migrations;
+using Samr.ERP.Infrastructure.Providers;
 using Samr.ERP.WebApi.Hub;
 
 namespace Samr.ERP.WebApi.HubEvent
@@ -19,15 +21,15 @@ namespace Samr.ERP.WebApi.HubEvent
         public HubEvent(IHubContext<NotificationHub> hubContext)
         {
             _hubContext = hubContext;
-
             MessageService.NotifyMessage += OnNotify;
         }
 
 
-        public  async Task OnNotify(object sender, EventArgs args)
+        //[Authorize]
+        public  async Task OnNotify(object sender, EventArgs args, string userId)
         {
             Debug.WriteLine("i am here");
-            await _hubContext.Clients.All.SendAsync("SendMessage", "message");
+            await _hubContext.Clients.All.SendAsync("MessageReceived", sender, userId);
         }
     }
 }

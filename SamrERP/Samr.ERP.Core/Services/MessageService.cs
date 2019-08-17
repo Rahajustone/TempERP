@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +25,8 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
 
         public static event OnNotificationAdd NotifyMessage;
-        public delegate Task OnNotificationAdd(
-            object sender, EventArgs e);
+        public delegate Task OnNotificationAdd(object sender, EventArgs e, string userId);
+
         public MessageService(IUnitOfWork unitOfWork, IMapper mapper, UserProvider userProvider)
         {
             _unitOfWork = unitOfWork;
@@ -65,9 +66,14 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            NotifyMessage?.Invoke(this, EventArgs.Empty);
-
             var createdNotification = await GetSentMessageAsync(notification.Id);
+
+            var sender = _mapper.Map<NotifyMessageViewModel>(notification);
+
+            var count = _unitOfWork.Notifications.GetDbSet().Count(p => !p.ReadDate.HasValue);
+            sender.TotalUnReadedMessage = count;
+
+            NotifyMessage?.Invoke(sender, EventArgs.Empty, notification.SenderUserId.ToString());
 
             return createdNotification;
         }

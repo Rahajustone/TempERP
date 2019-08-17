@@ -565,6 +565,27 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 
             CreateMap<CreateMessageViewModel, Notification>();
 
+            CreateMap<Notification, NotifyMessageViewModel>()
+                .ForMember(dest => dest.Message,
+                    src => src.MapFrom(
+                        map => new SenderMessageViewModel
+                        {
+                            Id = map.Id,
+                            ReadDate = map.ReadDate.ToString(),
+                            SenderUserId = map.SenderUserId,
+                            ReceiverUserId = map.ReceiverUserId,
+                            CreatedAt = map.CreatedAt.ToShortDateString(),
+                            Title = map.Title,
+                            User = new MiniProfileViewModel
+                            {
+                                EmployeeId = map.ReceiverUser.Employee.Id.ToString(),
+                                PhotoPath = FileService.GetDownloadAction(FileService.GetResizedPath(map.ReceiverUser.Employee.PhotoPath)),
+                                FullName = Extension.FullNameToString(map.ReceiverUser.Employee.LastName,
+                                    map.ReceiverUser.Employee.FirstName, map.ReceiverUser.Employee.MiddleName),
+                                PositionName = map.ReceiverUser.Employee.Position.Name
+                            }
+                        }));
+
             CreateMap<User, MiniProfileViewModel>();
         }
     }
