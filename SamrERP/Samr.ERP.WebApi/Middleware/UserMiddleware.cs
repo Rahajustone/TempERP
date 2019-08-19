@@ -25,6 +25,7 @@ namespace Samr.ERP.WebApi.Middleware
             IUserService userService
         )
         {
+            
             var user = await userService.GetUserAsync(context.User);
 
             if (user != null)

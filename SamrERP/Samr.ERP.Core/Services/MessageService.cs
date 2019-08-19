@@ -25,7 +25,7 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
 
         public static event OnNotificationAdd NotifyMessage;
-        public delegate Task OnNotificationAdd(object sender, EventArgs e, string userId);
+        public delegate Task OnNotificationAdd(NotifyMessageViewModel notifyMessage, string userId);
 
         public MessageService(IUnitOfWork unitOfWork, IMapper mapper, UserProvider userProvider)
         {
@@ -68,12 +68,12 @@ namespace Samr.ERP.Core.Services
 
             var createdNotification = await GetSentMessageAsync(notification.Id);
 
-            var sender = _mapper.Map<NotifyMessageViewModel>(notification);
+            var notifyMessage = _mapper.Map<NotifyMessageViewModel>(notification);
 
             var count = _unitOfWork.Notifications.GetDbSet().Count(p => !p.ReadDate.HasValue);
-            sender.TotalUnReadedMessage = count;
+            notifyMessage.TotalUnReadedMessage = count;
 
-            NotifyMessage?.Invoke(sender, EventArgs.Empty, notification.SenderUserId.ToString());
+            NotifyMessage?.Invoke(notifyMessage, notification.SenderUserId.ToString());
 
             return createdNotification;
         }

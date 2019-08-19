@@ -47,6 +47,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
+      <HintPath>..\..\..\..\..\.nuget\packages\microsoft.testplatform.objectmodel\15.9.0\lib\netstandard1.5\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="NativeLibs\32bit\libwkhtmltox.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

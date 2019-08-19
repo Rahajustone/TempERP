@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -123,6 +124,24 @@ namespace Samr.ERP.WebApi
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
                 x.TokenValidationParameters = TokenAuthenticationService.GetTokenValidationParameters(token);
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/hubs",StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            // Read the token out of the query string
+                            context.Token = $"{accessToken}";
+                            
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
 
             });
 
@@ -143,7 +162,9 @@ namespace Samr.ERP.WebApi
                     "http://samrdev.evomedia.pro","https://samrdev.evomedia.pro")
                     .WithExposedHeaders("Content-Disposition");
             }));
-            services.AddSignalR();
+            services.AddSignalR(o =>
+                o.EnableDetailedErrors = true
+                );
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -192,10 +213,9 @@ namespace Samr.ERP.WebApi
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-            app.UseAuthentication();
-          
-            app.UseMiddleware<UserMiddleware>();
+
             app.UseMiddleware<TokenManagerMiddleware>();
+            app.UseMiddleware<UserMiddleware>();
 
             app.UseSwaggerDocumentation();
 
@@ -211,7 +231,8 @@ namespace Samr.ERP.WebApi
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-           
+            app.UseAuthentication();
+
 
             //MessageService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
             DbInitializer.AddRolesToSystemUser(userManager,roleManager);

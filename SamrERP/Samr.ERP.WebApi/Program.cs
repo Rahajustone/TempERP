@@ -14,5 +14,6 @@ namespace Samr.ERP.WebApi
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseIISIntegration();
+
     }
 }
