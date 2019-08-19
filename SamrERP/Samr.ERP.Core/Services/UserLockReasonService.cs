@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -102,7 +103,7 @@ namespace Samr.ERP.Core.Services
             var existsUserLockReason = _unitOfWork.UserLockReasons.Any(p => p.Name.ToLower() == userLockReasonViewModel.Name.ToLower());
             if (existsUserLockReason)
             {
-                response = BaseDataResponse<UserLockReasonViewModel>.Fail(userLockReasonViewModel, new ErrorModel("UserLockReason already exist."));
+                response = BaseDataResponse<UserLockReasonViewModel>.Fail(userLockReasonViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -129,7 +130,7 @@ namespace Samr.ERP.Core.Services
                                    && u.Name.ToLower() == userLockReasonViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
-                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.NotFound(userLockReasonViewModel, new ErrorModel("Duplicate name of lock reason!"));
+                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.NotFound(userLockReasonViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

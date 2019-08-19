@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Org.BouncyCastle.Math.EC;
 using Remotion.Linq.Clauses;
 using Samr.ERP.Core.Auth;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -136,7 +137,7 @@ namespace Samr.ERP.Core.Services
             var newsExists = _unitOfWork.News.Any(u => u.ShortDescription == newsViewModel.ShortDescription);
             if (newsExists)
             {
-                response = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel, new ErrorModel("Duplicate Title. Title must be unique"));
+                response = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -174,8 +175,7 @@ namespace Samr.ERP.Core.Services
                                    && d.ShortDescription.ToLower() == newsViewModel.ShortDescription.ToLower());
                 if (checkShortDescriptionUnique)
                 {
-                    dataResponse = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel,
-                        new ErrorModel("Duplicate short description field!"));
+                    dataResponse = BaseDataResponse<EditNewsViewModel>.Fail(newsViewModel,new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

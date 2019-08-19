@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -111,7 +112,7 @@ namespace Samr.ERP.Core.Services
 
             if (exists)
             {
-                response = BaseDataResponse<NewsCategoryViewModel>.Fail(newsCategoryViewModel, new ErrorModel("Name already exist!"));
+                response = BaseDataResponse<NewsCategoryViewModel>.Fail(newsCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -139,7 +140,7 @@ namespace Samr.ERP.Core.Services
                                    && n.Name.ToLower() == newsCategoryViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
-                    dataResponse = BaseDataResponse<NewsCategoryViewModel>.Fail(newsCategoryViewModel, new ErrorModel("We have already this news categories with this name"));
+                    dataResponse = BaseDataResponse<NewsCategoryViewModel>.Fail(newsCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

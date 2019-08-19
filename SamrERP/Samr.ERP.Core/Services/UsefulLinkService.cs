@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -104,7 +105,7 @@ namespace Samr.ERP.Core.Services
                 .FirstOrDefaultAsync(p => p.Title.ToLower() == editUsefulLinkViewModel.Title.ToLower());
             if (existsUsefulLink != null)
             {
-                response = BaseDataResponse<UsefulLinkViewModel>.Fail(editUsefulLinkViewModel, new ErrorModel("Entity  was found with the same name!"));
+                response = BaseDataResponse<UsefulLinkViewModel>.Fail(editUsefulLinkViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -136,7 +137,7 @@ namespace Samr.ERP.Core.Services
                 if (checkNameUnique)
                 {
                     response = BaseDataResponse<UsefulLinkViewModel>.Fail(editUsefulLinkViewModel,
-                        new ErrorModel("We have already this useful link category"));
+                        new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

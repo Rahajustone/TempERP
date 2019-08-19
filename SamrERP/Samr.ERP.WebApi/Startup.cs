@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Samr.ERP.Core.Auth;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Infrastructure.Data;
@@ -109,6 +110,7 @@ namespace Samr.ERP.WebApi
                         
                     })
                     .AddRoles<Role>()
+                    .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     //.AddRoleManager<Role>()
                     .AddEntityFrameworkStores<SamrDbContext>();
 

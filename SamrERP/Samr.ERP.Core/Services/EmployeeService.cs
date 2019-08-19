@@ -143,33 +143,30 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
-            BaseDataResponse<EditEmployeeViewModel> dataResponse;
+            
 
             var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
                 e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() ||
                 e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
             );
-
+            //TODO phone edit
             if (employeeExists)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number already exists"));
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
 
             }
-            else
+            if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now) return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+
+            var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+
+            if (editEmployeeViewModel.Photo != null)
             {
-                var employee = _mapper.Map<Employee>(editEmployeeViewModel);
-
-                if (editEmployeeViewModel.Photo != null)
-                {
-                    employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
-                }
-                _unitOfWork.Employees.Add(employee);
-                await _unitOfWork.CommitAsync();
-
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
+                employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
             }
+            _unitOfWork.Employees.Add(employee);
+            await _unitOfWork.CommitAsync();
 
-            return dataResponse;
+            return BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
         }
 
         public async Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId)
@@ -191,7 +188,7 @@ namespace Samr.ERP.Core.Services
 
             if (!createUserResult.Succeeded)
                 return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
-
+            
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
@@ -209,7 +206,7 @@ namespace Samr.ERP.Core.Services
 
             if (employeExists == null)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel("Not found employee"));
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
             }
             else
             {

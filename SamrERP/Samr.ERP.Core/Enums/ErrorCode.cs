@@ -7,13 +7,16 @@ namespace Samr.ERP.Core.Enums
         [Description("invalid login or pass")]
         InvalidLoginPass = 1000,
         [Description("account or employee is locked")]
-        AccountOrEmployeeLocked,
+        AccountOrEmployeeLocked = 1001,
         [Description("email must be unique")]
-        EmailMustBeUnique,
+        EmailMustBeUnique = 1002,
         [Description("phone must be unique")]
-        PhoneMustBeUnique,
+        PhoneMustBeUnique = 1003,
         [Description("passport must be unique")]
-        PassportMustBeUnique
-
+        PassportMustBeUnique = 1004,
+        [Description("Name must be unique")]
+        NameMustBeUnique = 1005,
+        [Description("Email sender mustbe unique")]
+        EmailSenderMustBeUnique = 1006
     }
 }
