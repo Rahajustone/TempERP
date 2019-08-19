@@ -17,6 +17,8 @@ namespace Samr.ERP.Core.Enums
         [Description("Name must be unique")]
         NameMustBeUnique = 1005,
         [Description("Email sender mustbe unique")]
-        EmailSenderMustBeUnique = 1006
+        EmailSenderMustBeUnique = 1006,
+        [Description("User not exists")]
+        UserNotExists = 1007
     }
 }

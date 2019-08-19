@@ -145,17 +145,21 @@ namespace Samr.ERP.Core.Services
         {
             
 
-            var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() ||
+            var emailExist = _unitOfWork.Employees.Any(predicate: e =>
                 e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
             );
             //TODO phone edit
-            if (employeeExists)
-            {
-                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
+            if (emailExist)
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
+                    new ErrorModel(ErrorCode.EmailMustBeUnique));
 
-            }
-            if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now) return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+            if (_unitOfWork.Employees.Any(p=>p.Phone == editEmployeeViewModel.Phone))
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
+                    new ErrorModel(ErrorCode.PhoneMustBeUnique));
+
+            if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now)
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+
 
             var employee = _mapper.Map<Employee>(editEmployeeViewModel);
 
@@ -219,9 +223,13 @@ namespace Samr.ERP.Core.Services
                 {
                     return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
                 }
-
+            
                 if (await _unitOfWork.Employees.AnyAsync(p => p.Id != editEmployeeViewModel.Id && p.Phone == editEmployeeViewModel.Phone))
                     return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.PhoneMustBeUnique));
+
+                if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now)
+                    return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+
 
                 var existsUser = await _unitOfWork
                     .Employees
