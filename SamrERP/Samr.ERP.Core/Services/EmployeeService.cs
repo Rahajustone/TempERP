@@ -143,7 +143,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
-            
+
 
             var emailExist = _unitOfWork.Employees.Any(predicate: e =>
                 e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
@@ -153,7 +153,7 @@ namespace Samr.ERP.Core.Services
                 return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
                     new ErrorModel(ErrorCode.EmailMustBeUnique));
 
-            if (_unitOfWork.Employees.Any(p=>p.Phone == editEmployeeViewModel.Phone))
+            if (_unitOfWork.Employees.Any(p => p.Phone == editEmployeeViewModel.Phone))
                 return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
                     new ErrorModel(ErrorCode.PhoneMustBeUnique));
 
@@ -192,7 +192,7 @@ namespace Samr.ERP.Core.Services
 
             if (!createUserResult.Succeeded)
                 return BaseDataResponse<UserViewModel>.Fail(null, createUserResult.Errors.ToErrorModels());
-            
+
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
@@ -223,7 +223,7 @@ namespace Samr.ERP.Core.Services
                 {
                     return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
                 }
-            
+
                 if (await _unitOfWork.Employees.AnyAsync(p => p.Id != editEmployeeViewModel.Id && p.Phone == editEmployeeViewModel.Phone))
                     return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.PhoneMustBeUnique));
 
@@ -274,9 +274,10 @@ namespace Samr.ERP.Core.Services
             employee.Email = editUserDetailsView.Email;
             employee.FactualAddress = editUserDetailsView.FactualAddress;
 
-            await EditAsync(_mapper.Map<EditEmployeeViewModel>(employee));
-
-            return BaseResponse.Success();
+            var employeeEditResult = await EditAsync(_mapper.Map<EditEmployeeViewModel>(employee));
+            return employeeEditResult.Meta.Success
+                ? BaseResponse.Success()
+                : new BaseResponse(employeeEditResult.Meta.StatusCode, employeeEditResult.Meta.Errors);
         }
 
         public async Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel)
@@ -394,7 +395,7 @@ namespace Samr.ERP.Core.Services
 
                 if (passportNumberUnique)
                 {
-                    response = BaseResponse.Fail(new ErrorModel("Passport number must be unique"));
+                    response = BaseResponse.Fail(new ErrorModel(ErrorCode.PassportNumberMustBeUnique));
                 }
                 else
                 {
@@ -471,7 +472,7 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.LockUser)
                 .Include(p => p.User)
                 .Where(e => e.EmployeeId == id);
-                //.OrderByDescending(p => p.CreatedAt);
+            //.OrderByDescending(p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<EmployeeLogViewModel>();
 

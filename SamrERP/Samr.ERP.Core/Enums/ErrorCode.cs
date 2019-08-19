@@ -12,8 +12,8 @@ namespace Samr.ERP.Core.Enums
         EmailMustBeUnique = 1002,
         [Description("phone must be unique")]
         PhoneMustBeUnique = 1003,
-        [Description("passport must be unique")]
-        PassportMustBeUnique = 1004,
+        [Description("passport number must be unique")]
+        PassportNumberMustBeUnique = 1004,
         [Description("Name must be unique")]
         NameMustBeUnique = 1005,
         [Description("Email sender mustbe unique")]
