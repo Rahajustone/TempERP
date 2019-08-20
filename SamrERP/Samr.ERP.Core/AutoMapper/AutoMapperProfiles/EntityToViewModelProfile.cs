@@ -438,8 +438,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
             CreateMap<NewsCategory, SelectListItemViewModel>();
 
-            CreateMap<EmailSetting, EmailSettingViewModel>();
-            CreateMap<EmailSettingViewModel, EmailSetting>();
+            CreateMap<EmailSetting, EmailSettingViewModel>()
+                .ForMember( dst => dst.SSL, src => src.MapFrom(map => map.EnabledSSL));
+            CreateMap<EmailSettingViewModel, EmailSetting>()
+                .ForMember(dst => dst.EnabledSSL, src => src.MapFrom(map => map.SSL)); 
 
             CreateMap<UserLockReason, UserLockReasonViewModel>()
                 .ForMember(dst => dst.CreatedUserName,

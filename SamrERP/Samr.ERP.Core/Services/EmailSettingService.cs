@@ -54,7 +54,7 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting));
         }
 
-        public async Task<BaseDataResponse<EmailSettingViewModel>> UpdateAsync(
+        public async Task<BaseDataResponse<EmailSettingViewModel>> EditAsync(
             EmailSettingViewModel emailSettingViewModel)
         {
             var emailSettingExist =  await _unitOfWork.EmailSettings.AnyAsync(p => p.Sender == emailSettingViewModel.Sender && p.IsActive);
@@ -70,7 +70,6 @@ namespace Samr.ERP.Core.Services
             if (emailSettingViewModel.IsDefault)await UndefaultOthersAsync(emailSetting.Id);
 
             return BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting));
-            ;
         }
 
         public async Task<BaseDataResponse<EmailSettingViewModel>> GetByIdAsync(Guid id)

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Differencing;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.EmailSetting;
@@ -46,6 +47,19 @@ namespace Samr.ERP.WebApi.Controllers
         public async Task<BaseDataResponse<EmailSettingViewModel>> GetById(Guid id)
         {
             return Response(await _emailSettingService.GetByIdAsync(id));
+        }
+
+        [HttpPost]
+        public async Task<BaseDataResponse<EmailSettingViewModel>> Edit(EmailSettingViewModel emailSettingViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _emailSettingService.EditAsync(emailSettingViewModel);
+
+                return Response(response);
+            }
+
+            return Response(BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel));
         }
 
         [HttpPost("{id}")]
