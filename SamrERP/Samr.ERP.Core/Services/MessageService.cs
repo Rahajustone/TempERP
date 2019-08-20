@@ -73,7 +73,7 @@ namespace Samr.ERP.Core.Services
             var count = _unitOfWork.Notifications.GetDbSet().Count(p => !p.ReadDate.HasValue);
             notifyMessage.TotalUnReadedMessage = count;
 
-            NotifyMessage?.Invoke(notifyMessage, notification.SenderUserId.ToString());
+            NotifyMessage?.Invoke(notifyMessage, notification.ReceiverUserId.ToString());
 
             return createdNotification;
         }

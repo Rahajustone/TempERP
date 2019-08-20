@@ -108,12 +108,13 @@ namespace Samr.ERP.WebApi
                         options.Password.RequireNonAlphanumeric = false;
                         options.Password.RequireUppercase = false;
                         options.Password.RequiredLength = 4;
-                        
+
                     })
                     .AddRoles<Role>()
                     .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     //.AddRoleManager<Role>()
                     .AddEntityFrameworkStores<SamrDbContext>();
+      
 
             services.Configure<AppSettings>(Configuration.GetSection("TokenSettings"));
 
@@ -127,8 +128,29 @@ namespace Samr.ERP.WebApi
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
                 x.TokenValidationParameters = TokenAuthenticationService.GetTokenValidationParameters(token);
-             
 
+
+                // We have to hook the OnMessageReceived event in order to
+                // allow the JWT authentication handler to read the access
+                // token from the query string when a WebSocket or 
+                // Server-Sent Events request comes in.
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/Hubs",StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             #endregion
@@ -222,7 +244,7 @@ namespace Samr.ERP.WebApi
 
 
             //MessageService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
-            DbInitializer.AddRolesToSystemUser(userManager,roleManager);
+            //DbInitializer.AddRolesToSystemUser(userManager,roleManager);
         }
 
         private void SetUpCulture()
