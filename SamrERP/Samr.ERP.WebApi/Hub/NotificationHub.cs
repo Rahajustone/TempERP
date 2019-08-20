@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Samr.ERP.Core.Services;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Infrastructure.Providers;
 using Samr.ERP.WebApi.Infrastructure;
 
@@ -17,11 +19,11 @@ namespace Samr.ERP.WebApi.Hub
     public class NotificationHub : Microsoft.AspNetCore.SignalR.Hub
     {
         private readonly UserProvider _userProvider;
+        private readonly IHttpContextAccessor _accessor;
 
-        
-        public NotificationHub(UserProvider userProvider)
+
+        public NotificationHub()
         {
-            _userProvider = userProvider;
         }
         public async Task MessageReceived()
         {
@@ -31,14 +33,14 @@ namespace Samr.ERP.WebApi.Hub
         }
         public override async Task OnConnectedAsync()
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, _userProvider.CurrentUser.Id.ToString());
+            await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.GetIdClaimValue());
 
             await base.OnConnectedAsync();
         }
 
         public override  Task OnDisconnectedAsync(Exception exception)
         {
-            Groups.RemoveFromGroupAsync(Context.ConnectionId, _userProvider.CurrentUser.ToString());
+            Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.GetIdClaimValue());
 
             return base.OnDisconnectedAsync(exception);
         }

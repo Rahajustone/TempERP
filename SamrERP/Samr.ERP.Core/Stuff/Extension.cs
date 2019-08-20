@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -93,6 +94,11 @@ namespace Samr.ERP.Core.Stuff
         {
             
             return (TDest)Mapper.Map(src, src.GetType(), typeof(TDest));
+        }
+
+        public static string GetIdClaimValue(this ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Samr.ERP.WebApi.HubEvent
 
         public  async Task OnNotify(NotifyMessageViewModel notifyMessage, string userId)
         {
-            await _hubContext.Clients.All.SendAsync("MessageReceived", notifyMessage, userId);
+            await _hubContext.Clients.Group(userId).SendAsync("MessageReceived", notifyMessage, userId);
             //await _hubContext.Clients.Groups(userId).SendAsync("MessageReceived", notifyMessage, userId);
 
         }
