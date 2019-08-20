@@ -42,6 +42,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<ActiveUserToken> ActiveUserTokens { get; }
         IRepository<EmployeeLockReasonLog> EmployeeLockReasonLog { get; }
         IRepository<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; }
+        IRepository<SMPPSetting> SMPPSettings { get; }
         IRepository<T> GetStandardRepo<T>() where T : class;
     }
 }

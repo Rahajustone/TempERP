@@ -67,6 +67,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<FileArchive> FileArchives => GetStandardRepo<FileArchive>();
         public  IRepository<Notification> Notifications => GetStandardRepo<Notification>();
         public  IRepository<ActiveUserToken> ActiveUserTokens => GetStandardRepo<ActiveUserToken>();
+        public  IRepository<SMPPSetting> SMPPSettings => GetStandardRepo<SMPPSetting>();
 
         /// <summary>
         /// Save pending changes to the database

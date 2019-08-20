@@ -20,6 +20,7 @@ using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
 using Samr.ERP.Core.ViewModels.Message;
 using Samr.ERP.Core.ViewModels.News;
 using Samr.ERP.Core.ViewModels.Position;
+using Samr.ERP.Core.ViewModels.SMPPSetting;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
@@ -589,6 +590,19 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         }));
 
             CreateMap<User, MiniProfileViewModel>();
+
+            CreateMap<SMPPSetting, SMPPSettingViewModel>();
+            CreateMap<SMPPSettingViewModel, SMPPSetting>();
+
+            CreateMap<SMPPSetting, SMPPSettingResponseViewModel>()
+                .ForMember(dst => dst.CreatedUserName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.UserName))
+                .ForMember(dst => dst.CreatedAt, 
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToShortDateString()));
+
+            CreateMap<SMPPSettingViewModel, SMPPSettingResponseViewModel>().ReverseMap();
         }
     }
 }

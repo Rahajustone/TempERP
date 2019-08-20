@@ -47,6 +47,7 @@ namespace Samr.ERP.Infrastructure.Data
         public DbSet<FileArchive> FileArchives { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ActiveUserToken> ActiveUserTokens { get; set; }
+        public DbSet<SMPPSetting> SMPPSettings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
