@@ -18,7 +18,11 @@ namespace Samr.ERP.Core.Models.ErrorModels
         {
             Description = description;
         }
-
+        public ErrorModel(string code, string description)
+        {
+            Code = Enum.Parse<ErrorCode>(code);
+            Description = description;
+        }
         public ErrorModel(ErrorCode code)
         {
             Code = code;

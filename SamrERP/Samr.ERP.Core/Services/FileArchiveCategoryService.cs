@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -103,7 +104,7 @@ namespace Samr.ERP.Core.Services
             var fileCategoryExists = _unitOfWork.FileArchiveCategories.Any(p => p.Name.ToLower() == fileArchiveCategoryViewModel.Name.ToLower());
             if (fileCategoryExists)
             {
-                dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.Fail(fileArchiveCategoryViewModel, new ErrorModel("Already this model in database."));
+                dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.Fail(fileArchiveCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -129,7 +130,7 @@ namespace Samr.ERP.Core.Services
                                                                      && u.Name.ToLower() == editFileArchiveCategoryViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
-                    dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.NotFound(editFileArchiveCategoryViewModel, new ErrorModel("Duplicate name of file category!"));
+                    dataResponse = BaseDataResponse<EditFileArchiveCategoryViewModel>.NotFound(editFileArchiveCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

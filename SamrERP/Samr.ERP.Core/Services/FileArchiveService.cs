@@ -8,6 +8,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -134,7 +135,7 @@ namespace Samr.ERP.Core.Services
                 .FirstOrDefaultAsync(p => p.Title.ToLower() == editFileArchiveViewModel.Title.ToLower());
             if (existsFileArchive != null)
             {
-                response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel, new ErrorModel("Entity  was found with the same name!"));
+                response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -171,7 +172,7 @@ namespace Samr.ERP.Core.Services
                 if (checkNameUnique)
                 {
                     response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel,
-                        new ErrorModel("We have already this entity."));
+                        new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

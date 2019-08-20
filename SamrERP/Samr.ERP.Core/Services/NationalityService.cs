@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -106,7 +107,7 @@ namespace Samr.ERP.Core.Services
 
             if (nationalityExists)
             {
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel("Already this model is in Database"));
+                dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -133,7 +134,7 @@ namespace Samr.ERP.Core.Services
                     .AnyAsync(n =>n.Id != nationalityViewModel.Id && n.Name.ToLower() == nationalityViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
-                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, new ErrorModel("Already we have this nation with this Name"));
+                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

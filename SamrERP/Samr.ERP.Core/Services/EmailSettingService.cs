@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -38,7 +39,7 @@ namespace Samr.ERP.Core.Services
         {
             var emailSettingExist = _unitOfWork.EmailSettings.Any(p => p.Sender == emailSettingView.Sender);
 
-            if (emailSettingExist) return BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingView, new ErrorModel("emailsetting exist with same sender"));
+            if (emailSettingExist) return BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingView, new ErrorModel(ErrorCode.EmailSenderMustBeUnique));
 
             var emailSetting = _mapper.Map<EmailSetting>(emailSettingView);
 
@@ -58,7 +59,7 @@ namespace Samr.ERP.Core.Services
         {
             var emailSettingExist =  await _unitOfWork.EmailSettings.AnyAsync(p => p.Sender == emailSettingViewModel.Sender && p.IsActive);
 
-            if (emailSettingExist) return BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel, new ErrorModel("emailsetting exist with same sender"));
+            if (emailSettingExist) return BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel, new ErrorModel(ErrorCode.EmailSenderMustBeUnique));
 
             var emailSetting = _mapper.Map<EmailSetting>(emailSettingViewModel);
 

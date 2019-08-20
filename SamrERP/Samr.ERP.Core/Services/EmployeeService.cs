@@ -143,33 +143,34 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
-            BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-            var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() ||
+
+            var emailExist = _unitOfWork.Employees.Any(predicate: e =>
                 e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
             );
+            //TODO phone edit
+            if (emailExist)
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
+                    new ErrorModel(ErrorCode.EmailMustBeUnique));
 
-            if (employeeExists)
+            if (_unitOfWork.Employees.Any(p => p.Phone == editEmployeeViewModel.Phone))
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
+                    new ErrorModel(ErrorCode.PhoneMustBeUnique));
+
+            if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now)
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+
+
+            var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+
+            if (editEmployeeViewModel.Photo != null)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number already exists"));
-
+                employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
             }
-            else
-            {
-                var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+            _unitOfWork.Employees.Add(employee);
+            await _unitOfWork.CommitAsync();
 
-                if (editEmployeeViewModel.Photo != null)
-                {
-                    employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
-                }
-                _unitOfWork.Employees.Add(employee);
-                await _unitOfWork.CommitAsync();
-
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
-            }
-
-            return dataResponse;
+            return BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
         }
 
         public async Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId)
@@ -209,7 +210,7 @@ namespace Samr.ERP.Core.Services
 
             if (employeExists == null)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel("Not found employee"));
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
             }
             else
             {
@@ -225,6 +226,10 @@ namespace Samr.ERP.Core.Services
 
                 if (await _unitOfWork.Employees.AnyAsync(p => p.Id != editEmployeeViewModel.Id && p.Phone == editEmployeeViewModel.Phone))
                     return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.PhoneMustBeUnique));
+
+                if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now)
+                    return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+
 
                 var existsUser = await _unitOfWork
                     .Employees
@@ -269,9 +274,10 @@ namespace Samr.ERP.Core.Services
             employee.Email = editUserDetailsView.Email;
             employee.FactualAddress = editUserDetailsView.FactualAddress;
 
-            await EditAsync(_mapper.Map<EditEmployeeViewModel>(employee));
-
-            return BaseResponse.Success();
+            var employeeEditResult = await EditAsync(_mapper.Map<EditEmployeeViewModel>(employee));
+            return employeeEditResult.Meta.Success
+                ? BaseResponse.Success()
+                : new BaseResponse(employeeEditResult.Meta.StatusCode, employeeEditResult.Meta.Errors);
         }
 
         public async Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel)
@@ -389,7 +395,7 @@ namespace Samr.ERP.Core.Services
 
                 if (passportNumberUnique)
                 {
-                    response = BaseResponse.Fail(new ErrorModel("Passport number must be unique"));
+                    response = BaseResponse.Fail(new ErrorModel(ErrorCode.PassportNumberMustBeUnique));
                 }
                 else
                 {
@@ -466,7 +472,7 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.LockUser)
                 .Include(p => p.User)
                 .Where(e => e.EmployeeId == id);
-                //.OrderByDescending(p => p.CreatedAt);
+            //.OrderByDescending(p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<EmployeeLogViewModel>();
 

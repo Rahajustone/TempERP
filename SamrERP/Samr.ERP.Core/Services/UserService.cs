@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -157,7 +158,7 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel)
         {
             var user = await GetByPhoneNumber(resetPasswordModel.PhoneNumber);
-            if (user == null) return BaseDataResponse<string>.Fail("", new ErrorModel("user not found"));
+            if (user == null) return BaseDataResponse<string>.Fail("", new ErrorModel(ErrorCode.UserNotExists));
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 

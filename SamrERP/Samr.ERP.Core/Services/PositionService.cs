@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -115,7 +116,7 @@ namespace Samr.ERP.Core.Services
                 _unitOfWork.Positions.Any(p => p.Name.ToLower() == positionViewModel.Name.ToLower());
             if (positionExists)
             {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Already this model in database."));
+                dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -142,7 +143,7 @@ namespace Samr.ERP.Core.Services
                                    && p.Name.ToLower() == positionViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Duplicate position name"));
+                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

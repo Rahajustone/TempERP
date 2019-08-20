@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Samr.ERP.Core.Auth;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Infrastructure.Data;
@@ -109,6 +110,7 @@ namespace Samr.ERP.WebApi
                         
                     })
                     .AddRoles<Role>()
+                    .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     //.AddRoleManager<Role>()
                     .AddEntityFrameworkStores<SamrDbContext>();
 
@@ -124,24 +126,7 @@ namespace Samr.ERP.WebApi
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
                 x.TokenValidationParameters = TokenAuthenticationService.GetTokenValidationParameters(token);
-                x.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Query["access_token"];
-
-                        // If the request is for our hub...
-                        var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/hubs",StringComparison.InvariantCultureIgnoreCase)))
-                        {
-                            // Read the token out of the query string
-                            context.Token = $"{accessToken}";
-                            
-                        }
-                        return Task.CompletedTask;
-                    }
-                };
+             
 
             });
 
@@ -213,7 +198,9 @@ namespace Samr.ERP.WebApi
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
 
+            
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseMiddleware<UserMiddleware>();
 
@@ -231,7 +218,6 @@ namespace Samr.ERP.WebApi
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            app.UseAuthentication();
 
 
             //MessageService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");

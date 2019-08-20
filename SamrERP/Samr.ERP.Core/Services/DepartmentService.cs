@@ -7,6 +7,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Samr.ERP.Core.AutoMapper.AutoMapperProfiles;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
@@ -107,7 +108,7 @@ namespace Samr.ERP.Core.Services
             var departmentExists = await CheckDepartmentNameUnique(editDepartmentViewModel.Name);
             if (departmentExists)
             {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("Already this model in database."));
+                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
             }
             else
             {
@@ -136,7 +137,7 @@ namespace Samr.ERP.Core.Services
                     .AnyAsync(d => d.Id != editDepartmentViewModel.Id && d.Name.ToLower() == editDepartmentViewModel.Name.ToLower());
                 if (checkNameUnique)
                 {
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("We have already this department"));
+                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
                 }
                 else
                 {

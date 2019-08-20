@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -69,13 +70,13 @@ namespace Samr.ERP.WebApi.Infrastructure
         {
             var authenticateResult = new AuthenticateResult();
             User user = await _userService.GetByPhoneNumber(loginModel.PhoneNumber);
-            if (user == null) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("login or pass not correct"));
+            if (user == null) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel(ErrorCode.InvalidLoginPass));
 
             var checkPasswordResult = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
-            if (!checkPasswordResult.Succeeded) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("login or pass not correct"));
+            if (!checkPasswordResult.Succeeded) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel(ErrorCode.InvalidLoginPass));
 
             var canSighInResult = await _signInManager.CanSignInAsync(user);
-            if (!canSighInResult || user.LockDate != null) return BaseDataResponse<AuthenticateResult>.Fail(null,  new ErrorModel("you cant login call to support"));
+            if (!canSighInResult || user.LockDate != null) return BaseDataResponse<AuthenticateResult>.Fail(null,  new ErrorModel(ErrorCode.AccountOrEmployeeLocked));
 
             var token = GetJwtTokenForUser(user, loginModel.RememberMe);
 
