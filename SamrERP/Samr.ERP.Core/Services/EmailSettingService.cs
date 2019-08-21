@@ -57,9 +57,12 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<EmailSettingViewModel>> EditAsync(
             EmailSettingViewModel emailSettingViewModel)
         {
-            var emailSettingExist =  await _unitOfWork.EmailSettings.AnyAsync(p => p.Sender == emailSettingViewModel.Sender && p.IsActive);
-
-            if (emailSettingExist) return BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel, new ErrorModel(ErrorCode.EmailSenderMustBeUnique));
+            var emailSettingExist =  await _unitOfWork.EmailSettings.AnyAsync(p => p.Id == emailSettingViewModel.Id);
+            if (!emailSettingExist) return BaseDataResponse<EmailSettingViewModel>.NotFound(emailSettingViewModel, new ErrorModel(ErrorCode.EmailSenderMustBeUnique));
+            
+            var checkUniqueField = await _unitOfWork.EmailSettings.AnyAsync(p =>
+                p.Id != emailSettingViewModel.Id && p.Sender == emailSettingViewModel.Sender && p.IsActive);
+            if(checkUniqueField) return BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel, new ErrorModel(ErrorCode.EmailSenderMustBeUnique));
 
             var emailSetting = _mapper.Map<EmailSetting>(emailSettingViewModel);
 
@@ -67,7 +70,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            if (emailSettingViewModel.IsDefault)await UndefaultOthersAsync(emailSetting.Id);
+            if (emailSettingViewModel.IsDefault) await UndefaultOthersAsync(emailSetting.Id);
 
             return BaseDataResponse<EmailSettingViewModel>.Success(_mapper.Map<EmailSettingViewModel>(emailSetting));
         }

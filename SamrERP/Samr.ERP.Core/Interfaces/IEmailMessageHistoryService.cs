@@ -11,6 +11,8 @@ namespace Samr.ERP.Core.Interfaces
 {
     public  interface IEmailMessageHistoryService
     {
-        Task<BaseDataResponse<PagedList<EmailMessageHistoryLogViewModel>>> GetAllLogAsync(PagingOptions pagingOptions, SortRule sortRule);
+        Task<BaseDataResponse<PagedList<EmailMessageHistoryLogViewModel>>> GetAllLogAsync(
+            PagingOptions pagingOptions, SortRule sortRule,
+            FilterEmailMessageHistoryLogViewModel emailMessageHistoryLogFilterView);
     }
 }

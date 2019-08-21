@@ -13,6 +13,7 @@ using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Infrastructure.Data.Contracts;
+using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Services
 {
@@ -27,13 +28,16 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<BaseDataResponse<PagedList<EmailMessageHistoryLogViewModel>>> GetAllLogAsync(PagingOptions pagingOptions, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EmailMessageHistoryLogViewModel>>> GetAllLogAsync(PagingOptions pagingOptions, SortRule sortRule, FilterEmailMessageHistoryLogViewModel emailMessageHistoryLogFilterView)
         {
             var query = _unitOfWork.EmailMessageHistories.GetDbSet()
                 .Include(p => p.EmailSetting)
                 .Include(p => p.RecieverUser)
                 .Include(p => p.RecieverEMail)
-                .OrderByDescending(p => p.CreatedAt);
+                .OrderByDescending(p => p.CreatedAt)
+                .AsQueryable();
+
+            query = FilterEmailMessageHistories(emailMessageHistoryLogFilterView, query);
 
             var queryVm = query.ProjectTo<EmailMessageHistoryLogViewModel>();
 
@@ -42,6 +46,32 @@ namespace Samr.ERP.Core.Services
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
             return BaseDataResponse<PagedList<EmailMessageHistoryLogViewModel>>.Success(pagedList);
+        }
+
+        private static IQueryable<EmailMessageHistory> FilterEmailMessageHistories(
+            FilterEmailMessageHistoryLogViewModel emailMessageHistoryLogFilterView, IQueryable<EmailMessageHistory> query)
+        {
+            if (emailMessageHistoryLogFilterView.FromDate != null)
+            {
+                var fromDate = Convert.ToDateTime(emailMessageHistoryLogFilterView.FromDate);
+                query = query.Where(p => p.CreatedAt.Date >= fromDate);
+            }
+
+            if (emailMessageHistoryLogFilterView.ToDate != null)
+            {
+                var toDate = Convert.ToDateTime(emailMessageHistoryLogFilterView.ToDate);
+                query = query.Where(p => p.CreatedAt.Date <= toDate);
+            }
+
+            if (emailMessageHistoryLogFilterView.ReceiverName != null)
+                query = query.Where(p => EF.Functions.Like(p.RecieverUser.UserName.ToLower(),
+                    "%" + emailMessageHistoryLogFilterView.ReceiverName.ToLower() + "%"));
+
+            if (emailMessageHistoryLogFilterView.SenderName != null)
+                query = query.Where(p => EF.Functions.Like(p.CreatedUser.UserName.ToLower(),
+                    "%" + emailMessageHistoryLogFilterView.SenderName.ToLower() + "%"));
+
+            return query;
         }
     }
 }
