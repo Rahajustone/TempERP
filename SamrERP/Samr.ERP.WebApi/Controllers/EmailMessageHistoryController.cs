@@ -22,9 +22,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EmailMessageHistoryLogViewModel>>> GetAllLog([FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<EmailMessageHistoryLogViewModel>>> GetAllLog([FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule, [FromQuery]FilterEmailMessageHistoryLogViewModel filterEmailMessageHistoryLogViewModel)
         {
-            var response = await _emailMessageHistory.GetAllLogAsync(pagingOptions, sortRule);
+            var response = await _emailMessageHistory.GetAllLogAsync(pagingOptions, sortRule, filterEmailMessageHistoryLogViewModel);
             return Response(response);
         }
     }
