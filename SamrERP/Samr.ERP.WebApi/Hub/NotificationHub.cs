@@ -45,6 +45,7 @@ namespace Samr.ERP.WebApi.Hub
             return base.OnDisconnectedAsync(exception);
         }
 
+        
         //public override Task OnReconnected()
         //{
         //    Groups.AddToGroupAsync().
