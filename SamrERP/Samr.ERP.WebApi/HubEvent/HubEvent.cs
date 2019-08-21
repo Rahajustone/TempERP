@@ -21,14 +21,18 @@ namespace Samr.ERP.WebApi.HubEvent
         {
             _hubContext = hubContext;
             MessageService.NotifyMessage += OnNotify;
+            MessageService.NotifyCountChange += OnNotificationCountChange;
         }
 
 
-        public  async Task OnNotify(NotifyMessageViewModel notifyMessage, string userId)
+        public  async Task OnNotify(GetSenderMessageViewModel senderMessageView, string userId)
         {
-            await _hubContext.Clients.Group(userId).SendAsync("MessageReceived", notifyMessage, userId);
-            //await _hubContext.Clients.Groups(userId).SendAsync("MessageReceived", notifyMessage, userId);
+            await _hubContext.Clients.Group(userId).SendAsync("OnMessageReceived", senderMessageView, userId);
+        }
 
+        public async Task OnNotificationCountChange(int unReadedCount, string userId)
+        {
+            await _hubContext.Clients.Group(userId).SendAsync("OnNotificationCountChange", unReadedCount, userId);
         }
 
         public async Task SendMessage(object sender, string userId)

@@ -25,7 +25,11 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
 
         public static event OnNotificationAdd NotifyMessage;
-        public delegate Task OnNotificationAdd(NotifyMessageViewModel notifyMessage, string userId);
+        public delegate Task OnNotificationAdd(GetSenderMessageViewModel senderMessageView, string userId);
+
+        public static event OnNotificationCountChange NotifyCountChange;
+        public delegate Task OnNotificationCountChange(int unReadedCount, string userId);
+
 
         public MessageService(IUnitOfWork unitOfWork, IMapper mapper, UserProvider userProvider)
         {
@@ -33,6 +37,8 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
             _userProvider = userProvider;
         }
+
+
         private IQueryable<Notification> GetQuery()
         {
             return _unitOfWork.Notifications.GetDbSet()
@@ -70,14 +76,21 @@ namespace Samr.ERP.Core.Services
 
             var notifyMessage = _mapper.Map<NotifyMessageViewModel>(notification);
 
-            var count = _unitOfWork.Notifications.GetDbSet().Count(p => !p.ReadDate.HasValue);
-            notifyMessage.TotalUnReadedMessage = count;
+            
 
-            NotifyMessage?.Invoke(notifyMessage, notification.ReceiverUserId.ToString());
+            NotifyMessage?.Invoke(notifyMessage.Message, notification.ReceiverUserId.ToString());
+            await NotifyUnreadedMessageCount(notification.ReceiverUserId.Value);
 
             return createdNotification;
         }
 
+        public async Task NotifyUnreadedMessageCount(Guid userId)
+        {
+            var unReadedCount = await _unitOfWork.Notifications.GetDbSet().CountAsync(p => p.ReceiverUserId == userId && !p.ReadDate.HasValue);
+
+            NotifyCountChange?.Invoke(unReadedCount, userId.ToString());
+
+        }
         public async Task<BaseDataResponse<PagedList<ReceiverMessageViewModel>>> GetReceivedMessagesAsync(PagingOptions pagingOptions, FilterMessageViewModel fileFilterMessageViewModel)
         {
             var query = GetQuery()
