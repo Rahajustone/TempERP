@@ -62,7 +62,7 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel));
         }
 
-        [HttpPost("{id}")]
+        [HttpDelete("{id}")]
         public async Task<BaseResponse> Delete(Guid id)
         {
             var response = await _emailSettingService.Delete(id);

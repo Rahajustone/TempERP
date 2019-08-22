@@ -16,5 +16,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<PagedList<SenderMessageViewModel>>> GetSentMessagesAsync(PagingOptions pagingOptions, FilterMessageViewModel fileFilterMessageViewModel);
         Task<BaseDataResponse<GetReceiverMessageViewModel>> GetReceivedMessageAsync(Guid id);
         Task<BaseDataResponse<GetSenderMessageViewModel>> GetSentMessageAsync(Guid id);
+        Task NotifyUnreadedMessageCount(Guid userId);
     }
 }

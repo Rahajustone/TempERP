@@ -59,7 +59,7 @@ namespace Samr.ERP.WebApi
 
             services.AddDbContext<SamrDbContext>(options =>
                 options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Scoped);
+                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services.AddSingleton<PdfConverterService>();
@@ -114,7 +114,7 @@ namespace Samr.ERP.WebApi
                     .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     //.AddRoleManager<Role>()
                     .AddEntityFrameworkStores<SamrDbContext>();
-      
+
 
             services.Configure<AppSettings>(Configuration.GetSection("TokenSettings"));
 
@@ -143,7 +143,7 @@ namespace Samr.ERP.WebApi
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/Hubs",StringComparison.InvariantCultureIgnoreCase)))
+                            (path.StartsWithSegments("/Hubs", StringComparison.InvariantCultureIgnoreCase)))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
@@ -165,9 +165,9 @@ namespace Samr.ERP.WebApi
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyOrigin()
-                    .WithOrigins("http://localhost:4200", 
-                    "http://samr.evomedia.pro","https://samr.evomedia.pro",
-                    "http://samrdev.evomedia.pro","https://samrdev.evomedia.pro")
+                    .WithOrigins("http://localhost:4200",
+                    "http://samr.evomedia.pro", "https://samr.evomedia.pro",
+                    "http://samrdev.evomedia.pro", "https://samrdev.evomedia.pro")
                     .WithExposedHeaders("Content-Disposition");
             }));
             services.AddSignalR(o =>
@@ -179,7 +179,7 @@ namespace Samr.ERP.WebApi
             services.Configure<ApiBehaviorOptions>(options =>
                 options.SuppressModelStateInvalidFilter = true
             );
-         
+
             services.AddAutoMapperSetup();
 
             services.AddSwaggerDocumentation();
@@ -223,7 +223,7 @@ namespace Samr.ERP.WebApi
             app.UseHttpsRedirection();
             app.UseAuthentication();
 
-            
+
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseMiddleware<UserMiddleware>();
 
@@ -232,6 +232,7 @@ namespace Samr.ERP.WebApi
             app.UseSignalR(routes =>
             {
                 routes.MapHub<NotificationHub>("/Hubs/ListenMessages");
+
             });
 
             app.UseMvc(routes =>

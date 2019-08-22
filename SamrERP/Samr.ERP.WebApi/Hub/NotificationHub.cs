@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Infrastructure.Providers;
@@ -18,12 +19,14 @@ namespace Samr.ERP.WebApi.Hub
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificationHub : Microsoft.AspNetCore.SignalR.Hub
     {
+        private readonly IMessageService _messageService;
         private readonly UserProvider _userProvider;
         private readonly IHttpContextAccessor _accessor;
 
 
-        public NotificationHub()
+        public NotificationHub(IMessageService messageService)
         {
+            _messageService = messageService;
         }
         public async Task MessageReceived()
         {
@@ -33,17 +36,19 @@ namespace Samr.ERP.WebApi.Hub
         }
         public override async Task OnConnectedAsync()
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.GetIdClaimValue());
-
+            var userId = Context.User.GetIdClaimValue();
+            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+            await _messageService.NotifyUnreadedMessageCount(Guid.Parse(userId));
             await base.OnConnectedAsync();
         }
 
-        public override  Task OnDisconnectedAsync(Exception exception)
+        public override Task OnDisconnectedAsync(Exception exception)
         {
             Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.GetIdClaimValue());
 
             return base.OnDisconnectedAsync(exception);
         }
+
 
         //public override Task OnReconnected()
         //{
