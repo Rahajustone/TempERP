@@ -56,7 +56,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id)
         {
-            var department = await GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
+            var department = await GetQueryWithUser().Include(p => p.CreatedUser.Employee).FirstOrDefaultAsync(p => p.Id == id);
 
             BaseDataResponse<EditDepartmentViewModel> dataResponse;
 

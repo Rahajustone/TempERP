@@ -102,20 +102,5 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SMPPSettingResponseViewModel>>
                 .Success(_unitOfWork.SMPPSettings.GetAll().Select(p => _mapper.Map<SMPPSettingResponseViewModel>(p)));
         }
-
-        public async Task<BaseResponse> Delete(Guid id)
-        {
-            var smppSetting = await _unitOfWork.SMPPSettings.GetByIdAsync(id);
-            if (smppSetting != null)
-            {
-                _unitOfWork.SMPPSettings.Delete(id);
-
-                await _unitOfWork.CommitAsync();
-
-                return BaseResponse.Success();
-            }
-
-            return BaseResponse.NotFound();
-        }
     }
 }

@@ -14,7 +14,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<SMPPSettingResponseViewModel>> EditAsync(SMPPSettingViewModel smppSettingViewModel);
         Task<BaseDataResponse<SMPPSettingResponseViewModel>> GetByIdAsync(Guid id);
         BaseDataResponse<IEnumerable<SMPPSettingResponseViewModel>> GetAllAsync();
-        Task<BaseResponse> Delete(Guid id);
         SMPPSetting GetDefaultSMPPSetting();
     }
 }

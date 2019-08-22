@@ -16,5 +16,7 @@ namespace Samr.ERP.Core.ViewModels.Department
         public string Name { get; set; }
 
         public Guid? RootId { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }
