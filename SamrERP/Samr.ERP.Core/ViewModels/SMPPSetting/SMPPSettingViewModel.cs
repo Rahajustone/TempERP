@@ -12,6 +12,7 @@ namespace Samr.ERP.Core.ViewModels.SMPPSetting
         public int PortNumber { get; set; }
         public string SystemId { get; set; }
         public string Password { get; set; }
+        public bool IsDefault { get; set; }
         public bool IsActive { get; set; }
     }
 }
