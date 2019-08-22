@@ -36,19 +36,20 @@ namespace Samr.ERP.WebApi.Hub
         }
         public override async Task OnConnectedAsync()
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.GetIdClaimValue());
-
+            var userId = Context.User.GetIdClaimValue();
+            await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+            await _messageService.NotifyUnreadedMessageCount(Guid.Parse(userId));
             await base.OnConnectedAsync();
         }
 
-        public override  Task OnDisconnectedAsync(Exception exception)
+        public override Task OnDisconnectedAsync(Exception exception)
         {
             Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.GetIdClaimValue());
 
             return base.OnDisconnectedAsync(exception);
         }
 
-        
+
         //public override Task OnReconnected()
         //{
         //    Groups.AddToGroupAsync().

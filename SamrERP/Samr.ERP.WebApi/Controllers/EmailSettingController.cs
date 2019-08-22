@@ -63,7 +63,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<BaseResponse> Remove(Guid id)
+        public async Task<BaseResponse> Delete(Guid id)
         {
             var response = await _emailSettingService.Delete(id);
             return Response(response);
