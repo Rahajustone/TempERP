@@ -580,8 +580,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 
             CreateMap<CreateMessageViewModel, Notification>();
 
-            CreateMap<GetSenderMessageViewModel, NotifyMessageViewModel>().ReverseMap();
-
             CreateMap<Notification, NotifyMessageViewModel>()
                 .ForMember(dest => dest.Message,
                     src => src.MapFrom(

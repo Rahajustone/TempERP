@@ -73,10 +73,7 @@ namespace Samr.ERP.Core.Services
             await _unitOfWork.CommitAsync();
 
             var createdNotification = await GetSentMessageAsync(notification.Id);
-
-            var result = GetSentMessage(notification.Id);
-            var notifyMessage = _mapper.Map<NotifyMessageViewModel>(result);
-            
+            var notifyMessage = _mapper.Map<NotifyMessageViewModel>(notification);
 
             NotifyMessage?.Invoke(notifyMessage.Message, notification.ReceiverUserId.ToString());
             await NotifyUnreadedMessageCount(notification.ReceiverUserId.Value);
