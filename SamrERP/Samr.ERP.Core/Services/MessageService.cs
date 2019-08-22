@@ -25,7 +25,7 @@ namespace Samr.ERP.Core.Services
         private readonly UserProvider _userProvider;
 
         public static event OnNotificationAdd NotifyMessage;
-        public delegate Task OnNotificationAdd(GetSenderMessageViewModel senderMessageView, string userId);
+        public delegate Task OnNotificationAdd(GetReceiverMessageViewModel receivedMessage, string userId);
 
         public static event OnNotificationCountChange NotifyCountChange;
         public delegate Task OnNotificationCountChange(int unReadedCount, string userId);
@@ -73,11 +73,23 @@ namespace Samr.ERP.Core.Services
             await _unitOfWork.CommitAsync();
 
             var createdNotification = await GetSentMessageAsync(notification.Id);
-            var notifyMessage = _mapper.Map<NotifyMessageViewModel>(notification);
 
-            NotifyMessage?.Invoke(notifyMessage.Message, notification.ReceiverUserId.ToString());
+            var messageExists = await GetQuery()
+                .Include(p => p.SenderUser)
+                .ThenInclude(p => p.Employee)
+                .ThenInclude(p => p.Position)
+                .FirstOrDefaultAsync(p => p.Id == notification.Id);
+
+            var vm = _mapper.Map<GetReceiverMessageViewModel>(messageExists);
+
+            if (vm.User.PhotoPath != null)
+            {
+                vm.User.PhotoPath = FileService.GetDownloadAction(FileService.GetResizedPath(vm.User.PhotoPath));
+            }
+
+            NotifyMessage?.Invoke(vm, notification.ReceiverUserId.ToString());
             await NotifyUnreadedMessageCount(notification.ReceiverUserId.Value);
-
+            
             return createdNotification;
         }
 
