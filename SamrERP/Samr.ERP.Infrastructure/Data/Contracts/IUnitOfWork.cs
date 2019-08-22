@@ -43,6 +43,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<EmployeeLockReasonLog> EmployeeLockReasonLog { get; }
         IRepository<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; }
         IRepository<SMPPSetting> SMPPSettings { get; }
+        IRepository<SMSMessageHistory> SMSMessageHistories { get; }
         IRepository<T> GetStandardRepo<T>() where T : class;
     }
 }

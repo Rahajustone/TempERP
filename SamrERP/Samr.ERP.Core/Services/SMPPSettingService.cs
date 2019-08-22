@@ -27,6 +27,24 @@ namespace Samr.ERP.Core.Services
             _mapper = mapper;
         }
 
+        public SMPPSetting GetDefaultSMPPSetting()
+        {
+            return _unitOfWork.SMPPSettings.All().OrderByDescending(p => p.IsDefault).FirstOrDefault(p => p.IsActive);
+        }
+
+        private async Task UndefaultOthersAsync(Guid id)
+        {
+            var smppSettings = await _unitOfWork.SMPPSettings.All().Where(p => p.IsActive && p.IsDefault && p.Id != id).ToListAsync();
+            foreach (var setting in smppSettings)
+            {
+                setting.IsDefault = false;
+
+                _unitOfWork.SMPPSettings.Update(setting);
+            }
+
+            await _unitOfWork.CommitAsync();
+        }
+
         public async Task<BaseDataResponse<SMPPSettingResponseViewModel>> CreateAsync(SMPPSettingViewModel smppSettingViewModel)
         {
             var smppSettingExist = _unitOfWork.SMPPSettings.Any(p => p.Host == smppSettingViewModel.Host && p.SystemId == smppSettingViewModel.SystemId);
@@ -38,6 +56,8 @@ namespace Samr.ERP.Core.Services
             _unitOfWork.SMPPSettings.Add(smppSetting);
 
             await _unitOfWork.CommitAsync();
+
+            if (smppSetting.IsDefault) await UndefaultOthersAsync(smppSetting.Id);
 
             return BaseDataResponse<SMPPSettingResponseViewModel>.Success(_mapper.Map<SMPPSettingResponseViewModel>(smppSetting));
         }
@@ -58,9 +78,11 @@ namespace Samr.ERP.Core.Services
 
             var smppSetting = _mapper.Map<SMPPSetting>(smppSettingViewModel);
 
-                _unitOfWork.SMPPSettings.Update(smppSetting);
+            _unitOfWork.SMPPSettings.Update(smppSetting);
 
             await _unitOfWork.CommitAsync();
+
+            if (smppSetting.IsDefault) await UndefaultOthersAsync(smppSetting.Id);
 
             return BaseDataResponse<SMPPSettingResponseViewModel>.Success(
                     _mapper.Map<SMPPSettingResponseViewModel>(smppSetting));

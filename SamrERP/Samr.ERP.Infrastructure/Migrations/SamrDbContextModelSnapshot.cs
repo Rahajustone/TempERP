@@ -918,6 +918,8 @@ namespace Samr.ERP.Infrastructure.Migrations
 
                     b.Property<bool>("IsActive");
 
+                    b.Property<bool>("IsDefault");
+
                     b.Property<string>("Password");
 
                     b.Property<int>("PortNumber");
@@ -929,6 +931,34 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasIndex("CreatedUserId");
 
                     b.ToTable("SMPPSettings");
+                });
+
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.SMSMessageHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<Guid>("CreatedUserId");
+
+                    b.Property<string>("Message");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<Guid>("ReceiverUserId");
+
+                    b.Property<Guid>("SMPPSettingId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedUserId");
+
+                    b.HasIndex("ReceiverUserId");
+
+                    b.HasIndex("SMPPSettingId");
+
+                    b.ToTable("SMSMessageHistories");
                 });
 
             modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.UsefulLink", b =>
@@ -1492,6 +1522,24 @@ namespace Samr.ERP.Infrastructure.Migrations
                     b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
                         .WithMany()
                         .HasForeignKey("CreatedUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Samr.ERP.Infrastructure.Entities.SMSMessageHistory", b =>
+                {
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "CreatedUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.User", "ReceiverUser")
+                        .WithMany()
+                        .HasForeignKey("ReceiverUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Samr.ERP.Infrastructure.Entities.SMPPSetting", "SMPPSetting")
+                        .WithMany()
+                        .HasForeignKey("SMPPSettingId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
