@@ -65,12 +65,5 @@ namespace Samr.ERP.WebApi.Controllers
 
             return Response(BaseDataResponse<SMPPSettingResponseViewModel>.Fail(_mapper.Map<SMPPSettingResponseViewModel>(smppSettingViewModel)));
         }
-
-        [HttpPost("{id}")]
-        public async Task<BaseResponse> Delete(Guid id)
-        {
-            var response = await _smppSettingService.Delete(id);
-            return Response(response);
-        }
     }
 }

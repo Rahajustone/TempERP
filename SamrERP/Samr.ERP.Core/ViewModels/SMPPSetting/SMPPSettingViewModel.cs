@@ -7,6 +7,7 @@ namespace Samr.ERP.Core.ViewModels.SMPPSetting
     public class SMPPSettingViewModel
     {
         public Guid? Id { get; set; }
+        public string ProviderName { get; set; }
         public string Host { get; set; }
         public int PortNumber { get; set; }
         public string SystemId { get; set; }
