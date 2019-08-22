@@ -13,6 +13,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public int PortNumber { get; set; }
         public string SystemId { get; set; }
         public string Password { get; set; }
+        public bool IsDefault { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
     }

@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samr.ERP.Tests", "Samr.ERP.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samr.ERP.Infrastructure", "Samr.ERP.Infrastructure\Samr.ERP.Infrastructure.csproj", "{3B952CCE-9DE0-4129-A481-9EFCFA3E7C78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMPP", "SMPP\SMPP.csproj", "{6CF5D69F-10B5-489A-8101-FEE2125E6213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{3B952CCE-9DE0-4129-A481-9EFCFA3E7C78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B952CCE-9DE0-4129-A481-9EFCFA3E7C78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B952CCE-9DE0-4129-A481-9EFCFA3E7C78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CF5D69F-10B5-489A-8101-FEE2125E6213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CF5D69F-10B5-489A-8101-FEE2125E6213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CF5D69F-10B5-489A-8101-FEE2125E6213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CF5D69F-10B5-489A-8101-FEE2125E6213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
