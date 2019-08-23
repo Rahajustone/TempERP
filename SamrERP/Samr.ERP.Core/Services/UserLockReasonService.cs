@@ -39,7 +39,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<UserLockReason> GetQueryWithUser()
         {
-            return GetQuery().Include(u => u.CreatedUser);
+            return GetQuery().Include(u => u.CreatedUser).ThenInclude( p => p.Employee);
         }
 
         private IQueryable<UserLockReason> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<UserLockReason> query)

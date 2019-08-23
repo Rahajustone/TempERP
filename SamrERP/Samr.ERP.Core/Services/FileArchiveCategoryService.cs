@@ -35,7 +35,10 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<FileArchiveCategory> GetQuery()
         {
-            return _unitOfWork.FileArchiveCategories.GetDbSet().Include(p => p.CreatedUser).OrderByDescending( p => p.CreatedAt);
+            return _unitOfWork.FileArchiveCategories.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .OrderByDescending(p => p.CreatedAt);
         }
 
         private IQueryable<FileArchiveCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<FileArchiveCategory> query)

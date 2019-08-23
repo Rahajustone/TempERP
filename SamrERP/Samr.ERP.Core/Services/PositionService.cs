@@ -33,7 +33,7 @@ namespace Samr.ERP.Core.Services
         private IQueryable<Position> GetQueryWithUser()
         {
             return _unitOfWork.Positions.GetDbSet()
-                .OrderByDescending( p => p.CreatedAt)
+                .OrderByDescending(p => p.CreatedAt)
                 .Include(p => p.CreatedUser);
         }
 
@@ -79,8 +79,9 @@ namespace Samr.ERP.Core.Services
         {
             return _unitOfWork.Positions.All()
                 .Where(p=> !onlyActives || p.IsActive )
+                .Include(p => p.Department)
                 .Include(p => p.CreatedUser)
-                .Include(p => p.Department);
+                .ThenInclude(p => p.Employee);
         }
 
         public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterPositionViewModel filterPosition, SortRule sortRule)

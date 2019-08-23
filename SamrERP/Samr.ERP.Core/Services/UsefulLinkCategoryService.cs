@@ -41,7 +41,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<UsefulLinkCategory> GetQueryWithUser()
         {
-            return GetQuery().Include(p => p.CreatedUser);
+            return GetQuery().Include(p => p.CreatedUser).ThenInclude(p => p.Employee);
         }
 
         private IQueryable<UsefulLinkCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<UsefulLinkCategory> query)
