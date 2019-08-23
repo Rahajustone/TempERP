@@ -195,7 +195,7 @@ namespace Samr.ERP.WebApi.Controllers
                     worksheet.Column(col).AutoFit();
                 }
 
-                var fileName = $"Список_сотрудников({DateTime.Now.ToString("dd_MM_yyyy")})";
+                var fileName = $"Список_сотрудников({DateTime.Now:dd_MM_yyyy_HH_mm_ss})";
                 return File(package.GetAsByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
         }
@@ -217,7 +217,7 @@ namespace Samr.ERP.WebApi.Controllers
                         employeeCardViewModel);
 
 
-                var fileName = $"employeeCard({DateTime.Now.ToString("dd_MM_yyyy")})";
+                var fileName = $"employeeCard({DateTime.Now:dd_MM_yyyy_HH_mm_ss})";
 
                 var pdfBytes = _pdfConverterService.ConvertToPdf(html);
                 return File(pdfBytes, "application/pdf", fileName);
