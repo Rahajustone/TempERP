@@ -39,7 +39,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<Nationality> GetQueryWithUser()
         {
-            return GetQuery().Include(u => u.CreatedUser);
+            return GetQuery().Include(u => u.CreatedUser).ThenInclude( p => p.Employee );
         }
 
         private IQueryable<Nationality> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Nationality> query)

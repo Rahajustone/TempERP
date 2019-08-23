@@ -34,7 +34,9 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<NewsCategory> GetQueryWithUser()
         {
-            return _unitOfWork.NewsCategories.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.NewsCategories.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee);
         }
 
         private IQueryable<NewsCategory> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<NewsCategory> query)

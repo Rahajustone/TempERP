@@ -166,6 +166,8 @@ namespace Samr.ERP.Core.Services
         {
             var query = _unitOfWork.DepartmentLogs.GetDbSet()
                 .Where(d => d.DepartmentId == id)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
                 .OrderByDescending( p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<DepartmentLogViewModel>();

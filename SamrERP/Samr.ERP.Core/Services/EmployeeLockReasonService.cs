@@ -42,7 +42,7 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<EmployeeLockReason> GetQueryWithUser()
         {
-            return GetQuery().Include(p => p.CreatedUser);
+            return GetQuery().Include(p => p.CreatedUser).ThenInclude(p => p.Employee );
         }
 
         private bool EmployeeLockReasonExists(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
