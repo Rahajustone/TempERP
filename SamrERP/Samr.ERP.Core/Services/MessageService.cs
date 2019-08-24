@@ -24,7 +24,7 @@ namespace Samr.ERP.Core.Services
         private readonly IMapper _mapper;
         private readonly UserProvider _userProvider;
 
-        public static event OnNotificationReceive NotifyMessage;
+        public static event OnNotificationReceive NotifyNewMessage;
         public delegate Task OnNotificationReceive(GetReceiverMessageViewModel receivedMessageVm, GetSenderMessageViewModel senderMessageVm);
 
         public static event OnNotificationCountChange NotifyCountChange;
@@ -90,7 +90,7 @@ namespace Samr.ERP.Core.Services
                 receivedMessageVm.User.PhotoPath = FileService.GetDownloadAction(FileService.GetResizedPath(receivedMessageVm.User.PhotoPath));
             }
 
-            NotifyMessage?.Invoke(receivedMessageVm, senderMessageViewModel.Data);
+            NotifyNewMessage?.Invoke(receivedMessageVm, senderMessageViewModel.Data);
             await NotifyUnreadedMessageCount(notification.ReceiverUserId.Value);
 
             return senderMessageViewModel;

@@ -24,7 +24,6 @@ namespace Samr.ERP.WebApi.HubEvent
             MessageService.NotifyNewMessage += OnNewMessage;
             MessageService.NotifyCountChange += OnNotificationCountChange;
             MessageService.NotifyMessageRead += OnMessageRead;
-            MessageService.NotifyMessageRead += OnMessageRead;
         }
 
 
