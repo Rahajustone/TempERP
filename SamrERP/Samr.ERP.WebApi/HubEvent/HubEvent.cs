@@ -6,6 +6,7 @@ using Samr.ERP.Core.Services;
 using Samr.ERP.WebApi.Hub;
 using Microsoft.AspNetCore.SignalR;
 using Samr.ERP.Core.ViewModels.Message;
+using Samr.ERP.Infrastructure.Entities;
 
 
 namespace Samr.ERP.WebApi.HubEvent
@@ -20,19 +21,27 @@ namespace Samr.ERP.WebApi.HubEvent
         public HubEvent(IHubContext<NotificationHub> hubContext)
         {
             _hubContext = hubContext;
-            MessageService.NotifyMessage += OnNotify;
+            MessageService.NotifyNewMessage += OnNewMessage;
             MessageService.NotifyCountChange += OnNotificationCountChange;
+            MessageService.NotifyMessageRead += OnMessageRead;
+            MessageService.NotifyMessageRead += OnMessageRead;
         }
 
 
-        public  async Task OnNotify(GetSenderMessageViewModel senderMessageView, string userId)
+        public  async Task OnNewMessage(GetReceiverMessageViewModel receiverMessageViewModel, GetSenderMessageViewModel senderMessageViewModel )
         {
-            await _hubContext.Clients.Group(userId).SendAsync("OnMessageReceived", senderMessageView, userId);
+            await _hubContext.Clients.Group(receiverMessageViewModel.ReceiverUserId.ToString()).SendAsync("OnMessageReceived", receiverMessageViewModel);
+            await _hubContext.Clients.Group(senderMessageViewModel.SenderUserId.ToString()).SendAsync("OnMessageSent", senderMessageViewModel);
         }
 
         public async Task OnNotificationCountChange(int unReadedCount, string userId)
         {
             await _hubContext.Clients.Group(userId).SendAsync("OnNotificationCountChange", unReadedCount, userId);
+        }
+        public async Task OnMessageRead(Notification notification)
+        {
+            await _hubContext.Clients.Group(notification.ReceiverUserId.Value.ToString()).SendAsync("OnMessageRead", notification);
+            await _hubContext.Clients.Group(notification.SenderUserId.Value.ToString()).SendAsync("OnMessageRead", notification);
         }
 
         public async Task SendMessage(object sender, string userId)

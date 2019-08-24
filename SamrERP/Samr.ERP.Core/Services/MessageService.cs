@@ -24,11 +24,14 @@ namespace Samr.ERP.Core.Services
         private readonly IMapper _mapper;
         private readonly UserProvider _userProvider;
 
-        public static event OnNotificationAdd NotifyMessage;
-        public delegate Task OnNotificationAdd(GetReceiverMessageViewModel receivedMessage, string userId);
+        public static event OnNotificationReceive NotifyMessage;
+        public delegate Task OnNotificationReceive(GetReceiverMessageViewModel receivedMessageVm, GetSenderMessageViewModel senderMessageVm);
 
         public static event OnNotificationCountChange NotifyCountChange;
         public delegate Task OnNotificationCountChange(int unReadedCount, string userId);
+
+        public static event OnMessageRead NotifyMessageRead;
+        public delegate Task OnMessageRead(Notification notification);
 
 
         public MessageService(IUnitOfWork unitOfWork, IMapper mapper, UserProvider userProvider)
@@ -42,8 +45,8 @@ namespace Samr.ERP.Core.Services
         private IQueryable<Notification> GetQuery()
         {
             return _unitOfWork.Notifications.GetDbSet()
-                .Include( u => u.CreatedUser)
-                .OrderByDescending( p => p.CreatedAt);
+                .Include(u => u.CreatedUser)
+                .OrderByDescending(p => p.CreatedAt);
         }
 
         private IQueryable<Notification> FilterQuery(FilterMessageViewModel fileFilterMessageViewModel, IQueryable<Notification> query)
@@ -72,7 +75,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            var createdNotification = await GetSentMessageAsync(notification.Id);
+            var senderMessageViewModel = await GetSentMessageAsync(notification.Id);
 
             var messageExists = await GetQuery()
                 .Include(p => p.SenderUser)
@@ -80,17 +83,17 @@ namespace Samr.ERP.Core.Services
                 .ThenInclude(p => p.Position)
                 .FirstOrDefaultAsync(p => p.Id == notification.Id);
 
-            var vm = _mapper.Map<GetReceiverMessageViewModel>(messageExists);
+            var receivedMessageVm = _mapper.Map<GetReceiverMessageViewModel>(messageExists);
 
-            if (vm.User.PhotoPath != null)
+            if (receivedMessageVm.User.PhotoPath != null)
             {
-                vm.User.PhotoPath = FileService.GetDownloadAction(FileService.GetResizedPath(vm.User.PhotoPath));
+                receivedMessageVm.User.PhotoPath = FileService.GetDownloadAction(FileService.GetResizedPath(receivedMessageVm.User.PhotoPath));
             }
 
-            NotifyMessage?.Invoke(vm, notification.ReceiverUserId.ToString());
+            NotifyMessage?.Invoke(receivedMessageVm, senderMessageViewModel.Data);
             await NotifyUnreadedMessageCount(notification.ReceiverUserId.Value);
-            
-            return createdNotification;
+
+            return senderMessageViewModel;
         }
 
         public async Task NotifyUnreadedMessageCount(Guid userId)
@@ -107,7 +110,7 @@ namespace Samr.ERP.Core.Services
                 .Where(m => m.ReceiverUserId == _userProvider.CurrentUser.Id);
 
             query = FilterQuery(fileFilterMessageViewModel, query);
-            
+
             if (fileFilterMessageViewModel.Title != null)
             {
                 var titleFilter = fileFilterMessageViewModel.Title.ToLower();
@@ -162,10 +165,10 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<GetReceiverMessageViewModel>> GetReceivedMessageAsync(Guid id)
         {
             var messageExists = await GetQuery()
-                .Include( p => p.SenderUser)
+                .Include(p => p.SenderUser)
                 .ThenInclude(p => p.Employee)
-                .ThenInclude(p=>p.Position)
-                .Where( p => p.ReceiverUserId == _userProvider.CurrentUser.Id)
+                .ThenInclude(p => p.Position)
+                .Where(p => p.ReceiverUserId == _userProvider.CurrentUser.Id)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (messageExists != null)
@@ -175,6 +178,9 @@ namespace Samr.ERP.Core.Services
                     messageExists.ReadDate = DateTime.Now;
                     await _unitOfWork.CommitAsync();
                     await NotifyUnreadedMessageCount(messageExists.ReceiverUserId.Value);
+                    // ReSharper disable once PossibleNullReferenceException
+                    await NotifyMessageRead?.Invoke(messageExists);
+
                 }
 
                 var vm = _mapper.Map<GetReceiverMessageViewModel>(messageExists);
@@ -187,7 +193,7 @@ namespace Samr.ERP.Core.Services
                 return BaseDataResponse<GetReceiverMessageViewModel>.Success(vm);
             }
 
-            return  BaseDataResponse<GetReceiverMessageViewModel>.NotFound(null);
+            return BaseDataResponse<GetReceiverMessageViewModel>.NotFound(null);
         }
 
         public async Task<BaseDataResponse<GetSenderMessageViewModel>> GetSentMessageAsync(Guid id)

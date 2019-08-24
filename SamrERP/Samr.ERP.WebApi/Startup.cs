@@ -130,7 +130,7 @@ namespace Samr.ERP.WebApi
                 x.TokenValidationParameters = TokenAuthenticationService.GetTokenValidationParameters(token);
 
 
-                // We have to hook the OnMessageReceived event in order to
+                // We have to hook the OnNewMessage event in order to
                 // allow the JWT authentication handler to read the access
                 // token from the query string when a WebSocket or 
                 // Server-Sent Events request comes in.
@@ -244,7 +244,7 @@ namespace Samr.ERP.WebApi
 
 
 
-            //MessageService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
+            //MessageService.NotifyNewMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
             //DbInitializer.AddRolesToSystemUser(userManager,roleManager);
         }
 
