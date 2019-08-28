@@ -71,7 +71,7 @@ namespace Samr.ERP.Core.Services
 
         public bool HasUserValidRefreshToken(Guid userId, string refreshToken, string ipAddress)
         {
-            return _unitOfWork.RefreshTokens.Any(p => p.UserId == userId && p.Active && p.RemoteIpAddress == ipAddress);
+            return _unitOfWork.RefreshTokens.Any(p => p.UserId == userId && p.Active && p.RemoteIpAddress == ipAddress && p.Token == refreshToken);
         }
 
         public async Task AddRefreshToken(string token, Guid userId, string remoteIpAddress, double daysToExpire = 5)
