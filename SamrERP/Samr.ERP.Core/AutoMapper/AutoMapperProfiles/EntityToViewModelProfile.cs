@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Security.AccessControl;
 using AutoMapper;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
@@ -54,6 +55,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Department, opt => opt.Ignore());
+
             CreateMap<DepartmentLog, DepartmentLogViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
@@ -324,6 +326,33 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Nationality, SelectListItemViewModel>()
                 .ReverseMap();
 
+            #region Position
+
+            CreateMap<RequestPositionViewModel, ResponsePositionViewModel>();
+
+            CreateMap<RequestPositionViewModel, Position>();
+
+            CreateMap<Position, ResponsePositionViewModel>()
+                .ForMember( p => p.DepartmentName, 
+                    src => src.MapFrom(
+                        map => map.Department.Name))
+                .ForMember(dst => dst.FirstName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.FirstName))
+                .ForMember(dst => dst.LastName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.LastName))
+                .ForMember(dst => dst.MiddleName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.MiddleName))
+                .ForMember(dst => dst.DepartmentName,
+                    src => src.MapFrom(
+                        map => map.Department.Name))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
+
+
             CreateMap<Position, PositionViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
@@ -348,6 +377,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ReverseMap()
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.Department, opt => opt.Ignore());
+            #endregion
+
 
             #region Employee
 

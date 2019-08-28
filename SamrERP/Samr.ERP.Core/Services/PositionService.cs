@@ -34,7 +34,17 @@ namespace Samr.ERP.Core.Services
         {
             return _unitOfWork.Positions.GetDbSet()
                 .OrderByDescending(p => p.CreatedAt)
-                .Include(p => p.CreatedUser);
+                .Include(p => p.CreatedUser)
+                .ThenInclude( p => p.Employee);
+        }
+
+        private IQueryable<Position> GetAllQuery(bool onlyActives = false)
+        {
+            return _unitOfWork.Positions.All()
+                .Where(p => !onlyActives || p.IsActive)
+                .Include(p => p.Department)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee);
         }
 
         private IQueryable<Position> FilterQuery(FilterPositionViewModel filterPosition, IQueryable<Position> query)
@@ -57,31 +67,30 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<EditPositionViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> GetByIdAsync(Guid id)
         {
-            var position = await GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
-
-            BaseDataResponse<EditPositionViewModel> dataResponse;
+            var position =  await GetQueryWithUser()
+                .Include( p => p.Department)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (position == null)
             {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.NotFound(null);
+                return BaseDataResponse<ResponsePositionViewModel>.NotFound(null);
             }
-            else
+
+            var positionLog = await _unitOfWork.PositionLogs.GetDbSet()
+                .Include( p => p.CreatedUser)
+                .ThenInclude( p => p.Employee)
+                .FirstOrDefaultAsync(p => p.PositionId == position.Id);
+
+            if (positionLog != null )
             {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                position.CreatedUser = positionLog.CreatedUser;
+                position.CreatedAt = positionLog.CreatedAt;
             }
 
-            return dataResponse;
-        }
-
-        private IQueryable<Position> GetAllQuery(bool onlyActives = false)
-        {
-            return _unitOfWork.Positions.All()
-                .Where(p=> !onlyActives || p.IsActive )
-                .Include(p => p.Department)
-                .Include(p => p.CreatedUser)
-                .ThenInclude(p => p.Employee);
+            return BaseDataResponse<ResponsePositionViewModel>.Success(
+                _mapper.Map<ResponsePositionViewModel>(position));
         }
 
         public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterPositionViewModel filterPosition, SortRule sortRule)
@@ -109,63 +118,55 @@ namespace Samr.ERP.Core.Services
             return response;
         }
 
-        public async Task<BaseDataResponse<EditPositionViewModel>> CreateAsync(EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> CreateAsync(RequestPositionViewModel positionViewModel)
         {
-            BaseDataResponse<EditPositionViewModel> dataResponse;
 
             var positionExists =
                 _unitOfWork.Positions.Any(p => p.Name.ToLower() == positionViewModel.Name.ToLower());
             if (positionExists)
             {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var position = _mapper.Map<Position>(positionViewModel);
-                _unitOfWork.Positions.Add(position);
-
-                await _unitOfWork.CommitAsync();
-
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                    return BaseDataResponse<ResponsePositionViewModel>.Fail(
+                        _mapper.Map<ResponsePositionViewModel>(positionViewModel),
+                        new ErrorModel(ErrorCode.NameMustBeUnique));
             }
 
-            return dataResponse;
+            var position = _mapper.Map<Position>(positionViewModel);
+            _unitOfWork.Positions.Add(position);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(position.Id);
         }
 
-        public async Task<BaseDataResponse<EditPositionViewModel>> EditAsync(EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> EditAsync(RequestPositionViewModel positionViewModel)
         {
-            BaseDataResponse<EditPositionViewModel> dataResponse;
-
             var positionExists = await _unitOfWork.Positions.GetDbSet().FirstOrDefaultAsync( p => p.Id == positionViewModel.Id);
-            if (positionExists != null)
+            if (positionExists == null)
             {
-                var checkNameUnique = await _unitOfWork.Positions.GetDbSet()
-                    .AnyAsync(p => p.Id != positionViewModel.Id 
-                                   && p.Name.ToLower() == positionViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var positionLog = _mapper.Map<PositionLog>(positionExists);
-                    _unitOfWork.PositionLogs.Add(positionLog);
-
-                    var position = _mapper.Map<EditPositionViewModel, Position>(positionViewModel, positionExists);
-
-                    _unitOfWork.Positions.Update(position);
-
-                    await _unitOfWork.CommitAsync();
-
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
-                }
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.NotFound(positionViewModel);
+                return BaseDataResponse<ResponsePositionViewModel>.NotFound(
+                    _mapper.Map<ResponsePositionViewModel>(positionViewModel));
             }
 
-            return dataResponse;
+            var checkNameUnique = await _unitOfWork.Positions.GetDbSet()
+                .AnyAsync(p => p.Id != positionViewModel.Id 
+                               && p.Name.ToLower() == positionViewModel.Name.ToLower());
+            if (checkNameUnique)
+            {
+                return BaseDataResponse<ResponsePositionViewModel>.Fail(
+                    _mapper.Map<ResponsePositionViewModel>(positionViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            }
+
+            var positionLog = _mapper.Map<PositionLog>(positionExists);
+            _unitOfWork.PositionLogs.Add(positionLog);
+
+            var position = _mapper.Map(positionViewModel, positionExists);
+
+            _unitOfWork.Positions.Update(position);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(position.Id);
         }
 
         public async Task<BaseDataResponse<PagedList<PositionLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)

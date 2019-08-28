@@ -34,14 +34,13 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.EmailSetting)
                 .Include(p => p.ReceiverUser)
                 .Include(p => p.ReceiverEmail)
-                .OrderByDescending(p => p.CreatedAt)
                 .AsQueryable();
 
             query = FilterEmailMessageHistories(emailMessageHistoryLogFilterView, query);
 
             var queryVm = query.ProjectTo<EmailMessageHistoryLogViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.ReceiverUser);
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.CreatedAt);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 

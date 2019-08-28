@@ -15,7 +15,7 @@ namespace Samr.ERP.Core.Stuff
         //    if (string.IsNullOrEmpty(sortOptions?.Sort)) return source;
 
         //    var expression = source.Expression;
-            
+
         //    var parameter = Expression.Parameter(typeof(T), "x");
         //    var selector = Expression.PropertyOrField(parameter, sortOptions.Sort);
         //    var method = string.Equals(sortOptions.Sort, "desc", StringComparison.OrdinalIgnoreCase)
@@ -54,13 +54,17 @@ namespace Samr.ERP.Core.Stuff
             return query.Provider.CreateQuery<T>(orderByCallExpression);
         }
 
-        public static IQueryable<TSource> OrderBy<TSource, TKey>(this IQueryable<TSource> query, SortRule rule, Expression<Func<TSource, TKey>> keySelector)
+        public static IQueryable<TSource> OrderBy<TSource, TKey>(this IQueryable<TSource> query, SortRule rule, Expression<Func<TSource, TKey>> keySelector, SortDirection defaultSortDirection = SortDirection.Asc)
         {
             if (string.IsNullOrEmpty(rule?.SortProperty))
-                return query.OrderBy(keySelector);
+            {
+                if (defaultSortDirection == SortDirection.Asc) return query.OrderBy(keySelector);
+                return query.OrderByDescending(keySelector);
+            }
 
             return query.OrderBy(rule);
         }
+
 
         public static IQueryable<TSource> OrderByThenBy<TSource, TKey>(this IQueryable<TSource> query, SortRule rule, params Expression<Func<TSource, TKey>>[] keySelector)
         {
