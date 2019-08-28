@@ -46,11 +46,11 @@ namespace Samr.ERP.Core.Services
 
             var emailMessageHistory = new EmailMessageHistory()
             {
-                RecieverUserId = destUser.Id,
+                ReceiverUserId = destUser.Id,
                 EmailSettingId = DefaultEmailSetting.Id,
                 Subject = subject,
                 Message = message,
-                RecieverEMail = destUser.Email
+                ReceiverEmail = destUser.Email
             };
             if (_userProvider.CurrentUser == null)
             {

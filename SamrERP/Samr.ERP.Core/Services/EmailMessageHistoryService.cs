@@ -32,8 +32,8 @@ namespace Samr.ERP.Core.Services
         {
             var query = _unitOfWork.EmailMessageHistories.GetDbSet()
                 .Include(p => p.EmailSetting)
-                .Include(p => p.RecieverUser)
-                .Include(p => p.RecieverEMail)
+                .Include(p => p.ReceiverUser)
+                .Include(p => p.ReceiverEmail)
                 .OrderByDescending(p => p.CreatedAt)
                 .AsQueryable();
 
@@ -41,7 +41,7 @@ namespace Samr.ERP.Core.Services
 
             var queryVm = query.ProjectTo<EmailMessageHistoryLogViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.RecieverUser);
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.ReceiverUser);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
@@ -64,7 +64,7 @@ namespace Samr.ERP.Core.Services
             }
 
             if (emailMessageHistoryLogFilterView.ReceiverName != null)
-                query = query.Where(p => EF.Functions.Like(p.RecieverUser.UserName.ToLower(),
+                query = query.Where(p => EF.Functions.Like(p.ReceiverUser.UserName.ToLower(),
                     "%" + emailMessageHistoryLogFilterView.ReceiverName.ToLower() + "%"));
 
             if (emailMessageHistoryLogFilterView.SenderName != null)

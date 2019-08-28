@@ -24,6 +24,7 @@ using Samr.ERP.Core.ViewModels.SMPPSetting;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
+using SixLabors.ImageSharp.ColorSpaces.Companding;
 
 namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 {
@@ -36,9 +37,18 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             #region Log
 
             CreateMap<EmailMessageHistory, EmailMessageHistoryLogViewModel>()
-                .ForMember(dst => dst.RecieverUser,
+                .ForMember(dst => dst.ReceiverUser,
                     src => src.MapFrom(map =>
-                        map.RecieverUser.Employee.LastName + " " + map.RecieverUser.Employee.FirstName));
+                        map.ReceiverUser.Employee.LastName + " " + map.ReceiverUser.Employee.FirstName))
+                .ForMember(dst => dst.EmailSettingId,
+                    src => src.MapFrom(
+                        map => map.EmailSetting.Id))
+                .ForMember(dst => dst.SenderEmail,
+                    src => src.MapFrom(
+                        map => map.EmailSetting.Sender))
+                .ForMember(dst => dst.CreatedAt, 
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<Department, DepartmentLog>()
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
