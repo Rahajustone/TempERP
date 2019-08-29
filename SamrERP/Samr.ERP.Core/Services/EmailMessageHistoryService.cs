@@ -66,9 +66,9 @@ namespace Samr.ERP.Core.Services
                 query = query.Where(p => EF.Functions.Like(p.ReceiverUser.UserName.ToLower(),
                     "%" + emailMessageHistoryLogFilterView.ReceiverName.ToLower() + "%"));
 
-            if (emailMessageHistoryLogFilterView.SenderName != null)
-                query = query.Where(p => EF.Functions.Like(p.CreatedUser.UserName.ToLower(),
-                    "%" + emailMessageHistoryLogFilterView.SenderName.ToLower() + "%"));
+            if (emailMessageHistoryLogFilterView.SenderEmail != null)
+                query = query.Where(p => EF.Functions.Like(p.EmailSetting.Sender.ToLower(),
+                    "%" + emailMessageHistoryLogFilterView.SenderEmail.ToLower() + "%"));
 
             return query;
         }

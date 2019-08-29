@@ -5,10 +5,11 @@ using System.Text;
 
 namespace Samr.ERP.Core.ViewModels.Handbook.Nationality
 {
-    public class NationalityViewModel
+    public class RequestNationalityViewModel
     {
         public Guid Id { get; set; }
         [Required]
         public string Name { get; set; }
+        public bool IsActive { get; set; }
     }
 }

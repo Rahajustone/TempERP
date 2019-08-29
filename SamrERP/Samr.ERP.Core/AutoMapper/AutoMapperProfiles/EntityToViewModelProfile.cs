@@ -40,7 +40,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<EmailMessageHistory, EmailMessageHistoryLogViewModel>()
                 .ForMember(dst => dst.ReceiverUser,
                     src => src.MapFrom(map =>
-                        map.ReceiverUser.Employee.LastName + " " + map.ReceiverUser.Employee.FirstName))
+                        map.ReceiverUser.Employee.LastName + " " + map.ReceiverUser.Employee.FirstName + "(" +
+                        map.ReceiverUser.PhoneNumber + ")"))
                 .ForMember(dst => dst.EmailSettingId,
                     src => src.MapFrom(
                         map => map.EmailSetting.Id))
@@ -305,9 +306,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<SelectListItemViewModel, EmployeeLockReason>()
                 .ReverseMap();
 
-            CreateMap<Nationality, NationalityViewModel>();
-            CreateMap<NationalityViewModel, Nationality>();
-            CreateMap<Nationality, EditNationalityViewModel>()
+            #region Nationality
+
+            CreateMap<RequestNationalityViewModel, ResponseNationalityViewModel>();
+
+            CreateMap<RequestNationalityViewModel, Nationality>();
+
+            CreateMap<Nationality, ResponseNationalityViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -319,12 +324,11 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToShortDateString()));
 
-            CreateMap<Nationality, SelectListItemViewModel>()
-                .ReverseMap();
+            CreateMap<Nationality, SelectListItemViewModel>();
+
+            #endregion
 
             #region Position
 
@@ -352,7 +356,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(
                         map => map.CreatedAt.ToStringCustomFormat()));
 
-
+            // TODO
+            // Remove all after fixing get all
             CreateMap<Position, PositionViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
                     src => src.MapFrom(map =>
@@ -378,7 +383,6 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
                 .ForMember(dst => dst.Department, opt => opt.Ignore());
             #endregion
-
 
             #region Employee
 
