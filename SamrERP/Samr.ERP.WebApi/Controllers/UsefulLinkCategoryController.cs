@@ -30,7 +30,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseUsefulLinkCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var usefulLinCategories = await _usefulLinkCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(usefulLinCategories);
@@ -45,7 +45,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> Get(Guid id)
         {
             var usefulLinCategory = await _usefulLinkCategoryService.GetByIdAsync(id);
 
@@ -54,29 +54,29 @@ namespace Samr.ERP.WebApi.Controllers
 
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> Create([FromBody] EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> Create([FromBody] RequestUsefulLinkCategoryViewModel responseUsefulLinkCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
-                var response = await _usefulLinkCategoryService.CreateAsync(editUsefulLinkCategoryViewModel);
+                var response = await _usefulLinkCategoryService.CreateAsync(responseUsefulLinkCategoryViewModel);
 
                 return Response(response);
             }
 
-            return Response(BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(editUsefulLinkCategoryViewModel));
+            return Response(BaseDataResponse<ResponseUsefulLinkCategoryViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> Edit([FromBody] EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> Edit([FromBody] RequestUsefulLinkCategoryViewModel responseUsefulLinkCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
-                var response = await _usefulLinkCategoryService.EditAsync(editUsefulLinkCategoryViewModel);
+                var response = await _usefulLinkCategoryService.EditAsync(responseUsefulLinkCategoryViewModel);
 
                 return Response(response);
             }
 
-            return Response(BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(editUsefulLinkCategoryViewModel));
+            return Response(BaseDataResponse<ResponseUsefulLinkCategoryViewModel>.NotFound(null));
         }
 
         [HttpGet("{id}")]

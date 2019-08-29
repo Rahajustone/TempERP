@@ -27,7 +27,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterPositionViewModel filterPosition, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponsePositionViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterPositionViewModel filterPosition, [FromQuery] SortRule sortRule)
         {
             var position = await _positionService.GetAllAsync(pagingOptions, filterPosition, sortRule);
             return Response(position);
@@ -57,7 +57,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(position);
             }
 
-            return Response(BaseDataResponse<ResponsePositionViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponsePositionViewModel>.NotFound(null));
         }
 
         [HttpPost]
@@ -69,7 +69,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(positionResult);
             }
 
-            return Response(BaseDataResponse<ResponsePositionViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponsePositionViewModel>.NotFound(null));
         }
 
         [HttpGet("{id}")]

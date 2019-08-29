@@ -54,22 +54,25 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<NewsCategoryViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> GetByIdAsync(Guid id)
         {
-            BaseDataResponse<NewsCategoryViewModel> dataResponse;
-
-            var newsCategory = await  GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
-
-            if (newsCategory == null)
+            var existsNewsCategory = await  GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
+            if (existsNewsCategory == null)
             {
-                dataResponse = BaseDataResponse<NewsCategoryViewModel>.NotFound(null);
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<NewsCategoryViewModel>.Success(_mapper.Map<NewsCategoryViewModel>(newsCategory));
+                return BaseDataResponse<ResponseNewsCategoryViewModel>.NotFound(null);
             }
 
-            return dataResponse;
+            var existsNewsCategoryLog = await _unitOfWork.NewsCategoryLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .FirstOrDefaultAsync(p => p.NewsCategoryId == existsNewsCategory.Id);
+            if (existsNewsCategoryLog != null)
+            {
+                existsNewsCategory.CreatedUser = existsNewsCategoryLog.CreatedUser;
+                existsNewsCategory.CreatedAt = existsNewsCategoryLog.CreatedAt;
+            }
+
+            return BaseDataResponse<ResponseNewsCategoryViewModel>.Success(_mapper.Map<ResponseNewsCategoryViewModel>(existsNewsCategory));
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
@@ -90,79 +93,64 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
         }
 
-        public async Task<BaseDataResponse<PagedList<NewsCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseNewsCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<NewsCategoryViewModel>();
+            var queryVm = query.ProjectTo<ResponseNewsCategoryViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<NewsCategoryViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<ResponseNewsCategoryViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<NewsCategoryViewModel>> CreateAsync(NewsCategoryViewModel newsCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> CreateAsync(RequestNewsCategoryViewModel requestNewsCategoryViewModel)
         {
-            BaseDataResponse<NewsCategoryViewModel> response;
 
-            var exists =
-                _unitOfWork.NewsCategories.Any(e => e.Name.ToLower() == newsCategoryViewModel.Name.ToLower());
+            var existsNewsCategory =
+                _unitOfWork.NewsCategories.Any(e => e.Name.ToLower() == requestNewsCategoryViewModel.Name.ToLower());
+            if (existsNewsCategory)
+                return BaseDataResponse<ResponseNewsCategoryViewModel>.Fail(
+                    _mapper.Map<ResponseNewsCategoryViewModel>(requestNewsCategoryViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
 
-            if (exists)
-            {
-                response = BaseDataResponse<NewsCategoryViewModel>.Fail(newsCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var newsCategory = _mapper.Map<NewsCategory>(newsCategoryViewModel);
-                _unitOfWork.NewsCategories.Add(newsCategory);
+            var newsCategory = _mapper.Map<NewsCategory>(requestNewsCategoryViewModel);
+            _unitOfWork.NewsCategories.Add(newsCategory);
 
-                await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
 
-                response = BaseDataResponse<NewsCategoryViewModel>.Success(_mapper.Map<NewsCategoryViewModel>(newsCategory));
-            }
-
-            return response;
+            return await GetByIdAsync(newsCategory.Id);
         }
 
-        public async Task<BaseDataResponse<NewsCategoryViewModel>> EditAsync(NewsCategoryViewModel newsCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> EditAsync(RequestNewsCategoryViewModel responseNewsCategoryViewModel)
         {
-            BaseDataResponse<NewsCategoryViewModel> dataResponse;
+            var  newsCategoryExists = await _unitOfWork.NewsCategories.GetDbSet().FirstOrDefaultAsync( p => p.Id == responseNewsCategoryViewModel.Id);
+            if (newsCategoryExists == null)
+                return BaseDataResponse<ResponseNewsCategoryViewModel>.NotFound(null);
 
-            var  newsCategoryExists = await _unitOfWork.NewsCategories.GetDbSet().FirstOrDefaultAsync( p => p.Id == newsCategoryViewModel.Id);
-            if (newsCategoryExists != null)
-            {
-                var checkNameUnique = await _unitOfWork.NewsCategories
+            var checkNameUnique = await _unitOfWork.NewsCategories
                     .GetDbSet()
-                    .AnyAsync(n => n.Id != newsCategoryViewModel.Id 
-                                   && n.Name.ToLower() == newsCategoryViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<NewsCategoryViewModel>.Fail(newsCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var newsCategoryLog = _mapper.Map<NewsCategoryLog>(newsCategoryExists);
-                    _unitOfWork.NewsCategoryLogs.Add(newsCategoryLog);
+                    .AnyAsync(n => n.Id != responseNewsCategoryViewModel.Id 
+                                   && n.Name.ToLower() == responseNewsCategoryViewModel.Name.ToLower());
+            if (checkNameUnique)
+                return BaseDataResponse<ResponseNewsCategoryViewModel>.Fail(
+                    _mapper.Map<ResponseNewsCategoryViewModel>(responseNewsCategoryViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            
 
-                    var newsCategory = _mapper.Map<NewsCategoryViewModel, NewsCategory>(newsCategoryViewModel, newsCategoryExists);
-                    _unitOfWork.NewsCategories.Update(newsCategory);
+            var newsCategoryLog = _mapper.Map<NewsCategoryLog>(newsCategoryExists);
+            _unitOfWork.NewsCategoryLogs.Add(newsCategoryLog);
 
-                    await _unitOfWork.CommitAsync();
+            var newsCategory = _mapper.Map<RequestNewsCategoryViewModel, NewsCategory>(responseNewsCategoryViewModel, newsCategoryExists);
+            _unitOfWork.NewsCategories.Update(newsCategory);
 
-                    dataResponse = BaseDataResponse<NewsCategoryViewModel>.Success(_mapper.Map<NewsCategoryViewModel>(newsCategory));
-                }
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<NewsCategoryViewModel>.NotFound(newsCategoryViewModel);
-            }
+            await _unitOfWork.CommitAsync();
 
-            return dataResponse;
+            return await GetByIdAsync(newsCategory.Id);
         }
 
         public async Task<BaseDataResponse<PagedList<NewsCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)

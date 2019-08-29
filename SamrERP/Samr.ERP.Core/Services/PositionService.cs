@@ -93,19 +93,19 @@ namespace Samr.ERP.Core.Services
                 _mapper.Map<ResponsePositionViewModel>(position));
         }
 
-        public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterPositionViewModel filterPosition, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponsePositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterPositionViewModel filterPosition, SortRule sortRule)
         {
             var query = GetAllQuery();
 
             query = FilterQuery(filterPosition, query);
 
-            var queryVm = query.ProjectTo<EditPositionViewModel>();
+            var queryVm = query.ProjectTo<ResponsePositionViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EditPositionViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<ResponsePositionViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id)

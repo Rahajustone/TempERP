@@ -28,14 +28,14 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<NewsCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseNewsCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var newsCategories = await _newsCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(newsCategories);
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<NewsCategoryViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> Get(Guid id)
         {
             var newsCategory = await _newsCategoryService.GetByIdAsync(id);
             return Response(newsCategory);
@@ -49,29 +49,29 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<NewsCategoryViewModel>> Create([FromBody] NewsCategoryViewModel newsCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> Create([FromBody] RequestNewsCategoryViewModel responseNewsCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
-                var response = await _newsCategoryService.CreateAsync(newsCategoryViewModel);
+                var response = await _newsCategoryService.CreateAsync(responseNewsCategoryViewModel);
 
                 return response;
             }
 
-            return BaseDataResponse<NewsCategoryViewModel>.Fail(null);
+            return BaseDataResponse<ResponseNewsCategoryViewModel>.Fail(null);
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<NewsCategoryViewModel>> Edit([FromBody] NewsCategoryViewModel newsCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> Edit([FromBody] RequestNewsCategoryViewModel requestNewsCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
-                var response = await _newsCategoryService.EditAsync(newsCategoryViewModel);
+                var response = await _newsCategoryService.EditAsync(requestNewsCategoryViewModel);
 
                 return response;
             }
 
-            return BaseDataResponse<NewsCategoryViewModel>.Fail(null);
+            return BaseDataResponse<ResponseNewsCategoryViewModel>.Fail(null);
         }
 
         [HttpGet("{id}")]

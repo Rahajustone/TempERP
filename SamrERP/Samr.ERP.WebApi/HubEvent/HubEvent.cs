@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using Samr.ERP.Core.Services;
 using Samr.ERP.WebApi.Hub;
-using Microsoft.AspNetCore.SignalR;
 using Samr.ERP.Core.ViewModels.Message;
 using Samr.ERP.Infrastructure.Entities;
 
@@ -43,12 +42,12 @@ namespace Samr.ERP.WebApi.HubEvent
             await _hubContext.Clients.Group(notification.SenderUserId.Value.ToString()).SendAsync("OnMessageRead", notification);
         }
 
-        public async Task SendMessage(object sender, string userId)
-        {
-            //string name = Context.User.Identity.Name;
-            //Debug.WriteLine("i am here");
-            //await _hubContext.Clients.All.SendAsync("MessageReceived", sender, userId, name);
-            //await _hubContext.Clients.User(name).SendAsync("MessageReceived", sender, userId);
-        }
+        //public async Task SendMessage(object sender, string userId)
+        //{
+        //    //string name = Context.User.Identity.Name;
+        //    //Debug.WriteLine("i am here");
+        //    //await _hubContext.Clients.All.SendAsync("MessageReceived", sender, userId, name);
+        //    //await _hubContext.Clients.User(name).SendAsync("MessageReceived", sender, userId);
+        //}
     }
 }
