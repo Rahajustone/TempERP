@@ -39,9 +39,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 
             CreateMap<EmailMessageHistory, EmailMessageHistoryLogViewModel>()
                 .ForMember(dst => dst.ReceiverUser,
-                    src => src.MapFrom(map =>
-                        map.ReceiverUser.Employee.LastName + " " + map.ReceiverUser.Employee.FirstName + "(" +
-                        map.ReceiverUser.PhoneNumber + ")"))
+                    src => src.MapFrom(map => Extension.FullNameToString(map.ReceiverUser.Employee.LastName,
+                                                  map.ReceiverUser.Employee.FirstName,
+                                                  map.ReceiverUser.Employee.MiddleName)
+                                                  + " (" + map.ReceiverUser.PhoneNumber + ")"))
                 .ForMember(dst => dst.EmailSettingId,
                     src => src.MapFrom(
                         map => map.EmailSetting.Id))

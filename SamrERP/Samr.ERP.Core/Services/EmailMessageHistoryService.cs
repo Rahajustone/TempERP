@@ -63,7 +63,8 @@ namespace Samr.ERP.Core.Services
             }
 
             if (emailMessageHistoryLogFilterView.ReceiverName != null)
-                query = query.Where(p => EF.Functions.Like(p.ReceiverUser.UserName.ToLower(),
+                query = query.Where(p => EF.Functions.Like(Extension.FullNameToString(p.ReceiverUser.Employee.LastName,
+                    p.ReceiverUser.Employee.FirstName, p.ReceiverUser.Employee.MiddleName).ToLower(),
                     "%" + emailMessageHistoryLogFilterView.ReceiverName.ToLower() + "%"));
 
             if (emailMessageHistoryLogFilterView.SenderEmail != null)
