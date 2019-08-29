@@ -71,6 +71,7 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
                 .OrderByDescending( p => p.CreatedAt)
+                .OrderByDescending( p => p.CreatedAt)
                 .FirstOrDefaultAsync(u => u.UsefulLinkCategoryId == existUsefulLinkCategory.Id);
 
             if (existUsefulLinkCategoryLog != null)

@@ -68,6 +68,7 @@ namespace Samr.ERP.Core.Services
             var existsUserLockReasonLog = await _unitOfWork.UserLockReasonLogs.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
+                .OrderByDescending(p => p.CreatedAt)
                 .FirstOrDefaultAsync(p => p.UserLockReasonId == existsUserLockReason.Id);
 
             if (existsUserLockReasonLog != null)

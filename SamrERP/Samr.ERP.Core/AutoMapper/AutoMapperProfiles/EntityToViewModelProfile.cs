@@ -282,7 +282,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             // TODO
             CreateMap<Department, DepartmentViewModel>()

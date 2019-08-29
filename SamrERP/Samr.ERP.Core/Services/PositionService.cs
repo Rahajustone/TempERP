@@ -81,6 +81,7 @@ namespace Samr.ERP.Core.Services
             var positionLog = await _unitOfWork.PositionLogs.GetDbSet()
                 .Include( p => p.CreatedUser)
                 .ThenInclude( p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
                 .FirstOrDefaultAsync(p => p.PositionId == position.Id);
 
             if (positionLog != null )

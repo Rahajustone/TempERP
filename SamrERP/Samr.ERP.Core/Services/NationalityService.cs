@@ -91,6 +91,7 @@ namespace Samr.ERP.Core.Services
             var nationalityLog = await _unitOfWork.NationalityLogs.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
                 .FirstOrDefaultAsync(n => n.NationalityId == nationality.Id);
 
             if (nationalityLog != null)

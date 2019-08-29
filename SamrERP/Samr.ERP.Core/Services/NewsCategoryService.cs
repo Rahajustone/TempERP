@@ -65,6 +65,7 @@ namespace Samr.ERP.Core.Services
             var existsNewsCategoryLog = await _unitOfWork.NewsCategoryLogs.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
                 .FirstOrDefaultAsync(p => p.NewsCategoryId == existsNewsCategory.Id);
             if (existsNewsCategoryLog != null)
             {
