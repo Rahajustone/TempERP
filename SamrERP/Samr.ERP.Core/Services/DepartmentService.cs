@@ -123,7 +123,7 @@ namespace Samr.ERP.Core.Services
 
             await _unitOfWork.CommitAsync();
 
-            return BaseDataResponse<ResponseDepartmentViewModel>.Success(_mapper.Map<ResponseDepartmentViewModel>(department));
+            return await GetByIdAsync(department.Id);
         }
 
         public async Task<BaseDataResponse<ResponseDepartmentViewModel>> EditAsync(RequestDepartmentViewModel requestDepartmentViewModel)
