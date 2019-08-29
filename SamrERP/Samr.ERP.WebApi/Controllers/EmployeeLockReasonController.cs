@@ -29,7 +29,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditEmployeeLockReasonViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseEmployeeLockReasonViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var employeeLockReasons = await _employeeLockReason.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(employeeLockReasons);
@@ -44,7 +44,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> Get(Guid id)
         {
             var employeeLockReason = await _employeeLockReason.GetByIdAsync(id);
 
@@ -52,7 +52,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> Create([FromBody]EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> Create([FromBody]RequestEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -60,11 +60,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(employeeLockResult);
             }
 
-            return Response(BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, null));
+            return Response(BaseDataResponse<ResponseEmployeeLockReasonViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> Edit([FromBody] EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> Edit([FromBody] RequestEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(response);
             }
 
-            return Response(BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponseEmployeeLockReasonViewModel>.NotFound(null));
         }
 
         [HttpGet("{id}")]

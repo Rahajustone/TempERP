@@ -45,7 +45,7 @@ namespace Samr.ERP.Core.Services
             return GetQuery().Include(p => p.CreatedUser).ThenInclude(p => p.Employee );
         }
 
-        private bool EmployeeLockReasonExists(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        private bool EmployeeLockReasonExists(RequestEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             return _unitOfWork.EmployeeLockReasons.Any(p => p.Name.ToLower() == employeeLockReasonViewModel.Name.ToLower());
         }
@@ -73,96 +73,93 @@ namespace Samr.ERP.Core.Services
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
         }
-        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> GetByIdAsync(Guid id)
+
+        public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> GetByIdAsync(Guid id)
         {
-            var employeeLockReason = await GetQuery().FirstOrDefaultAsync(p => p.Id == id);
-
-            BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
-
-            if (employeeLockReason == null)
+            var existEmployeeLockReason = await GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
+            
+            if (existEmployeeLockReason == null)
             {
-                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.NotFound( null);
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                return BaseDataResponse<ResponseEmployeeLockReasonViewModel>.NotFound(null);
             }
 
-            return dataResponse;
+            var existEmployeeLockReasonLog = await _unitOfWork.EmployeeLockReasonLog.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .FirstOrDefaultAsync(p => p.EmployeeLockReasonId == existEmployeeLockReason.Id);
+
+            if (existEmployeeLockReasonLog != null)
+            {
+                existEmployeeLockReason.CreatedUser = existEmployeeLockReasonLog.CreatedUser;
+                existEmployeeLockReason.CreatedAt = existEmployeeLockReasonLog.CreatedAt;
+            }
+
+            return BaseDataResponse<ResponseEmployeeLockReasonViewModel>.Success(
+                _mapper.Map<ResponseEmployeeLockReasonViewModel>(existEmployeeLockReason));
         }
 
-        public async Task<BaseDataResponse<PagedList<EditEmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseEmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<EditEmployeeLockReasonViewModel>();
+            var queryVm = query.ProjectTo<ResponseEmployeeLockReasonViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EditEmployeeLockReasonViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<ResponseEmployeeLockReasonViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> CreateAsync(RequestEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
-            BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
-
             var employeeLockReasonExists = EmployeeLockReasonExists(employeeLockReasonViewModel);
             if (employeeLockReasonExists)
             {
-                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Fail(employeeLockReasonViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var employeeLockReason = _mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel);
-                _unitOfWork.EmployeeLockReasons.Add(employeeLockReason);
-
-                await _unitOfWork.CommitAsync();
-
-                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
+                return BaseDataResponse<ResponseEmployeeLockReasonViewModel>.Fail(
+                    _mapper.Map<ResponseEmployeeLockReasonViewModel>(employeeLockReasonViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
             }
 
-            return dataResponse;
+            var employeeLockReason = _mapper.Map<EmployeeLockReason>(employeeLockReasonViewModel);
+            _unitOfWork.EmployeeLockReasons.Add(employeeLockReason);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(employeeLockReason.Id);
         }
 
-        public async Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> EditAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> EditAsync(RequestEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
-            BaseDataResponse<EditEmployeeLockReasonViewModel> dataResponse;
-
             var employeeLockReasonExists = await GetQuery()
                 .FirstOrDefaultAsync(e => e.Id == employeeLockReasonViewModel.Id);
-            if (employeeLockReasonExists != null)
-            {
-                var checkNameUnique = await _unitOfWork.EmployeeLockReasons
-                    .GetDbSet()
-                    .AnyAsync(e => e.Id != employeeLockReasonViewModel.Id
-                                   && e.Name == employeeLockReasonViewModel.Name);
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.NotFound(employeeLockReasonViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var employeeLockReasonLog = _mapper.Map<EmployeeLockReasonLog>(employeeLockReasonExists);
-                    _unitOfWork.EmployeeLockReasonLog.Add(employeeLockReasonLog);
 
-                    var employeeLockReason = _mapper.Map<EditEmployeeLockReasonViewModel, EmployeeLockReason>(employeeLockReasonViewModel, employeeLockReasonExists);
-                    _unitOfWork.EmployeeLockReasons.Update(employeeLockReason);
-                    
-                    await _unitOfWork.CommitAsync();
-
-                    dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.Success(_mapper.Map<EditEmployeeLockReasonViewModel>(employeeLockReason));
-                }
-            }
-            else
+            if (employeeLockReasonExists == null)
             {
-                dataResponse = BaseDataResponse<EditEmployeeLockReasonViewModel>.NotFound(employeeLockReasonViewModel);
+                return BaseDataResponse<ResponseEmployeeLockReasonViewModel>.NotFound(null);
             }
 
-            return dataResponse;
+            var checkNameUnique = await _unitOfWork.EmployeeLockReasons
+                .GetDbSet()
+                .AnyAsync(e => e.Id != employeeLockReasonViewModel.Id && e.Name == employeeLockReasonViewModel.Name);
+            if (checkNameUnique)
+            {
+                return BaseDataResponse<ResponseEmployeeLockReasonViewModel>.NotFound(
+                    _mapper.Map<ResponseEmployeeLockReasonViewModel>(employeeLockReasonViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            }
+
+            var employeeLockReasonLog = _mapper.Map<EmployeeLockReasonLog>(employeeLockReasonExists);
+            _unitOfWork.EmployeeLockReasonLog.Add(employeeLockReasonLog);
+
+            var employeeLockReason = _mapper.Map<RequestEmployeeLockReasonViewModel, EmployeeLockReason>(employeeLockReasonViewModel, employeeLockReasonExists);
+            _unitOfWork.EmployeeLockReasons.Update(employeeLockReason);
+  
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(employeeLockReasonExists.Id);
         }
 
         public async Task<BaseDataResponse<PagedList<EmployeeLockReasonLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
