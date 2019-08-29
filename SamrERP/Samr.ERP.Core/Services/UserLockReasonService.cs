@@ -57,36 +57,42 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> GetByIdAsync(Guid id)
         {
-            BaseDataResponse<UserLockReasonViewModel> response;
-
             var existsUserLockReason = await GetQueryWithUser().FirstOrDefaultAsync(u => u.Id == id);
             if (existsUserLockReason == null)
             {
-                response = BaseDataResponse<UserLockReasonViewModel>.NotFound(null, new ErrorModel("No such record!"));
-            }
-            else
-            {
-                response = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(existsUserLockReason));
+                return BaseDataResponse<ResponseUserLockReasonViewModel>.NotFound(null);
             }
 
-            return response;
+            var existsUserLockReasonLog = await _unitOfWork.UserLockReasonLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .FirstOrDefaultAsync(p => p.UserLockReasonId == existsUserLockReason.Id);
+
+            if (existsUserLockReasonLog != null)
+            {
+                existsUserLockReason.CreatedUser = existsUserLockReasonLog.CreatedUser;
+                existsUserLockReason.CreatedAt = existsUserLockReasonLog.CreatedAt;
+            }
+
+            return BaseDataResponse<ResponseUserLockReasonViewModel>.Success(_mapper.Map<ResponseUserLockReasonViewModel>(existsUserLockReason));
         }
 
-        public async Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseUserLockReasonViewModel>>> GetAllAsync(
+            PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<UserLockReasonViewModel>();
+            var queryVm = query.ProjectTo<ResponseUserLockReasonViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<UserLockReasonViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<ResponseUserLockReasonViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemsAsync()
@@ -96,61 +102,48 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(listItem));
         }
 
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> CreateAsync(UserLockReasonViewModel userLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> CreateAsync(RequestUserLockReasonViewModel userLockReasonViewModel)
         {
-            BaseDataResponse<UserLockReasonViewModel> response;
-
             var existsUserLockReason = _unitOfWork.UserLockReasons.Any(p => p.Name.ToLower() == userLockReasonViewModel.Name.ToLower());
             if (existsUserLockReason)
             {
-                response = BaseDataResponse<UserLockReasonViewModel>.Fail(userLockReasonViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var userLockReason = _mapper.Map<UserLockReason>(userLockReasonViewModel);
-
-                _unitOfWork.UserLockReasons.Add(userLockReason);
-
-                await _unitOfWork.CommitAsync();
-
-                response = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
+                return BaseDataResponse<ResponseUserLockReasonViewModel>.Fail(
+                    _mapper.Map<ResponseUserLockReasonViewModel>(userLockReasonViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
             }
 
-            return response;
+            var userLockReason = _mapper.Map<UserLockReason>(userLockReasonViewModel);
+            _unitOfWork.UserLockReasons.Add(userLockReason);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(userLockReason.Id);
         }
 
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> EditAsync(UserLockReasonViewModel userLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> EditAsync(RequestUserLockReasonViewModel userLockReasonViewModel)
         {
-            BaseDataResponse<UserLockReasonViewModel> dataResponse;
-
             var userLockReasonExists = await GetQuery().FirstOrDefaultAsync( u => u.Id == userLockReasonViewModel.Id);
-            if (userLockReasonExists != null)
+            if (userLockReasonExists == null)
             {
-                var checkNameUnique = await GetQuery().AnyAsync(u => u.Id != userLockReasonViewModel.Id 
+                return BaseDataResponse<ResponseUserLockReasonViewModel>.NotFound(null);
+            }
+
+            var checkNameUnique = await GetQuery().AnyAsync(u => u.Id != userLockReasonViewModel.Id 
                                    && u.Name.ToLower() == userLockReasonViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.NotFound(userLockReasonViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var userLockReasonLog = _mapper.Map<UserLockReasonLog>(userLockReasonExists);
-                    _unitOfWork.UserLockReasonLogs.Add(userLockReasonLog);
+            if (checkNameUnique)
+                return BaseDataResponse<ResponseUserLockReasonViewModel>.NotFound(
+                    _mapper.Map<ResponseUserLockReasonViewModel>(userLockReasonViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            
+            var userLockReasonLog = _mapper.Map<UserLockReasonLog>(userLockReasonExists);
+            _unitOfWork.UserLockReasonLogs.Add(userLockReasonLog);
 
-                    var userLockReason = _mapper.Map<UserLockReasonViewModel, UserLockReason>(userLockReasonViewModel, userLockReasonExists);
-                    _unitOfWork.UserLockReasons.Update(userLockReason);
+            var userLockReason = _mapper.Map<RequestUserLockReasonViewModel, UserLockReason>(userLockReasonViewModel, userLockReasonExists);
+            _unitOfWork.UserLockReasons.Update(userLockReason);
 
-                    await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<UserLockReasonViewModel>.Success(_mapper.Map<UserLockReasonViewModel>(userLockReason));
-                }
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<UserLockReasonViewModel>.NotFound(userLockReasonViewModel);
-            }
-
-            return dataResponse;
+            return await GetByIdAsync(userLockReason.Id);
         }
 
         public async Task<BaseDataResponse<PagedList<UserLockReasonLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)

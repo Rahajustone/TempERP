@@ -601,9 +601,15 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<EmailSetting, EmailSettingViewModel>()
                 .ForMember( dst => dst.SSL, src => src.MapFrom(map => map.EnabledSSL));
             CreateMap<EmailSettingViewModel, EmailSetting>()
-                .ForMember(dst => dst.EnabledSSL, src => src.MapFrom(map => map.SSL)); 
+                .ForMember(dst => dst.EnabledSSL, src => src.MapFrom(map => map.SSL));
 
-            CreateMap<UserLockReason, UserLockReasonViewModel>()
+            #region UserLockReason
+
+            CreateMap<RequestUserLockReasonViewModel, ResponseUserLockReasonViewModel>();
+
+            CreateMap<RequestUserLockReasonViewModel, UserLockReason>();
+
+            CreateMap<UserLockReason, ResponseUserLockReasonViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -615,12 +621,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<UserLockReason, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, UserLockReason>();
+
+            #endregion
+
+
 
             CreateMap<Gender, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, Gender>();
