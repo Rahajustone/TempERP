@@ -104,6 +104,7 @@ namespace Samr.ERP.Core.Services
         {
             var departments = await GetQueryWithUser()
                 .Where(e => e.IsActive)
+                .OrderBy(p=>p.Name)
                 .ToListAsync();
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(departments));
