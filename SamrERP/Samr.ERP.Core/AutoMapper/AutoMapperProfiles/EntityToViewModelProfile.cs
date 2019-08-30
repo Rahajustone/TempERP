@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Security.AccessControl;
 using AutoMapper;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
@@ -24,6 +25,7 @@ using Samr.ERP.Core.ViewModels.SMPPSetting;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
+using SixLabors.ImageSharp.ColorSpaces.Companding;
 
 namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
 {
@@ -36,14 +38,26 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             #region Log
 
             CreateMap<EmailMessageHistory, EmailMessageHistoryLogViewModel>()
-                .ForMember(dst => dst.RecieverUser,
-                    src => src.MapFrom(map =>
-                        map.RecieverUser.Employee.LastName + " " + map.RecieverUser.Employee.FirstName));
+                .ForMember(dst => dst.ReceiverUser,
+                    src => src.MapFrom(map => Extension.FullNameToString(map.ReceiverUser.Employee.LastName,
+                                                  map.ReceiverUser.Employee.FirstName,
+                                                  map.ReceiverUser.Employee.MiddleName)
+                                                  + " (" + map.ReceiverUser.PhoneNumber + ")"))
+                .ForMember(dst => dst.EmailSettingId,
+                    src => src.MapFrom(
+                        map => map.EmailSetting.Id))
+                .ForMember(dst => dst.SenderEmail,
+                    src => src.MapFrom(
+                        map => map.EmailSetting.Sender))
+                .ForMember(dst => dst.CreatedAt, 
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<Department, DepartmentLog>()
                 .ForMember(dst => dst.DepartmentId, src => src.MapFrom(map => map.Id))
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ForMember(dst => dst.Department, opt => opt.Ignore());
+
             CreateMap<DepartmentLog, DepartmentLogViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
@@ -250,31 +264,31 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ReverseMap();
 
+            #region Department
+
+            CreateMap<RequestDepartmentViewModel, ResponseDepartmentViewModel>();
+
+            CreateMap<RequestDepartmentViewModel, Department>();
+
+            CreateMap<Department, ResponseDepartmentViewModel>()
+                .ForMember(dst => dst.FirstName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.FirstName))
+                .ForMember(dst => dst.LastName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.LastName))
+                .ForMember(dst => dst.MiddleName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.MiddleName))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
+
+            // TODO
             CreateMap<Department, DepartmentViewModel>()
                 .ReverseMap();
 
             CreateMap<Department, EditDepartmentViewModel>()
-                .ForMember(dst => dst.FirstName, 
-                    src => src.MapFrom(
-                        map => map.CreatedUser.Employee.FirstName))
-                .ForMember(dst => dst.LastName,
-                    src => src.MapFrom(
-                        map => map.CreatedUser.Employee.LastName))
-                .ForMember(dst => dst.MiddleName,
-                    src => src.MapFrom(
-                        map => map.CreatedUser.Employee.MiddleName))
-                .ForMember(dst => dst.CreatedAt, 
-                    src => src.MapFrom(
-                    map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap();
-
-            CreateMap<Department, SelectListItemViewModel>()
-                .ReverseMap();
-
-            CreateMap<EmployeeLockReason, EmployeeLockReasonViewModel>()
-                .ReverseMap();
-
-            CreateMap<EmployeeLockReason, EditEmployeeLockReasonViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -286,16 +300,18 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToShortDateString()));
 
-            CreateMap<SelectListItemViewModel, EmployeeLockReason>()
-                .ReverseMap();
+            CreateMap<Department, SelectListItemViewModel>();
+            #endregion
 
-            CreateMap<Nationality, NationalityViewModel>();
-            CreateMap<NationalityViewModel, Nationality>();
-            CreateMap<Nationality, EditNationalityViewModel>()
+            #region EmployeeLockReason
+
+            CreateMap<RequestEmployeeLockReasonViewModel, ResponseEmployeeLockReasonViewModel>();
+
+            CreateMap<RequestEmployeeLockReasonViewModel, EmployeeLockReason>();
+
+            CreateMap<EmployeeLockReason, ResponseEmployeeLockReasonViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -307,19 +323,46 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
-            CreateMap<Nationality, SelectListItemViewModel>()
-                .ReverseMap();
+            CreateMap<EmployeeLockReason, SelectListItemViewModel>();
 
-            CreateMap<Position, PositionViewModel>()
-                .ForMember(dst => dst.CreatedUserName,
-                    src => src.MapFrom(map =>
-                        map.CreatedUser == null ? string.Empty : map.CreatedUser.ToShortName()))
-                .ReverseMap();
-            CreateMap<Position, EditPositionViewModel>()
+            #endregion
+
+            #region Nationality
+
+            CreateMap<RequestNationalityViewModel, ResponseNationalityViewModel>();
+
+            CreateMap<RequestNationalityViewModel, Nationality>();
+
+            CreateMap<Nationality, ResponseNationalityViewModel>()
+                .ForMember(dst => dst.FirstName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.FirstName))
+                .ForMember(dst => dst.LastName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.LastName))
+                .ForMember(dst => dst.MiddleName,
+                    src => src.MapFrom(
+                        map => map.CreatedUser.Employee.MiddleName))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
+
+            CreateMap<Nationality, SelectListItemViewModel>();
+
+            #endregion
+
+            #region Position
+
+            CreateMap<RequestPositionViewModel, ResponsePositionViewModel>();
+
+            CreateMap<RequestPositionViewModel, Position>();
+
+            CreateMap<Position, ResponsePositionViewModel>()
+                .ForMember( p => p.DepartmentName, 
+                    src => src.MapFrom(
+                        map => map.Department.Name))
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -334,10 +377,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.Department.Name))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore())
-                .ForMember(dst => dst.Department, opt => opt.Ignore());
+                        map => map.CreatedAt.ToStringCustomFormat()));
+            #endregion
 
             #region Employee
 
@@ -532,8 +573,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             //    .ForMember(dst => dst.ItemsCount, src => src.MapFrom(
             //        map => Count(map.NewsCategory)));
 
+            #region NewsCategory
 
-            CreateMap<NewsCategory, NewsCategoryViewModel>()
+            CreateMap<RequestNewsCategoryViewModel, ResponseNewsCategoryViewModel>();
+
+            CreateMap<RequestNewsCategoryViewModel, NewsCategory>();
+
+            CreateMap<NewsCategory, ResponseNewsCategoryViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -545,17 +591,26 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToStringCustomFormat()));
+
             CreateMap<NewsCategory, SelectListItemViewModel>();
+
+            #endregion
+
+
 
             CreateMap<EmailSetting, EmailSettingViewModel>()
                 .ForMember( dst => dst.SSL, src => src.MapFrom(map => map.EnabledSSL));
             CreateMap<EmailSettingViewModel, EmailSetting>()
-                .ForMember(dst => dst.EnabledSSL, src => src.MapFrom(map => map.SSL)); 
+                .ForMember(dst => dst.EnabledSSL, src => src.MapFrom(map => map.SSL));
 
-            CreateMap<UserLockReason, UserLockReasonViewModel>()
+            #region UserLockReason
+
+            CreateMap<RequestUserLockReasonViewModel, ResponseUserLockReasonViewModel>();
+
+            CreateMap<RequestUserLockReasonViewModel, UserLockReason>();
+
+            CreateMap<UserLockReason, ResponseUserLockReasonViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -567,19 +622,22 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<UserLockReason, SelectListItemViewModel>();
-            CreateMap<SelectListItemViewModel, UserLockReason>();
+            #endregion
+
 
             CreateMap<Gender, SelectListItemViewModel>();
             CreateMap<SelectListItemViewModel, Gender>();
 
-            CreateMap<UsefulLinkCategory, UsefulLinkCategoryViewModel>();
-            CreateMap<UsefulLinkCategoryViewModel, UsefulLinkCategory>();
-            CreateMap<UsefulLinkCategory, EditUsefulLinkCategoryViewModel>()
+            #region UsefulLinkCategory
+
+            CreateMap<RequestUsefulLinkCategoryViewModel, ResponseUsefulLinkCategoryViewModel>();
+
+            CreateMap<RequestUsefulLinkCategoryViewModel, UsefulLinkCategory>();
+
+            CreateMap<UsefulLinkCategory, ResponseUsefulLinkCategoryViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -591,11 +649,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToStringCustomFormat()));
             CreateMap<UsefulLinkCategory, SelectListItemViewModel>();
-            CreateMap<SelectListItemViewModel, UsefulLinkCategory>();
+            #endregion
+
 
             CreateMap<UsefulLink, UsefulLinkViewModel>()
                 .ForMember(dst => dst.CreatedUserName,
@@ -616,9 +673,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         }))
                 .ReverseMap()
                 .ForMember(dst => dst.UsefulLinkCategory, opt => opt.Ignore());
-            
-            CreateMap<FileArchiveCategory, FileArchiveCategoryViewModel>().ReverseMap();
-            CreateMap<FileArchiveCategory, EditFileArchiveCategoryViewModel>()
+
+            #region FileArchiveCategory
+
+            CreateMap<RequestFileArchiveCategoryViewModel, ResponseFileArchiveCategoryViewModel>();
+            CreateMap<RequestFileArchiveCategoryViewModel, FileArchiveCategory>();
+
+            CreateMap<FileArchiveCategory, ResponseFileArchiveCategoryViewModel>()
                 .ForMember(dst => dst.FirstName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.FirstName))
@@ -630,10 +691,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
-                .ReverseMap()
-                .ForMember(dst => dst.CreatedAt, opt => opt.Ignore());
+                        map => map.CreatedAt.ToStringCustomFormat()));
             CreateMap<FileArchiveCategory, SelectListItemViewModel>();
+            #endregion
 
             CreateMap<FileArchive, EditFileArchiveViewModel>()
                 .ForMember(dst => dst.CreatedUserName,

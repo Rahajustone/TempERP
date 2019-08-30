@@ -36,7 +36,10 @@ namespace Samr.ERP.Core.Services
 
         private IQueryable<Department> GetQueryWithUser()
         {
-            return _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser).OrderByDescending(p => p.CreatedAt);
+            return _unitOfWork.Departments.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude( p => p.Employee)
+                .OrderByDescending(p => p.CreatedAt);
         }
 
         private IQueryable<Department> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Department> query)
@@ -54,22 +57,27 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> GetByIdAsync(Guid id)
         {
-            var department = await GetQueryWithUser().Include(p => p.CreatedUser.Employee).FirstOrDefaultAsync(p => p.Id == id);
-
-            BaseDataResponse<EditDepartmentViewModel> dataResponse;
-
-            if (department == null)
-            {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(null);
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-            }
+            var existsDepartment = await GetQueryWithUser()
+                .FirstOrDefaultAsync(p => p.Id == id);
             
-            return dataResponse;
+            if (existsDepartment == null)
+                return  BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null);
+
+            var existsDepartmentLog = await _unitOfWork.DepartmentLogs.GetDbSet()
+                .OrderByDescending( p => p.CreatedAt)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .FirstOrDefaultAsync(a => a.DepartmentId == existsDepartment.Id);
+
+            if (existsDepartmentLog != null)
+            {
+                existsDepartment.CreatedUser = existsDepartmentLog.CreatedUser;
+                existsDepartment.CreatedAt = existsDepartmentLog.CreatedAt;
+            }
+
+             return BaseDataResponse<ResponseDepartmentViewModel>.Success(_mapper.Map<ResponseDepartmentViewModel>(existsDepartment));
         }
 
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
@@ -102,65 +110,50 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(departments));
         }
 
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel editDepartmentViewModel)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> CreateAsync(RequestDepartmentViewModel requestDepartmentViewModel)
         {
-            BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
-            var departmentExists = await CheckDepartmentNameUnique(editDepartmentViewModel.Name);
+            var departmentExists = await CheckDepartmentNameUnique(requestDepartmentViewModel.Name);
             if (departmentExists)
-            {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var department = _mapper.Map<Department>(editDepartmentViewModel);
-                _unitOfWork.Departments.Add(department);
+                return BaseDataResponse<ResponseDepartmentViewModel>.NotFound(
+                    _mapper.Map<ResponseDepartmentViewModel>(requestDepartmentViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
 
-                await _unitOfWork.CommitAsync();
+            var department = _mapper.Map<Department>(requestDepartmentViewModel);
+            _unitOfWork.Departments.Add(department);
 
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-            }
+            await _unitOfWork.CommitAsync();
 
-            return dataResponse;
+            return await GetByIdAsync(department.Id);
         }
 
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel editDepartmentViewModel)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> EditAsync(RequestDepartmentViewModel requestDepartmentViewModel)
         {
-            BaseDataResponse<EditDepartmentViewModel> dataResponse;
 
             var departmentExists = await _unitOfWork.Departments.GetDbSet()
-                .FirstOrDefaultAsync(p => p.Id == editDepartmentViewModel.Id);
+                .FirstOrDefaultAsync(p => p.Id == requestDepartmentViewModel.Id);
+            if (departmentExists == null)
+                return BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null);
 
-            if (departmentExists != null)
-            {
-                var checkNameUnique = await _unitOfWork.Departments
+            var checkNameUnique = await _unitOfWork.Departments
                     .GetDbSet()
-                    .AnyAsync(d => d.Id != editDepartmentViewModel.Id && d.Name.ToLower() == editDepartmentViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var departmentLog = _mapper.Map<DepartmentLog>(departmentExists);
+                    .AnyAsync(d =>
+                        d.Id != requestDepartmentViewModel.Id &&
+                        d.Name.ToLower() == requestDepartmentViewModel.Name.ToLower());
+            if (checkNameUnique)
+                return BaseDataResponse<ResponseDepartmentViewModel>.Fail(
+                    _mapper.Map<ResponseDepartmentViewModel>(requestDepartmentViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
 
-                    var department = _mapper.Map<EditDepartmentViewModel, Department>(editDepartmentViewModel, departmentExists);
+            var departmentLog = _mapper.Map<DepartmentLog>(departmentExists);
+            _unitOfWork.DepartmentLogs.Add(departmentLog);
 
-                    _unitOfWork.Departments.Update(department);
+            var department = _mapper.Map<RequestDepartmentViewModel, Department>(requestDepartmentViewModel, departmentExists);
+            _unitOfWork.Departments.Update(department);
 
-                    _unitOfWork.DepartmentLogs.Add(departmentLog);
+            await _unitOfWork.CommitAsync();
 
-                    await _unitOfWork.CommitAsync();
-
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-                }
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(editDepartmentViewModel);
-            }
-
-            return dataResponse;
+            return await GetByIdAsync(department.Id);
         }
 
         public async Task<BaseDataResponse<PagedList<DepartmentLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)

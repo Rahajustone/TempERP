@@ -45,7 +45,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Get(Guid id)
         {
             var department = await _departmentService.GetByIdAsync(id);
 
@@ -53,7 +53,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> Create([FromBody]EditDepartmentViewModel departmentViewModel)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Create([FromBody]RequestDepartmentViewModel departmentViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -61,19 +61,19 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
+            return Response(BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Edit([FromBody] RequestDepartmentViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var departmentResult = await _departmentService.UpdateAsync(model);
+                var departmentResult = await _departmentService.EditAsync(model);
                 return Response(departmentResult);
             }
 
-            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null));
         }
 
         [HttpGet("{id}")]

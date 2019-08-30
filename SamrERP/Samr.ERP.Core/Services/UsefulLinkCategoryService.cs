@@ -59,30 +59,44 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> GetByIdAsync(Guid id)
         {
             var existUsefulLinkCategory = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
             if (existUsefulLinkCategory == null)
             {
-                return BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(null);
+                return BaseDataResponse<ResponseUsefulLinkCategoryViewModel>.NotFound(null);
             }
 
-            return BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(existUsefulLinkCategory));
+            var existUsefulLinkCategoryLog = await _unitOfWork.UsefulLinkCategoryLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
+                .OrderByDescending( p => p.CreatedAt)
+                .FirstOrDefaultAsync(u => u.UsefulLinkCategoryId == existUsefulLinkCategory.Id);
+
+            if (existUsefulLinkCategoryLog != null)
+            {
+                existUsefulLinkCategory.CreatedUser = existUsefulLinkCategoryLog.CreatedUser;
+                existUsefulLinkCategory.CreatedAt = existUsefulLinkCategoryLog.CreatedAt;
+            }
+
+            return BaseDataResponse<ResponseUsefulLinkCategoryViewModel>.Success(
+                _mapper.Map<ResponseUsefulLinkCategoryViewModel>(existUsefulLinkCategory));
         }
 
-        public async Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseUsefulLinkCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<EditUsefulLinkCategoryViewModel>();
+            var queryVm = query.ProjectTo<ResponseUsefulLinkCategoryViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<ResponseUsefulLinkCategoryViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync()
@@ -96,67 +110,52 @@ namespace Samr.ERP.Core.Services
                     {
                         Id = p.Id,
                         Name = p.Name,
-                        ItemsCount = _unitOfWork.UsefulLinks.GetDbSet().Count(m => m.UsefulLinkCategoryId == p.Id)
+                        ItemsCount = _unitOfWork.UsefulLinks.GetDbSet().Where( _ => _.IsActive).Count(m => m.UsefulLinkCategoryId == p.Id)
                     }).ToListAsync();
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(categorySelectList);
         }
 
-        public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> CreateAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> CreateAsync(RequestUsefulLinkCategoryViewModel requestUsefulLinkCategoryViewModel)
         {
-            BaseDataResponse<EditUsefulLinkCategoryViewModel> response;
-
-            var existsUsefulLinkCategories = await GetQuery().FirstOrDefaultAsync(p => p.Name.ToLower() == editUsefulLinkCategoryViewModel.Name.ToLower());
+            var existsUsefulLinkCategories = await GetQuery().FirstOrDefaultAsync(p => p.Name.ToLower() == requestUsefulLinkCategoryViewModel.Name.ToLower());
             if (existsUsefulLinkCategories != null)
             {
-                response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Fail(editUsefulLinkCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var usefulLinkCategory = _mapper.Map<UsefulLinkCategory>(editUsefulLinkCategoryViewModel);
-
-                _unitOfWork.UsefulLinkCategories.Add(usefulLinkCategory);
-
-                await _unitOfWork.CommitAsync();
-
-                response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
+                return BaseDataResponse<ResponseUsefulLinkCategoryViewModel>.Fail(
+                    _mapper.Map<ResponseUsefulLinkCategoryViewModel>(requestUsefulLinkCategoryViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
             }
 
-            return response;
+            var usefulLinkCategory = _mapper.Map<UsefulLinkCategory>(requestUsefulLinkCategoryViewModel);
+            _unitOfWork.UsefulLinkCategories.Add(usefulLinkCategory);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(usefulLinkCategory.Id);
         }
 
-        public async Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> EditAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> EditAsync(RequestUsefulLinkCategoryViewModel requestUsefulLinkCategoryViewModel)
         {
-            BaseDataResponse<EditUsefulLinkCategoryViewModel> response;
-
-            var existUsefulLinkCategory = await GetQuery().FirstOrDefaultAsync(p => p.Id == editUsefulLinkCategoryViewModel.Id);
+            var existUsefulLinkCategory = await GetQuery().FirstOrDefaultAsync(p => p.Id == requestUsefulLinkCategoryViewModel.Id);
             if (existUsefulLinkCategory == null)
-            {
-                response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.NotFound(editUsefulLinkCategoryViewModel);
-            }
-            else
-            {
-                var checkNameUnique = await GetQuery()
-                    .AnyAsync(d => d.Id != editUsefulLinkCategoryViewModel.Id && d.Name.ToLower() == editUsefulLinkCategoryViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Fail(editUsefulLinkCategoryViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var usefulLinkCategoryLog = _mapper.Map<UsefulLinkCategoryLog>(existUsefulLinkCategory);
-                    _unitOfWork.UsefulLinkCategoryLogs.Add(usefulLinkCategoryLog);
+                return BaseDataResponse<ResponseUsefulLinkCategoryViewModel>.NotFound(null);
 
-                    var usefulLinkCategory = _mapper.Map<EditUsefulLinkCategoryViewModel, UsefulLinkCategory>(editUsefulLinkCategoryViewModel, existUsefulLinkCategory);
-                    _unitOfWork.UsefulLinkCategories.Update(usefulLinkCategory);
+            var checkNameUnique = await GetQuery()
+                .AnyAsync(d => d.Id != requestUsefulLinkCategoryViewModel.Id && d.Name.ToLower() == requestUsefulLinkCategoryViewModel.Name.ToLower());
+            if (checkNameUnique)
+                return BaseDataResponse<ResponseUsefulLinkCategoryViewModel>.Fail(
+                    _mapper.Map<ResponseUsefulLinkCategoryViewModel>(requestUsefulLinkCategoryViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
 
-                    await _unitOfWork.CommitAsync();
+            var usefulLinkCategoryLog = _mapper.Map<UsefulLinkCategoryLog>(existUsefulLinkCategory);
+            _unitOfWork.UsefulLinkCategoryLogs.Add(usefulLinkCategoryLog);
 
-                    response = BaseDataResponse<EditUsefulLinkCategoryViewModel>.Success(_mapper.Map<EditUsefulLinkCategoryViewModel>(usefulLinkCategory));
-                }
-            }
+            var usefulLinkCategory = _mapper.Map<RequestUsefulLinkCategoryViewModel, UsefulLinkCategory>(requestUsefulLinkCategoryViewModel, existUsefulLinkCategory);
+            _unitOfWork.UsefulLinkCategories.Update(usefulLinkCategory);
 
-            return response;
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(usefulLinkCategory.Id);
         }
 
         public async Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)

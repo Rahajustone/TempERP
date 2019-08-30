@@ -15,11 +15,11 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IUsefulLinkCategoryService
     {
-        Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> GetByIdAsync(Guid id);
-        Task<BaseDataResponse<PagedList<EditUsefulLinkCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
-        Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> CreateAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel);
-        Task<BaseDataResponse<EditUsefulLinkCategoryViewModel>> EditAsync(EditUsefulLinkCategoryViewModel editUsefulLinkCategoryViewModel);
+        Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<PagedList<ResponseUsefulLinkCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
+        Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> CreateAsync(RequestUsefulLinkCategoryViewModel requestUsefulLinkCategoryViewModel);
+        Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> EditAsync(RequestUsefulLinkCategoryViewModel requestUsefulLinkCategoryViewModel);
         Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

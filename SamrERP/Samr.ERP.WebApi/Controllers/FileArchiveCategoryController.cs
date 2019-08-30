@@ -31,7 +31,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditFileArchiveCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseFileArchiveCategoryViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var fileCategories = await _fileArchiveCategoryService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(fileCategories);
@@ -45,7 +45,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> Get(Guid id)
         {
             var fileCategory = await _fileArchiveCategoryService.GetByIdAsync(id);
 
@@ -53,7 +53,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> Create([FromBody] EditFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> Create([FromBody] ResponseFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -61,11 +61,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(result);
             }
 
-            return Response(BaseDataResponse<EditFileArchiveCategoryViewModel>.Fail(editFileArchiveCategoryViewModel, null));
+            return Response(BaseDataResponse<ResponseFileArchiveCategoryViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> Edit([FromBody] EditFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> Edit([FromBody] RequestFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +73,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(result);
             }
 
-            return Response(BaseDataResponse<EditFileArchiveCategoryViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponseFileArchiveCategoryViewModel>.NotFound(null));
         }
 
         [HttpGet("{id}")]

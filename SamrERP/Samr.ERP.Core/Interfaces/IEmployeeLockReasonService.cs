@@ -15,10 +15,10 @@ namespace Samr.ERP.Core.Interfaces
     public interface IEmployeeLockReasonService
     {
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemAsync();
-        Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> GetByIdAsync(Guid id);
-        Task<BaseDataResponse<PagedList<EditEmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
-        Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> CreateAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel);
-        Task<BaseDataResponse<EditEmployeeLockReasonViewModel>> EditAsync(EditEmployeeLockReasonViewModel employeeLockReasonViewModel);
+        Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<PagedList<ResponseEmployeeLockReasonViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
+        Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> CreateAsync(RequestEmployeeLockReasonViewModel employeeLockReasonViewModel);
+        Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> EditAsync(RequestEmployeeLockReasonViewModel employeeLockReasonViewModel);
         Task<BaseDataResponse<PagedList<EmployeeLockReasonLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

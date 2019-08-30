@@ -1,20 +1,17 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Text;
 using Samr.ERP.Core.Stuff;
 
-namespace Samr.ERP.Core.ViewModels.Handbook.UserLockReason
+namespace Samr.ERP.Core.ViewModels.Handbook.Nationality
 {
-    public class UserLockReasonViewModel
+    public class ResponseNationalityViewModel : RequestNationalityViewModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
         public string CreatedUserName => Extension.FullNameToString(LastName, FirstName, MiddleName);
 
-        public Guid Id { get; set; }
-        [StringLength(32)]
-        public string Name { get; set; }
         public string CreatedAt { get; set; }
-        public bool IsActive { get; set; }
     }
 }

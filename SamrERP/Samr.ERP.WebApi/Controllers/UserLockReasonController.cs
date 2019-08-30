@@ -29,7 +29,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseUserLockReasonViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var userLockReasons = await _userLockReasonService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(userLockReasons);
@@ -44,7 +44,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> Get(Guid id)
         {
             var userLockReasons = await _userLockReasonService.GetByIdAsync(id);
 
@@ -52,7 +52,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> Create(UserLockReasonViewModel userLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> Create(RequestUserLockReasonViewModel userLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -61,11 +61,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(result);
             }
 
-            return Response(BaseDataResponse<UserLockReasonViewModel>.NotFound(null));
+            return Response(BaseDataResponse<ResponseUserLockReasonViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> Edit([FromBody] UserLockReasonViewModel userLockReasonViewModel)
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> Edit([FromBody] RequestUserLockReasonViewModel userLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +73,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(responseData);
             }
 
-            return Response(BaseDataResponse<UserLockReasonViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponseUserLockReasonViewModel>.Fail(null));
         }
 
         [HttpGet("{id}")]

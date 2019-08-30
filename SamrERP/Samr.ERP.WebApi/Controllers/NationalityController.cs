@@ -30,7 +30,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseNationalityViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var nationalities = await _nationalityService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(nationalities);
@@ -45,7 +45,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditNationalityViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseNationalityViewModel>> Get(Guid id)
         {
             var nationality = await _nationalityService.GetByIdAsync(id);
 
@@ -54,7 +54,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         // POST: api/Nationality
         [HttpPost]
-        public  async Task<BaseDataResponse<EditNationalityViewModel>> Create([FromBody]EditNationalityViewModel nationalityViewModel)
+        public  async Task<BaseDataResponse<ResponseNationalityViewModel>> Create([FromBody]RequestNationalityViewModel nationalityViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -62,22 +62,21 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(nationality);
             }
 
-            return Response(BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel,
-                new ErrorModel("Model Not created")));
+            return Response(BaseDataResponse<ResponseNationalityViewModel>.NotFound(null));
         }
 
 
         [HttpPost]
-        public async  Task<BaseDataResponse<EditNationalityViewModel>> Edit([FromBody]EditNationalityViewModel nationalityViewModel)
+        public async  Task<BaseDataResponse<ResponseNationalityViewModel>> Edit([FromBody]RequestNationalityViewModel nationalityViewModel)
         {
             if (ModelState.IsValid)
             {
-                var nationality = await _nationalityService.UpdateAsync(nationalityViewModel);
+                var nationality = await _nationalityService.EditAsync(nationalityViewModel);
 
                 return Response(nationality);
             }
 
-            return Response(BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, null));
+            return Response(BaseDataResponse<ResponseNationalityViewModel>.NotFound(null));
         }
 
         [HttpGet("{id}")]

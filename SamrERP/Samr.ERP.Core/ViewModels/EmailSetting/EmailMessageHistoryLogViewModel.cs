@@ -6,9 +6,10 @@ namespace Samr.ERP.Core.ViewModels.EmailSetting
 {
     public class EmailMessageHistoryLogViewModel 
     {
-        public string RecieverUser { get; set; }
-        public string RecieverEMail { get; set; }
-        public string EmailSetting { get; set; }
+        public string ReceiverUser { get; set; }
+        public string ReceiverEmail { get; set; }
+        public string EmailSettingId { get; set; }
+        public string SenderEmail { get; set; }
         public string Subject { get; set; }
         public string Message { get; set; }
         public string CreatedAt { get; set; }

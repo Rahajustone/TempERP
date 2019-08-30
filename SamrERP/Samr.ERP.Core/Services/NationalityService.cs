@@ -57,19 +57,19 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<PagedList<EditNationalityViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseNationalityViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<EditNationalityViewModel>();
+            var queryVm = query.ProjectTo<ResponseNationalityViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EditNationalityViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<ResponseNationalityViewModel>>.Success(pagedList);
         }
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllListItemAsync()
@@ -79,82 +79,79 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(listItems));
         }
 
-        public async Task<BaseDataResponse<EditNationalityViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponseNationalityViewModel>> GetByIdAsync(Guid id)
         {
-            BaseDataResponse<EditNationalityViewModel> dataResponse;
 
-            var nationality = await GetQuery()
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var nationality = await GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
             if (nationality == null)
             {
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.NotFound(null, new ErrorModel("Not found Entity"));
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                return  BaseDataResponse<ResponseNationalityViewModel>.NotFound(null, new ErrorModel("Not found Entity"));
             }
 
-            return dataResponse;
+            var nationalityLog = await _unitOfWork.NationalityLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
+                .FirstOrDefaultAsync(n => n.NationalityId == nationality.Id);
+
+            if (nationalityLog != null)
+            {
+                nationality.CreatedAt = nationalityLog.CreatedAt;
+                nationality.CreatedUser = nationalityLog.CreatedUser;
+            }
+
+            return BaseDataResponse<ResponseNationalityViewModel>.Success(_mapper.Map<ResponseNationalityViewModel>(nationality));
         }
 
-        public async Task<BaseDataResponse<EditNationalityViewModel>> CreateAsync(EditNationalityViewModel editNationalityViewModel)
+        public async Task<BaseDataResponse<ResponseNationalityViewModel>> CreateAsync(RequestNationalityViewModel nationalityViewModel)
         {
-            BaseDataResponse<EditNationalityViewModel> dataResponse;
-
             var nationalityExists =
                 _unitOfWork.Nationalities
-                    .Any(p => p.Name.ToLower() == editNationalityViewModel.Name.ToLower());
+                    .Any(p => p.Name.ToLower() == nationalityViewModel.Name.ToLower());
 
             if (nationalityExists)
             {
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(editNationalityViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var nationality = _mapper.Map<Nationality>(editNationalityViewModel);
-                _unitOfWork.Nationalities.Add(nationality);
-
-                await _unitOfWork.CommitAsync();
-
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
+                return BaseDataResponse<ResponseNationalityViewModel>.Fail(
+                    _mapper.Map<ResponseNationalityViewModel>(nationalityViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
             }
 
-            return dataResponse;
+            var nationality = _mapper.Map<Nationality>(nationalityViewModel);
+            _unitOfWork.Nationalities.Add(nationality);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(nationality.Id);
         }
 
-        public async Task<BaseDataResponse<EditNationalityViewModel>> UpdateAsync(EditNationalityViewModel nationalityViewModel)
+        public async Task<BaseDataResponse<ResponseNationalityViewModel>> EditAsync(RequestNationalityViewModel nationalityViewModel)
         {
-            BaseDataResponse<EditNationalityViewModel> dataResponse;
-
             var nationalityExists = await GetQuery().FirstOrDefaultAsync(n => n.Id == nationalityViewModel.Id);
-            if (nationalityExists != null)
-            {
-                var checkNameUnique = await _unitOfWork.Nationalities
-                    .GetDbSet()
-                    .AnyAsync(n =>n.Id != nationalityViewModel.Id && n.Name.ToLower() == nationalityViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Fail(nationalityViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var nationalityLog = _mapper.Map<NationalityLog>(nationalityExists);
-                    _unitOfWork.NationalityLogs.Add(nationalityLog);
 
-                    var nationality = _mapper.Map<EditNationalityViewModel, Nationality>(nationalityViewModel, nationalityExists);
-                    _unitOfWork.Nationalities.Update(nationality);
-                    
-                    await _unitOfWork.CommitAsync();
-
-                    dataResponse = BaseDataResponse<EditNationalityViewModel>.Success(_mapper.Map<EditNationalityViewModel>(nationality));
-                }
-            }
-            else
+            if (nationalityExists == null)
             {
-                dataResponse = BaseDataResponse<EditNationalityViewModel>.NotFound(nationalityViewModel);
+                return BaseDataResponse<ResponseNationalityViewModel>.NotFound(
+                    _mapper.Map<ResponseNationalityViewModel>(nationalityViewModel));
             }
 
-            return dataResponse;
+            var checkNameUnique = await _unitOfWork.Nationalities.GetDbSet()
+                .AnyAsync(n =>
+                    n.Id != nationalityViewModel.Id && n.Name.ToLower() == nationalityViewModel.Name.ToLower());
+            if (checkNameUnique)
+            {
+                return  BaseDataResponse<ResponseNationalityViewModel>.Fail(_mapper.Map<ResponseNationalityViewModel>(nationalityViewModel), 
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            }
+
+            var nationalityLog = _mapper.Map<NationalityLog>(nationalityExists);
+            _unitOfWork.NationalityLogs.Add(nationalityLog);
+
+            var nationality = _mapper.Map<RequestNationalityViewModel, Nationality>(nationalityViewModel, nationalityExists);
+            _unitOfWork.Nationalities.Update(nationality);
+            
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(nationalityExists.Id);
         }
 
         public async Task<BaseDataResponse<PagedList<NationalityLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)

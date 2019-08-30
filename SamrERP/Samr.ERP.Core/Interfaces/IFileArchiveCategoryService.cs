@@ -13,11 +13,11 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IFileArchiveCategoryService
     {
-        Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> GetByIdAsync(Guid id);
-        Task<BaseDataResponse<PagedList<EditFileArchiveCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
+        Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> GetByIdAsync(Guid id);
+        Task<BaseDataResponse<PagedList<ResponseFileArchiveCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule);
         Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemAsync();
-        Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> CreateAsync(EditFileArchiveCategoryViewModel fileArchiveCategoryViewModel);
-        Task<BaseDataResponse<EditFileArchiveCategoryViewModel>> EditAsync(EditFileArchiveCategoryViewModel editFileArchiveCategoryViewModel);
+        Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> CreateAsync(RequestFileArchiveCategoryViewModel fileArchiveCategoryViewModel);
+        Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> EditAsync(RequestFileArchiveCategoryViewModel editFileArchiveCategoryViewModel);
         Task<BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

@@ -27,7 +27,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterPositionViewModel filterPosition, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponsePositionViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterPositionViewModel filterPosition, [FromQuery] SortRule sortRule)
         {
             var position = await _positionService.GetAllAsync(pagingOptions, filterPosition, sortRule);
             return Response(position);
@@ -41,7 +41,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
  
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditPositionViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> Get(Guid id)
         {
             var position = await _positionService.GetByIdAsync(id);
 
@@ -49,7 +49,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditPositionViewModel>> Create([FromBody]EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> Create([FromBody]RequestPositionViewModel positionViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -57,11 +57,11 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(position);
             }
 
-            return Response(BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, null));
+            return Response(BaseDataResponse<ResponsePositionViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditPositionViewModel>> Edit([FromBody] EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> Edit([FromBody] RequestPositionViewModel positionViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -69,7 +69,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(positionResult);
             }
 
-            return Response(BaseDataResponse<EditPositionViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponsePositionViewModel>.NotFound(null));
         }
 
         [HttpGet("{id}")]

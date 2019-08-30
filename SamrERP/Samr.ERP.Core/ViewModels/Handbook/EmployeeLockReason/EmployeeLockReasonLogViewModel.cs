@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason
 {
-    public class EmployeeLockReasonLogViewModel : EditEmployeeLockReasonViewModel
+    public class EmployeeLockReasonLogViewModel : ResponseEmployeeLockReasonViewModel
     {
     }
 }

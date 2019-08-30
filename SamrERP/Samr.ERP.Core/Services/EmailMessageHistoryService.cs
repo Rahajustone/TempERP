@@ -32,16 +32,15 @@ namespace Samr.ERP.Core.Services
         {
             var query = _unitOfWork.EmailMessageHistories.GetDbSet()
                 .Include(p => p.EmailSetting)
-                .Include(p => p.RecieverUser)
-                .Include(p => p.RecieverEMail)
-                .OrderByDescending(p => p.CreatedAt)
+                .Include(p => p.ReceiverUser)
+                .Include(p => p.ReceiverEmail)
                 .AsQueryable();
 
             query = FilterEmailMessageHistories(emailMessageHistoryLogFilterView, query);
 
             var queryVm = query.ProjectTo<EmailMessageHistoryLogViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.RecieverUser);
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.CreatedAt);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
@@ -64,12 +63,13 @@ namespace Samr.ERP.Core.Services
             }
 
             if (emailMessageHistoryLogFilterView.ReceiverName != null)
-                query = query.Where(p => EF.Functions.Like(p.RecieverUser.UserName.ToLower(),
+                query = query.Where(p => EF.Functions.Like(Extension.FullNameToString(p.ReceiverUser.Employee.LastName,
+                    p.ReceiverUser.Employee.FirstName, p.ReceiverUser.Employee.MiddleName).ToLower() + " " + p.ReceiverUser.PhoneNumber.ToLower(),
                     "%" + emailMessageHistoryLogFilterView.ReceiverName.ToLower() + "%"));
 
-            if (emailMessageHistoryLogFilterView.SenderName != null)
-                query = query.Where(p => EF.Functions.Like(p.CreatedUser.UserName.ToLower(),
-                    "%" + emailMessageHistoryLogFilterView.SenderName.ToLower() + "%"));
+            if (emailMessageHistoryLogFilterView.SenderEmail != null)
+                query = query.Where(p => EF.Functions.Like(p.EmailSetting.Sender.ToLower(),
+                    "%" + emailMessageHistoryLogFilterView.SenderEmail.ToLower() + "%"));
 
             return query;
         }
