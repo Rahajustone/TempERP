@@ -378,6 +378,8 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
                         map => map.CreatedAt.ToStringCustomFormat()));
+             
+            CreateMap<Position, SelectListItemViewModel>();
             #endregion
 
             #region Employee

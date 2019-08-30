@@ -12,6 +12,7 @@ using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -109,12 +110,12 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<PagedList<ResponsePositionViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id)
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllByDepartmentId(Guid id)
         {
             var positions = await GetAllQuery(true).Where(p=>p.DepartmentId == id).ToListAsync();
-            var vm = _mapper.Map<IEnumerable<PositionViewModel>>(positions);
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(positions);
 
-            var response = BaseDataResponse<IEnumerable<PositionViewModel>>.Success(vm);
+            var response = BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
 
             return response;
         }
