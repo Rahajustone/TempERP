@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.Differencing;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.EmailSetting;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -27,6 +28,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EmailSettingViewModel>> Create(EmailSettingViewModel emailSettingViewModel)
         {
             if (ModelState.IsValid)
@@ -50,6 +52,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EmailSettingViewModel>> Edit(EmailSettingViewModel emailSettingViewModel)
         {
             if (ModelState.IsValid)

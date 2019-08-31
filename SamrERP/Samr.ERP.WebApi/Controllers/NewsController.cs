@@ -11,6 +11,7 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.News;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -42,6 +43,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EditNewsViewModel>> Create([FromForm] EditNewsViewModel newsViewModel)
         {
             if (ModelState.IsValid)
@@ -55,6 +57,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EditNewsViewModel>> Edit([FromForm] EditNewsViewModel positionViewModel)
         {
             if (ModelState.IsValid)

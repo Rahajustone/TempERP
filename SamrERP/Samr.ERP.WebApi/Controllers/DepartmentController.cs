@@ -15,6 +15,7 @@ using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -53,6 +54,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Create([FromBody]RequestDepartmentViewModel departmentViewModel)
         {
             if (ModelState.IsValid)
@@ -65,6 +67,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Edit([FromBody] RequestDepartmentViewModel model)
         {
             if (ModelState.IsValid)

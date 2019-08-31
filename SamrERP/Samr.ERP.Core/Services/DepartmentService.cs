@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -83,8 +84,16 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
+                //.Select( p => new DepartmentListViewModel
+                //{
+                //    Department =  p,
+                //    DepartmentLog =  _unitOfWork.DepartmentLogs.GetDbSet().Take(1).FirstOrDefault( j => j.DepartmentId == p.Id)
+                //})
+                //.AsQueryable()
+                //;
 
-            query = FilterQuery(filterHandbook, query);
+            Debug.WriteLine(query.FirstOrDefault());
+            //query = FilterQuery(filterHandbook, query);
 
             var queryVm = query.ProjectTo<EditDepartmentViewModel>();
 

@@ -14,6 +14,7 @@ using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -52,8 +53,8 @@ namespace Samr.ERP.WebApi.Controllers
             return nationality;
         }
 
-        // POST: api/Nationality
         [HttpPost]
+        [TrimInputStrings]
         public  async Task<BaseDataResponse<ResponseNationalityViewModel>> Create([FromBody]RequestNationalityViewModel nationalityViewModel)
         {
             if (ModelState.IsValid)
@@ -67,6 +68,7 @@ namespace Samr.ERP.WebApi.Controllers
 
 
         [HttpPost]
+        [TrimInputStrings]
         public async  Task<BaseDataResponse<ResponseNationalityViewModel>> Edit([FromBody]RequestNationalityViewModel nationalityViewModel)
         {
             if (ModelState.IsValid)

@@ -16,6 +16,7 @@ using Samr.ERP.Core.ViewModels.Handbook.UsefulLinkCategory;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -47,6 +48,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<UsefulLinkViewModel>> Create([FromBody] UsefulLinkViewModel usefulLinkViewModel)
         {
             if (ModelState.IsValid)
@@ -59,6 +61,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<UsefulLinkViewModel>> Edit([FromBody] UsefulLinkViewModel usefulLinkViewModel)
         {
             if (ModelState.IsValid)

@@ -12,6 +12,7 @@ using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.NewCategories;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -49,6 +50,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> Create([FromBody] RequestNewsCategoryViewModel responseNewsCategoryViewModel)
         {
             if (ModelState.IsValid)
@@ -62,6 +64,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> Edit([FromBody] RequestNewsCategoryViewModel requestNewsCategoryViewModel)
         {
             if (ModelState.IsValid)

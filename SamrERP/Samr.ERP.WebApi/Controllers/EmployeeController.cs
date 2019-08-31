@@ -18,6 +18,7 @@ using Samr.ERP.Core.Services;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
+using Samr.ERP.WebApi.Filters;
 using Samr.ERP.WebApi.Services;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -70,6 +71,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpPost]
         [Authorize(Roles = Roles.EmployeeCreate)]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromForm] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)
@@ -85,6 +87,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseDataResponse<EditEmployeeViewModel>> Edit(
             [FromForm] EditEmployeeViewModel editEmployeeViewModel)
@@ -108,6 +111,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseResponse> LockEmployee([FromBody] LockEmployeeViewModel lockEmployeeViewModel)
         {
@@ -141,6 +145,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseResponse> EditPassportData([FromForm]
             EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)

@@ -13,6 +13,7 @@ using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.EmployeeLockReason;
 using Samr.ERP.Core.ViewModels.Handbook.Nationality;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -52,6 +53,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> Create([FromBody]RequestEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)
@@ -64,6 +66,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<ResponseEmployeeLockReasonViewModel>> Edit([FromBody] RequestEmployeeLockReasonViewModel employeeLockReasonViewModel)
         {
             if (ModelState.IsValid)

@@ -9,6 +9,7 @@ using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Stuff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.FileArchive;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -40,6 +41,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EditFileArchiveViewModel>> Create([FromForm] EditFileArchiveViewModel editFileArchiveViewModel)
         {
             if (ModelState.IsValid)
@@ -52,6 +54,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EditFileArchiveViewModel>> Edit([FromForm] EditFileArchiveViewModel editFileArchiveViewModel)
         {
             if (ModelState.IsValid)

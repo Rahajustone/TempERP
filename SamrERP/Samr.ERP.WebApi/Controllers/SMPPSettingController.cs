@@ -10,6 +10,7 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.EmailSetting;
 using Samr.ERP.Core.ViewModels.SMPPSetting;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -19,27 +20,15 @@ namespace Samr.ERP.WebApi.Controllers
     public class SMPPSettingController : ApiController
     {
         private readonly ISMPPSettingService _smppSettingService;
-        private readonly IMapper _mapper;
 
         public SMPPSettingController(
-            ISMPPSettingService smppSettingService,
-            IMapper mapper
+            ISMPPSettingService smppSettingService
         )
         {
             _smppSettingService = smppSettingService;
-            _mapper = mapper;
         }
 
-        [HttpPost]
-        public async Task<BaseDataResponse<SMPPSettingResponseViewModel>> Create(SMPPSettingViewModel smppSettingViewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var resposne = await _smppSettingService.CreateAsync(smppSettingViewModel);
-                return Response(resposne);
-            }
-            return Response(BaseDataResponse<SMPPSettingResponseViewModel>.Fail(_mapper.Map<SMPPSettingResponseViewModel>(smppSettingViewModel)));
-        }
+
 
         [HttpGet]
         public BaseDataResponse<IEnumerable<SMPPSettingResponseViewModel>> GetAll()
@@ -54,6 +43,19 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<SMPPSettingResponseViewModel>> Create(SMPPSettingViewModel smppSettingViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _smppSettingService.CreateAsync(smppSettingViewModel);
+                return Response(response);
+            }
+            return Response(BaseDataResponse<SMPPSettingResponseViewModel>.NotFound(null));
+        }
+
+        [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<SMPPSettingResponseViewModel>> Edit(SMPPSettingViewModel smppSettingViewModel)
         {
             if (ModelState.IsValid)
@@ -63,7 +65,7 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(response);
             }
 
-            return Response(BaseDataResponse<SMPPSettingResponseViewModel>.Fail(_mapper.Map<SMPPSettingResponseViewModel>(smppSettingViewModel)));
+            return Response(BaseDataResponse<SMPPSettingResponseViewModel>.NotFound(null));
         }
     }
 }
