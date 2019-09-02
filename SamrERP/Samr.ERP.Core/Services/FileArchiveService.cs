@@ -118,7 +118,7 @@ namespace Samr.ERP.Core.Services
         {
             var query = GetQueryWithInclude().Include(c => c.FileArchiveCategory).AsQueryable();
 
-            if (!(_userProvider.ContextUser.IsInRole(Roles.FileArchiveAdd) &&
+            if (!(_userProvider.ContextUser.IsInRole(Roles.FileArchiveCreate) &&
                 _userProvider.ContextUser.IsInRole(Roles.FileArchiveEdit)))
             {
                 query = query.Where(a => a.IsActive);
