@@ -196,7 +196,7 @@ namespace Samr.ERP.Core.Services
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
-            await _emailSender.SendEmailToEmployeeAsync(user, "User created", $"Account was created, your pass {generateNewPassword}");
+            await _emailSender.SendEmailToEmployeeAsync(user, "User created", $"Account was created, your pass {generateNewPassword}", true);
 
             return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
 

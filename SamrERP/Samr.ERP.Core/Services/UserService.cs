@@ -113,7 +113,7 @@ namespace Samr.ERP.Core.Services
             user.ChangePasswordConfirmationCodeExpires = DateTime.Now.AddMinutes(2);
 
             await _emailSender.SendEmailToEmployeeAsync(user, "Confirmation code",
-                $"Change password confirmation code {confirmCode}");
+                $"Change password confirmation code {confirmCode}", true);
 
             await _unitOfWork.CommitAsync();
 
@@ -165,7 +165,7 @@ namespace Samr.ERP.Core.Services
             var generatedPass = RandomGenerator.GenerateNewPassword();
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, generatedPass);
 
-            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}");
+            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}", true);
 
             if (!resetPasswordResult.Succeeded)
                 return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()

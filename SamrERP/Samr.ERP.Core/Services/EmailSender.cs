@@ -35,13 +35,13 @@ namespace Samr.ERP.Core.Services
         }
 
 
-        public async Task SendEmailToEmployeeAsync(User user, string subject, string message)
+        public async Task SendEmailToEmployeeAsync(User user, string subject, string message, bool hideMessage = false)
         {
-            await AddEmailMessageHistory(user, subject, message);
+            await AddEmailMessageHistory(user, subject, message, hideMessage);
             await SendEmailAsync(user.Email, subject, message);
         }
 
-        private async Task AddEmailMessageHistory(User destUser, string subject, string message)
+        private async Task AddEmailMessageHistory(User destUser, string subject, string message, bool hideMessage)
         {
 
             var emailMessageHistory = new EmailMessageHistory()
@@ -49,9 +49,10 @@ namespace Samr.ERP.Core.Services
                 ReceiverUserId = destUser.Id,
                 EmailSettingId = DefaultEmailSetting.Id,
                 Subject = subject,
-                Message = message,
+                Message = hideMessage ? "*****" : message,
                 ReceiverEmail = destUser.Email
             };
+
             if (_userProvider.CurrentUser == null)
             {
                 var firstUser = await _unitOfWork.Users.All().FirstAsync();
@@ -77,6 +78,7 @@ namespace Samr.ERP.Core.Services
             emailMessage.To.Add(new MailboxAddress(email));
 
             emailMessage.Subject = subject;
+
             emailMessage.Body = new TextPart(TextFormat.Text)
             {
                 Text = message
