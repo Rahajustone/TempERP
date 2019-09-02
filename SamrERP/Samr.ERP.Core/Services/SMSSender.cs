@@ -7,11 +7,12 @@ using JulMar.Smpp.Elements;
 using JulMar.Smpp.Esme;
 using JulMar.Smpp.Pdu;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Services
 {
-    public class SMSSender
+    public class SMSSender:ISMSSender
     {
         private readonly EsmeSession _smppSession;
         private readonly ISMPPSettingService _smppSettingService;
@@ -21,9 +22,11 @@ namespace Samr.ERP.Core.Services
 
         public SMSSender(
             EsmeSession  smppSession,
-            ISMPPSettingService smppSettingService
+            ISMPPSettingService smppSettingService,
+            IUnitOfWork unitOfWork
             )
         {
+            //
             _smppSession = smppSession;
             _smppSettingService = smppSettingService;
         }
@@ -58,6 +61,33 @@ namespace Samr.ERP.Core.Services
         //        _smppSession.BindTransceiver(bindPdu);
         //    }
         //}
+        private async Task AddEmailMessageHistory(User destUser, string subject, string message)
+        {
+
+            var emailMessageHistory = new EmailMessageHistory()
+            {
+                ReceiverUserId = destUser.Id,
+                EmailSettingId = _defaultSMMPSetting.Id,
+                Subject = subject,
+                Message = message,
+                ReceiverEmail = destUser.Email
+            };
+            if (_userProvider.CurrentUser == null)
+            {
+                var firstUser = await _unitOfWork.Users.All().FirstAsync();
+                emailMessageHistory.CreatedUserId = firstUser.Id;
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
+            }
+            else
+            {
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory);
+
+            }
+
+            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
+
+            await _unitOfWork.CommitAsync();
+        }
 
         private void SendMessageAsync(string phoneNumber, string message)
         {
@@ -90,5 +120,9 @@ namespace Samr.ERP.Core.Services
                 }
             }
         }
+    }
+
+    public interface ISMSSender
+    {
     }
 }
