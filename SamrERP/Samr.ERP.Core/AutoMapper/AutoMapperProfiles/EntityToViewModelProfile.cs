@@ -70,7 +70,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<Position, PositionLog>()
                 .ForMember(dst => dst.PositionId, src => src.MapFrom(map => map.Id))
@@ -88,7 +88,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<Nationality, NationalityLog>()
                 .ForMember(dst => dst.NationalityId, src => src.MapFrom(map => map.Id))
@@ -106,7 +106,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<Employee, EmployeeLog>()
                 .ForMember(dst => dst.EmployeeId, src => src.MapFrom(map => map.Id))
@@ -147,7 +147,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.LastName))
                 .ForMember(dst => dst.MiddleName,
                     src => src.MapFrom(
-                        map => map.CreatedUser.Employee.MiddleName));
+                        map => map.CreatedUser.Employee.MiddleName))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<UserLockReason, UserLockReasonLog>()
                 .ForMember(dst => dst.UserLockReasonId, src => src.MapFrom(map => map.Id))
@@ -162,7 +165,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.LastName))
                 .ForMember(dst => dst.MiddleName,
                     src => src.MapFrom(
-                        map => map.CreatedUser.Employee.MiddleName));
+                        map => map.CreatedUser.Employee.MiddleName))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<NewsCategory, NewsCategoryLog>()
                 .ForMember(dst => dst.NewsCategoryId, src => src.MapFrom(map => map.Id))
@@ -177,7 +183,10 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.LastName))
                 .ForMember(dst => dst.MiddleName,
                     src => src.MapFrom(
-                        map => map.CreatedUser.Employee.MiddleName));
+                        map => map.CreatedUser.Employee.MiddleName))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<UsefulLinkCategory, UsefulLinkCategoryLog>()
                 .ForMember(dst => dst.UsefulLinkCategoryId, src => src.MapFrom(map => map.Id))
@@ -193,9 +202,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.MiddleName,
                     src => src.MapFrom(
                         map => map.CreatedUser.Employee.MiddleName))
-                .ForMember(dst => dst.CreatedAt, 
+                .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                    map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<FileArchiveCategory, FileArchiveCategoryLog>()
                 .ForMember(dst => dst.FileCategoryId, src => src.MapFrom(map => map.Id))
@@ -213,7 +222,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedUser.Employee.MiddleName))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()));
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             #endregion
 
