@@ -5,6 +5,7 @@ using System.Threading;
 using JulMar.Smpp.Utility;
 using JulMar.Smpp;
 using JulMar.Smpp.Pdu;
+// ReSharper disable All
 
 namespace JulMar.Smpp
 {

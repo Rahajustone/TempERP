@@ -65,8 +65,6 @@ namespace Samr.ERP.Core.Services
 
             }
 
-            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
-
             await _unitOfWork.CommitAsync();
         }
 

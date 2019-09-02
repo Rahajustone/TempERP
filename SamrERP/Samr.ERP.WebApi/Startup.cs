@@ -69,6 +69,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<ISMSSender, SMSSender>();
             services.AddScoped<IActiveUserTokenService, ActiveUserTokenService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();

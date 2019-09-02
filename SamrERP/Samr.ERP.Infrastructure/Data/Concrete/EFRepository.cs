@@ -24,10 +24,8 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         public EFRepository(DbContext dbContext, UserProvider userProvider)
         {
-            if (dbContext == null)
-                throw new ArgumentNullException(nameof(dbContext));
             _userProvider = userProvider;
-            DbContext = dbContext;
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             DbSet = DbContext.Set<T>();
         }
 

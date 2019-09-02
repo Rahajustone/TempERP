@@ -7,8 +7,11 @@ using JulMar.Smpp.Elements;
 using JulMar.Smpp.Esme;
 using JulMar.Smpp.Pdu;
 using Samr.ERP.Core.Interfaces;
+using Samr.ERP.Core.Stuff;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Extensions;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -16,6 +19,8 @@ namespace Samr.ERP.Core.Services
     {
         private readonly EsmeSession _smppSession;
         private readonly ISMPPSettingService _smppSettingService;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserProvider _userProvider;
         private SMPPSetting _defaultSMMPSetting;
 
         private SMPPSetting DefaultSMPPSetting => _defaultSMMPSetting ?? (_defaultSMMPSetting = _smppSettingService.GetDefaultSMPPSetting());
@@ -23,85 +28,61 @@ namespace Samr.ERP.Core.Services
         public SMSSender(
             EsmeSession  smppSession,
             ISMPPSettingService smppSettingService,
-            IUnitOfWork unitOfWork
+            IUnitOfWork unitOfWork,
+            UserProvider userProvider
             )
         {
             //
             _smppSession = smppSession;
             _smppSettingService = smppSettingService;
+            _unitOfWork = unitOfWork;
+            _userProvider = userProvider;
         }
 
-
-
-
-        //public bool ConnectToSMMProvider(string address, int port, string systemId, string password)
-        //{
-        //    _smppSession.SmppVersion = SmppVersion.SMPP_V34;
-
-        //    _smppSession.Connect(address, port);
-
-        //    if (_smppSession.IsConnected)
-        //    {
-        //        BindTranceiver(systemId, password);
-
-        //        return true;
-        //    }
-
-        //    return _smppSession.IsConnected;
-        //}
-
-        //private void BindTranceiver(string systemId, string password)
-        //{
-        //    bind_transceiver bindPdu = new bind_transceiver(systemId, password, "",
-        //        new interface_version(),
-        //        new address_range());
-
-        //    if (bindPdu.IsValid)
-        //    {
-        //        _smppSession.BindTransceiver(bindPdu);
-        //    }
-        //}
-        private async Task AddEmailMessageHistory(User destUser, string subject, string message)
+        public async Task SendSMSAsync(User destUser, string message, bool hideMessage = false)
         {
+            await AddSMSMessageHistory(destUser, message, hideMessage);
+            SendMessage(destUser.PhoneNumber,message);
 
-            var emailMessageHistory = new EmailMessageHistory()
+        }
+        private async Task AddSMSMessageHistory(User destUser, string message,bool hideMessage = false)
+        {
+            var emailMessageHistory = new SMSMessageHistory()
             {
                 ReceiverUserId = destUser.Id,
-                EmailSettingId = _defaultSMMPSetting.Id,
-                Subject = subject,
-                Message = message,
-                ReceiverEmail = destUser.Email
+                SMPPSettingId = DefaultSMPPSetting.Id,
+                Message = hideMessage ? "*****" : message,
+                ReceiverPhoneNumber = destUser.Email,
             };
             if (_userProvider.CurrentUser == null)
             {
-                var firstUser = await _unitOfWork.Users.All().FirstAsync();
-                emailMessageHistory.CreatedUserId = firstUser.Id;
-                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
+                var systemUser = await _unitOfWork.Users.GetByIdAsync(GuidExtensions.FULL_GUID);
+                emailMessageHistory.CreatedUserId = systemUser.Id;
+                _unitOfWork.SMSMessageHistories.Add(emailMessageHistory, false);
             }
             else
             {
-                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory);
-
+                _unitOfWork.SMSMessageHistories.Add(emailMessageHistory);
             }
-
-            _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
 
             await _unitOfWork.CommitAsync();
         }
 
-        private void SendMessageAsync(string phoneNumber, string message)
+        private void SendMessage(string phoneNumber, string message)
         {
-            submit_sm submitPdu = new submit_sm();
+            submit_sm submitPdu = new submit_sm
+            {
+                SourceAddress = new address(TypeOfNumber.ALPHANUMERIC, NumericPlanIndicator.E164, "SMCS.TJ"),
+                DestinationAddress = new address(TypeOfNumber.INTERNATIONAL, NumericPlanIndicator.E164, phoneNumber),
+                RegisteredDelivery = new registered_delivery(DeliveryReceiptType.FINAL_DELIVERY_RECEIPT,
+                    AcknowledgementType.DELIVERY_USER_ACK_REQUEST, true),
+                DataCoding = DataEncoding.LATIN,
+                Message = message
+            };
 
-            submitPdu.SourceAddress = new address(TypeOfNumber.ALPHANUMERIC, NumericPlanIndicator.E164, "SMCS.TJ");
-            submitPdu.DestinationAddress = new address(TypeOfNumber.INTERNATIONAL, NumericPlanIndicator.E164, phoneNumber);
-            submitPdu.RegisteredDelivery = new registered_delivery(DeliveryReceiptType.FINAL_DELIVERY_RECEIPT,
-                AcknowledgementType.DELIVERY_USER_ACK_REQUEST, true);
             //mBloxOperatorId operatorId = new mBloxOperatorId("SMCS.TJ");
             //submitPdu.AddVendorSpecificElements(operatorId);
-            submitPdu.DataCoding = DataEncoding.LATIN;
 
-            submitPdu.Message = message;
 
             _smppSession.SmppVersion = SmppVersion.SMPP_V34;
 
@@ -120,9 +101,5 @@ namespace Samr.ERP.Core.Services
                 }
             }
         }
-    }
-
-    public interface ISMSSender
-    {
     }
 }

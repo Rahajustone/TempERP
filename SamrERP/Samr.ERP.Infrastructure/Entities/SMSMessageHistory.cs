@@ -10,12 +10,14 @@ namespace Samr.ERP.Infrastructure.Entities
     public class SMSMessageHistory:CreatableByUserBaseObject,ICreatable
     {
         public Guid ReceiverUserId { get; set; }
+
         [ForeignKey(nameof(ReceiverUserId))]
         public User ReceiverUser { get; set; }
 
-        public string PhoneNumber { get; set; }
+        public string ReceiverPhoneNumber { get; set; }
 
         public Guid SMPPSettingId { get; set; }
+
         [ForeignKey(nameof(SMPPSettingId))]
         public SMPPSetting SMPPSetting { get; set; }
 
