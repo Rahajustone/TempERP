@@ -21,6 +21,9 @@ namespace Samr.ERP.Core.Enums
         [Description("User not exists")]
         UserNotExists = 1007,
         [Description("SystemId and Host must be unique")]
-        SystemIdAndHostMustBeUnique = 1008
+        SystemIdAndHostMustBeUnique = 1008,
+
+        [Description("Can not unlock user, employee is locked")]
+        EmployeeLockedAndUserLocked = 1009
     }
 }

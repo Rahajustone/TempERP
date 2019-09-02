@@ -247,10 +247,14 @@ namespace Samr.ERP.Core.Services
         {
             var userExists = await _unitOfWork
                 .Users.GetDbSet()
+                .Include(p=>p.Employee)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (userExists?.UserLockReasonId == null)
                 return BaseResponse.Fail();
+
+            if (userExists.Employee.LockDate != null)
+                return BaseResponse.Fail(new ErrorModel(ErrorCode.EmployeeLockedAndUserLocked));
 
             UnlockUser(userExists);
             
