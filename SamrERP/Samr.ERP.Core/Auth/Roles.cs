@@ -9,5 +9,11 @@
 
         public const string NewsCreate = "News.Create";
         public const string NewsEdit = "News.Edit";
+
+        public const string FileArchiveCreate = "FileArchive.Create";
+        public const string FileArchiveEdit = "FileArchive.Edit";
+
+        public const string UsefulLinkCreate = "UsefulLink.Create";
+        public const string UsefulLinkEdit = "UsefulLink.Edit";
     }
 }

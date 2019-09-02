@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Samr.ERP.Core.Auth;
 using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -21,6 +23,7 @@ using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Extensions;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -29,14 +32,18 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
+        private readonly UserProvider _userProvider;
 
         public FileArchiveService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IFileService fileService)
+            IFileService fileService,
+            UserProvider userProvider
+            )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileService = fileService;
+            _userProvider = userProvider;
         }
 
         private IQueryable<FileArchive> GetQuery()
@@ -110,6 +117,12 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
         {
             var query = GetQueryWithInclude().Include(c => c.FileArchiveCategory).AsQueryable();
+
+            if (!(_userProvider.ContextUser.IsInRole(Roles.FileArchiveCreate) &&
+                _userProvider.ContextUser.IsInRole(Roles.FileArchiveEdit)))
+            {
+                query = query.Where(a => a.IsActive);
+            }
 
             query = FilterQuery(filterFileArchiveViewModel, query);
 

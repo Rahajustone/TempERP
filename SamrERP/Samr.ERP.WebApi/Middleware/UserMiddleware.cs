@@ -30,7 +30,7 @@ namespace Samr.ERP.WebApi.Middleware
 
             if (user != null)
             {
-                userProvider.Initialise(user);
+                userProvider.Initialise(user,context.User);
             }
             await next(context);
         }

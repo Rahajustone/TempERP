@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Auth;
 using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
@@ -18,6 +19,7 @@ using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -25,11 +27,13 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserProvider _userProvider;
 
-        public UsefulLinkService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UsefulLinkService(IUnitOfWork unitOfWork, IMapper mapper, UserProvider userProvider)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userProvider = userProvider;
         }
 
         private IQueryable<UsefulLink> GetQuery()
@@ -91,6 +95,12 @@ namespace Samr.ERP.Core.Services
         {
             var query = GetQueryWithInclude();
             query = GetQueryFilter(filterUsefulLinkViewModel, query);
+
+            if (!(_userProvider.ContextUser.IsInRole(Roles.UsefulLinkCreate) &&
+                  _userProvider.ContextUser.IsInRole(Roles.UsefulLinkEdit)))
+            {
+                query = query.Where(a => a.IsActive);
+            }
 
             var pagedList = await query.ToMappedPagedListAsync<UsefulLink, UsefulLinkViewModel>(pagingOptions);
 

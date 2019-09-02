@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Samr.ERP.Infrastructure.Data;
@@ -9,9 +10,10 @@ using Samr.ERP.Infrastructure.Data;
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190902111758_AddFileArchiveRole")]
+    partial class AddFileArchiveRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -922,46 +924,6 @@ namespace Samr.ERP.Infrastructure.Migrations
                             Description = "Редактирование",
                             Name = "FileArchive.Edit",
                             NormalizedName = "FILEARCHIVE.EDIT"
-                        },
-                        new
-                        {
-                            Id = new Guid("dcd9b7ea-d8be-41e6-8da1-468e0e9b9f95"),
-                            Category = "UsefulLink",
-                            CategoryName = "Полезные ссылки",
-                            ConcurrencyStamp = "bcda3231-c9c9-4afb-a730-879d4099a712",
-                            Description = "Создание",
-                            Name = "UsefulLink.Create",
-                            NormalizedName = "USEFULLINK.CREATE"
-                        },
-                        new
-                        {
-                            Id = new Guid("ce6ab40d-23a0-4b9a-8ad2-65f4d38a9a76"),
-                            Category = "UsefulLink",
-                            CategoryName = "Полезные ссылки",
-                            ConcurrencyStamp = "6d356f9a-2318-4434-afd4-c4bea23aa7d0",
-                            Description = "Редактирование",
-                            Name = "UsefulLink.Edit",
-                            NormalizedName = "USEFULLINK.EDIT"
-                        },
-                        new
-                        {
-                            Id = new Guid("2607ef6c-1f5b-49c7-8839-c2dec3471dc5"),
-                            Category = "News",
-                            CategoryName = "новостей",
-                            ConcurrencyStamp = "4dee761f-8d23-4d92-bb37-32539bc7f353",
-                            Description = "Создание",
-                            Name = "News.Create",
-                            NormalizedName = "NEWS.CREATE"
-                        },
-                        new
-                        {
-                            Id = new Guid("7d5ecac9-b964-438d-8911-383569d4d804"),
-                            Category = "News",
-                            CategoryName = "новостей",
-                            ConcurrencyStamp = "2c00e616-9534-4c49-8255-bfed5e0db7b2",
-                            Description = "Редактирование",
-                            Name = "News.Edit",
-                            NormalizedName = "NEWS.EDIT"
                         });
                 });
 
