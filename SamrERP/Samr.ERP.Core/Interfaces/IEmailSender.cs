@@ -8,6 +8,6 @@ namespace Samr.ERP.Core.Interfaces
 {
     public interface IEmailSender
     {
-        Task SendEmailToEmployeeAsync(User user,string subject,string message, bool hideMessage);
+        Task SendEmailToUserAsync(User user,string subject,string message, bool hideMessage);
     }
 }

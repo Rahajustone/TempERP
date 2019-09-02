@@ -35,7 +35,7 @@ namespace Samr.ERP.Core.Services
         }
 
 
-        public async Task SendEmailToEmployeeAsync(User user, string subject, string message, bool hideMessage = false)
+        public async Task SendEmailToUserAsync(User user, string subject, string message, bool hideMessage = false)
         {
             await AddEmailMessageHistory(user, subject, message, hideMessage);
             await SendEmailAsync(user.Email, subject, message);

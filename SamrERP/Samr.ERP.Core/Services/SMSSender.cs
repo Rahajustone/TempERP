@@ -39,7 +39,7 @@ namespace Samr.ERP.Core.Services
             _userProvider = userProvider;
         }
 
-        public async Task SendSMSAsync(User destUser, string message, bool hideMessage = false)
+        public async Task SendSMSToUserAsync(User destUser, string message, bool hideMessage = false)
         {
             await AddSMSMessageHistory(destUser, message, hideMessage);
             SendMessage(destUser.PhoneNumber,message);

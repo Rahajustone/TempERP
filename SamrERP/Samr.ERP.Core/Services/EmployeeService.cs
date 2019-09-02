@@ -26,6 +26,7 @@ namespace Samr.ERP.Core.Services
         private readonly UserService _userService;
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
+        private readonly ISMSSender _smsSender;
         private readonly IFileService _fileService;
         private readonly IActiveUserTokenService _activeUserTokenService;
         private readonly IMapper _mapper;
@@ -35,6 +36,7 @@ namespace Samr.ERP.Core.Services
             UserService userService,
             UserProvider userProvider,
             IEmailSender emailSender,
+            ISMSSender smsSender,
             IFileService fileService,
             IActiveUserTokenService activeUserTokenService,
             IMapper mapper
@@ -45,6 +47,7 @@ namespace Samr.ERP.Core.Services
             _userService = userService;
             _userProvider = userProvider;
             _emailSender = emailSender;
+            _smsSender = smsSender;
             _fileService = fileService;
             _activeUserTokenService = activeUserTokenService;
             _mapper = mapper;
@@ -196,8 +199,8 @@ namespace Samr.ERP.Core.Services
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
-            await _emailSender.SendEmailToEmployeeAsync(user, "User created", $"Account was created, your pass {generateNewPassword}", true);
-
+            //await _emailSender.SendEmailToUserAsync(user, "User created", $"Account was created, your pass {generateNewPassword}", true);
+            await _smsSender.SendSMSToUserAsync(user, $"Account was created, your pass {generateNewPassword}", true);
             return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
 
         }

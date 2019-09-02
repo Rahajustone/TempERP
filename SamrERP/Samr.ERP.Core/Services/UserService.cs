@@ -27,6 +27,7 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly ISMSSender _smsSender;
         private readonly UserProvider _userProvider;
         private readonly IActiveUserTokenService _activeUserTokenService;
         private readonly IMapper _mapper;
@@ -35,6 +36,7 @@ namespace Samr.ERP.Core.Services
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             IEmailSender emailSender,
+            ISMSSender smsSender,
             UserProvider userProvider,
             IActiveUserTokenService activeUserTokenService,
             IMapper mapper
@@ -43,6 +45,7 @@ namespace Samr.ERP.Core.Services
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _emailSender = emailSender;
+            _smsSender = smsSender;
             _userProvider = userProvider;
             _activeUserTokenService = activeUserTokenService;
             _mapper = mapper;
@@ -112,7 +115,9 @@ namespace Samr.ERP.Core.Services
             user.ChangePasswordConfirmationCode = confirmCode;
             user.ChangePasswordConfirmationCodeExpires = DateTime.Now.AddMinutes(2);
 
-            await _emailSender.SendEmailToEmployeeAsync(user, "Confirmation code",
+            //await _emailSender.SendEmailToUserAsync(user, "Confirmation code",
+            //    $"Change password confirmation code {confirmCode}", true);
+            await _smsSender.SendSMSToUserAsync(user, 
                 $"Change password confirmation code {confirmCode}", true);
 
             await _unitOfWork.CommitAsync();
@@ -165,7 +170,8 @@ namespace Samr.ERP.Core.Services
             var generatedPass = RandomGenerator.GenerateNewPassword();
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, generatedPass);
 
-            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}", true);
+            //await _emailSender.SendEmailToUserAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}", true);
+            await _smsSender.SendSMSToUserAsync(user, $"Your account pass was reset, new pass {generatedPass}", true);
 
             if (!resetPasswordResult.Succeeded)
                 return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
