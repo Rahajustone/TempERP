@@ -117,14 +117,12 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
         {
             var query = GetQueryWithInclude().Include(c => c.FileArchiveCategory).AsQueryable();
+            
+            query = FilterQuery(filterFileArchiveViewModel, query);
 
             if (!(_userProvider.ContextUser.IsInRole(Roles.FileArchiveCreate) &&
                 _userProvider.ContextUser.IsInRole(Roles.FileArchiveEdit)))
-            {
                 query = query.Where(a => a.IsActive);
-            }
-
-            query = FilterQuery(filterFileArchiveViewModel, query);
 
             var queryVm = query.ProjectTo<EditFileArchiveViewModel>();
 

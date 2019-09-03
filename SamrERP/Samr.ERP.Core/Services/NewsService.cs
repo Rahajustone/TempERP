@@ -114,13 +114,11 @@ namespace Samr.ERP.Core.Services
         {
             var query = GetQueryWithInclude();
 
-            if (!(_userProvider.ContextUser.IsInRole(Roles.UsefulLinkCreate) &&
-                  _userProvider.ContextUser.IsInRole(Roles.UsefulLinkEdit)))
-            {
-                query = query.Where(a => a.IsActive);
-            }
-
             query = GetFilterQuery(filterNewViewModel, query);
+
+            if (!(_userProvider.ContextUser.IsInRole(Roles.NewsCreate) &&
+                  _userProvider.ContextUser.IsInRole(Roles.NewsEdit)))
+                query = query.Where(a => a.IsActive);
 
             var queryVm = query.ProjectTo<EditNewsViewModel>();
 

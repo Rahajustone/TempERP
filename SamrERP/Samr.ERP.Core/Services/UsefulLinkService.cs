@@ -98,9 +98,7 @@ namespace Samr.ERP.Core.Services
 
             if (!(_userProvider.ContextUser.IsInRole(Roles.UsefulLinkCreate) &&
                   _userProvider.ContextUser.IsInRole(Roles.UsefulLinkEdit)))
-            {
                 query = query.Where(a => a.IsActive);
-            }
 
             var pagedList = await query.ToMappedPagedListAsync<UsefulLink, UsefulLinkViewModel>(pagingOptions);
 
