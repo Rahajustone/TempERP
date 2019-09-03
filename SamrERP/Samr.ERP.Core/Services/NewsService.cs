@@ -59,7 +59,8 @@ namespace Samr.ERP.Core.Services
             return GetQuery()
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
-                .ThenInclude(p => p.Position);
+                .ThenInclude(p => p.Position)
+                .OrderByDescending( p => p.CreatedAt);
         }
 
         private static IQueryable<News> GetFilterQuery(FilterNewsViewModel filterNewViewModel, IQueryable<News> query)

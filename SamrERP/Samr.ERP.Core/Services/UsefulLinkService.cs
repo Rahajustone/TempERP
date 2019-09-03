@@ -94,6 +94,7 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterUsefulLinkViewModel filterUsefulLinkViewModel)
         {
             var query = GetQueryWithInclude();
+            query = query.OrderByDescending(p => p.CreatedAt);
             query = GetQueryFilter(filterUsefulLinkViewModel, query);
 
             if (!(_userProvider.ContextUser.IsInRole(Roles.UsefulLinkCreate) &&

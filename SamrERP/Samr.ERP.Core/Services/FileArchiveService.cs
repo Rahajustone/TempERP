@@ -126,7 +126,7 @@ namespace Samr.ERP.Core.Services
 
             var queryVm = query.ProjectTo<EditFileArchiveViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Title);
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.CreatedAt);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
