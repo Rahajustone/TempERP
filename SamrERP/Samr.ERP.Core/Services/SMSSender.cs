@@ -17,7 +17,6 @@ namespace Samr.ERP.Core.Services
 {
     public class SMSSender:ISMSSender
     {
-        private readonly EsmeSession _smppSession;
         private readonly ISMPPSettingService _smppSettingService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserProvider _userProvider;
@@ -26,14 +25,11 @@ namespace Samr.ERP.Core.Services
         private SMPPSetting DefaultSMPPSetting => _defaultSMMPSetting ?? (_defaultSMMPSetting = _smppSettingService.GetDefaultSMPPSetting());
 
         public SMSSender(
-            EsmeSession  smppSession,
             ISMPPSettingService smppSettingService,
             IUnitOfWork unitOfWork,
             UserProvider userProvider
             )
         {
-            //
-            _smppSession = smppSession;
             _smppSettingService = smppSettingService;
             _unitOfWork = unitOfWork;
             _userProvider = userProvider;
@@ -42,7 +38,8 @@ namespace Samr.ERP.Core.Services
         public async Task SendSMSToUserAsync(User destUser, string message, bool hideMessage = false)
         {
             await AddSMSMessageHistory(destUser, message, hideMessage);
-            SendMessage(destUser.PhoneNumber,message);
+            var phoneNumber = destUser.PhoneNumber.Length == 9 ? $"992{destUser.PhoneNumber}" : destUser.PhoneNumber;
+            SendMessage(phoneNumber,message);
 
         }
         private async Task AddSMSMessageHistory(User destUser, string message,bool hideMessage = false)
@@ -70,6 +67,7 @@ namespace Samr.ERP.Core.Services
 
         private void SendMessage(string phoneNumber, string message)
         {
+            var smppSession = new EsmeSession(DefaultSMPPSetting.SystemId);
             submit_sm submitPdu = new submit_sm
             {
                 SourceAddress = new address(TypeOfNumber.ALPHANUMERIC, NumericPlanIndicator.E164, "SMCS.TJ"),
@@ -84,11 +82,11 @@ namespace Samr.ERP.Core.Services
             //submitPdu.AddVendorSpecificElements(operatorId);
 
 
-            _smppSession.SmppVersion = SmppVersion.SMPP_V34;
+            smppSession.SmppVersion = SmppVersion.SMPP_V34;
 
-            _smppSession.Connect(_defaultSMMPSetting.Host, _defaultSMMPSetting.PortNumber);
+            smppSession.Connect(_defaultSMMPSetting.Host, _defaultSMMPSetting.PortNumber);
 
-            if (_smppSession.IsConnected)
+            if (smppSession.IsConnected)
             {
                 bind_transceiver bindPdu = new bind_transceiver(_defaultSMMPSetting.SystemId,
                     _defaultSMMPSetting.Password, "",
@@ -96,8 +94,8 @@ namespace Samr.ERP.Core.Services
                     new address_range());
                 if (bindPdu.IsValid)
                 {
-                    _smppSession.BindTransceiver(bindPdu);
-                    _smppSession.SubmitSm(submitPdu);
+                    smppSession.BindTransceiver(bindPdu);
+                    smppSession.SubmitSm(submitPdu);
                 }
             }
         }
