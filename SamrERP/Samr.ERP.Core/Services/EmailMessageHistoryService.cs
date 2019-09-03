@@ -67,9 +67,9 @@ namespace Samr.ERP.Core.Services
                     p.ReceiverUser.Employee.FirstName, p.ReceiverUser.Employee.MiddleName).ToLower() + " " + p.ReceiverUser.PhoneNumber.ToLower(),
                     "%" + emailMessageHistoryLogFilterView.ReceiverName.ToLower() + "%"));
 
-            if (emailMessageHistoryLogFilterView.SenderEmail != null)
-                query = query.Where(p => EF.Functions.Like(p.EmailSetting.Sender.ToLower(),
-                    "%" + emailMessageHistoryLogFilterView.SenderEmail.ToLower() + "%"));
+            if (emailMessageHistoryLogFilterView.ReceiverEmail != null)
+                query = query.Where(p => EF.Functions.Like(p.ReceiverEmail.ToLower(),
+                    "%" + emailMessageHistoryLogFilterView.ReceiverEmail.ToLower() + "%"));
 
             return query;
         }
