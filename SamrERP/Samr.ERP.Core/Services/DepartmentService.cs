@@ -84,6 +84,8 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
+
+            // TODO
                 //.Select( p => new DepartmentListViewModel
                 //{
                 //    Department =  p,
@@ -92,8 +94,7 @@ namespace Samr.ERP.Core.Services
                 //.AsQueryable()
                 //;
 
-            Debug.WriteLine(query.FirstOrDefault());
-            //query = FilterQuery(filterHandbook, query);
+            query = FilterQuery(filterHandbook, query);
 
             var queryVm = query.ProjectTo<EditDepartmentViewModel>();
 
