@@ -4,11 +4,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.UsefulLinkCategory;
-using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.Interfaces

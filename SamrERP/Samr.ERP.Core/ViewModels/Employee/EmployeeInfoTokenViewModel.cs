@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Samr.ERP.Core.ViewModels.Account
+﻿namespace Samr.ERP.Core.ViewModels.Employee
 {
     public class EmployeeInfoTokenViewModel
     {

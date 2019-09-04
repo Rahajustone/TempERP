@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 
 namespace Samr.ERP.Core.ViewModels.Position
 {

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Infrastructure.Providers;
 using Samr.ERP.WebApi.Infrastructure;
 

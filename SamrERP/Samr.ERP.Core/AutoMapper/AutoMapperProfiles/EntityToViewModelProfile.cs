@@ -5,7 +5,7 @@ using AutoMapper;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Samr.ERP.Core.Services;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
@@ -23,7 +23,6 @@ using Samr.ERP.Core.ViewModels.News;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Core.ViewModels.SMPPSetting;
 using Samr.ERP.Core.ViewModels.UsefulLink;
-using Samr.ERP.Core.ViewModels.UsefulLink.UsefulLinkCategory;
 using Samr.ERP.Infrastructure.Entities;
 using SixLabors.ImageSharp.ColorSpaces.Companding;
 
