@@ -76,6 +76,18 @@ namespace Samr.ERP.Core.Staff
             return fullName;
         }
 
+        public static string ShortFullNameToString(string lastName, string firstName, string middleName)
+        {
+            string fullName = lastName + " " + firstName[0] + ".";
+
+            if (middleName != null)
+            {
+                fullName = fullName + " " + middleName[0] + ".";
+            }
+
+            return fullName;
+        }
+
         public static string ToDownloadFileName(this string fileName)
         {
             if (string.IsNullOrEmpty(fileName)) return "noname";
