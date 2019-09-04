@@ -122,7 +122,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemWithPositionAsync()
         {
-            var departmentsWithPosition = GetQueryWithUser()
+            var departmentsWithPosition = await GetQueryWithUser()
                 .Include( p => p.Positions)
                 .Where( a => a.Positions.Any())
                 .Where(e => e.IsActive)
