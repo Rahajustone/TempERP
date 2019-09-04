@@ -102,8 +102,29 @@ namespace Samr.ERP.Core.Services
                     {
                         Id = p.Id,
                         Name = p.Name,
-                        ItemsCount = _unitOfWork.FileArchives.GetDbSet().Count(m =>m.FileCategoryId == p.Id )
-                    }).ToListAsync();
+                        ItemsCount = _unitOfWork.FileArchives.GetDbSet().Count(m => m.FileCategoryId == p.Id)
+                    })
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
+        }
+
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetCategoriesWithFileArchiveAllSelectListItemAsync()
+        {
+            var categorySelectList = await GetQuery()
+                .Include(p => p.FileArchives)
+                .Where( p => p.FileArchives.Any())
+                .Where(p => p.IsActive)
+                .Select(p =>
+                    new SelectListItemViewModel()
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        ItemsCount = p.FileArchives.Count
+                    })
+                .ToListAsync();
 
             var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
 

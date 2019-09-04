@@ -234,7 +234,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.UserLockReason.IfNotNull(p => p.Name)))
                 .ForMember(dst => dst.LockDate,
                     src => src.MapFrom(
-                        map => map.LockDate.Value.ToStringCustomFormat()))
+                        map => map.LockDate.HasValue ? map.LockDate.Value.ToStringCustomFormat() : null))
                 .ForMember(dst => dst.LockUserFullName,
                     src => src.MapFrom(
                         map => Extension.ShortFullNameToString(map.UserLockReason.CreatedUser.Employee.LastName,

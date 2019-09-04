@@ -19,5 +19,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> CreateAsync(RequestFileArchiveCategoryViewModel fileArchiveCategoryViewModel);
         Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> EditAsync(RequestFileArchiveCategoryViewModel editFileArchiveCategoryViewModel);
         Task<BaseDataResponse<PagedList<FileArchiveCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
+        Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetCategoriesWithFileArchiveAllSelectListItemAsync();
     }
 }

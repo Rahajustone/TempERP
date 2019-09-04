@@ -45,6 +45,13 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(listedItem);
         }
 
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetCategoriesWithFileArchiveAllSelectListItem()
+        {
+            var listedItem = await _fileArchiveCategoryService.GetCategoriesWithFileArchiveAllSelectListItemAsync();
+            return Response(listedItem);
+        }
+
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> Get(Guid id)
         {
@@ -55,7 +62,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpPost]
         [TrimInputStrings]
-        public async Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> Create([FromBody] ResponseFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
+        public async Task<BaseDataResponse<ResponseFileArchiveCategoryViewModel>> Create([FromBody] RequestFileArchiveCategoryViewModel editFileArchiveCategoryViewModel)
         {
             if (ModelState.IsValid)
             {
