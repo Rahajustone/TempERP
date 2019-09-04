@@ -52,7 +52,7 @@ namespace Samr.ERP.Core.Services
         {
             if (filterPosition.Name != null)
             {
-                query = query.Where(n => EF.Functions.Like(n.Name, "%" + filterPosition.Name + "%"));
+                query = query.Where(n => EF.Functions.Like(n.Name.ToLower(), "%" + filterPosition.Name.ToLower() + "%"));
             }
 
             if (filterPosition.OnlyActive)
@@ -103,7 +103,7 @@ namespace Samr.ERP.Core.Services
 
             var queryVm = query.ProjectTo<ResponsePositionViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.CreatedAt);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
