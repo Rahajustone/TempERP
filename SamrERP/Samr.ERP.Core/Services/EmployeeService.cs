@@ -115,6 +115,8 @@ namespace Samr.ERP.Core.Services
                 .Include(p => p.Position.Department)
                 .Include(p => p.Gender)
                 .Include(p => p.EmployeeLockReason)
+                    .ThenInclude( p => p.CreatedUser)
+                        .ThenInclude( p => p.Employee)
                 .FirstOrDefaultAsync(p => p.Id == id);
             return employee;
         }

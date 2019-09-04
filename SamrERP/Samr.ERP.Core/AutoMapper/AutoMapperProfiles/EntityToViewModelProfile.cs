@@ -479,7 +479,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.EmployeeLockReason.Name))
                 .ForMember(dst => dst.LockDate,
                     src => src.MapFrom(
-                        map => map.LockDate.HasValue ? map.LockDate.Value.ToShortDateString() : null))
+                        map => map.LockDate.HasValue ? map.LockDate.Value.ToStringCustomFormat() : null))
                 .ForMember(dst => dst.DateOfBirth,
                     src => src.MapFrom(
                         map => map.DateOfBirth.ToShortDateString()))
@@ -488,7 +488,9 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.HireDate.ToShortDateString()))
                 .ForMember(dst => dst.LockUserFullName,
                     src => src.MapFrom(
-                        map => map.LockUser != null ? map.LockUser.UserName : string.Empty))
+                        map =>
+                            Extension.FullNameToString(map.LockUser.Employee.LastName,
+                                map.LockUser.Employee.FirstName, map.LockUser.Employee.MiddleName)))
                 .ForMember(dst => dst.PhotoPath,
                     src => src.MapFrom(map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.PhotoPathMax,
