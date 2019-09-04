@@ -60,7 +60,7 @@ namespace Samr.ERP.Core.Services
                 var filterFullName = filterEmployeeViewModel.FullName.ToLower();
 
                 query = query.Where(e =>
-                    EF.Functions.Like(Extension.FullNameToString(e.LastName, e.FirstName, e.MiddleName).ToString(),
+                    EF.Functions.Like(Extension.FullNameToString(e.LastName, e.FirstName, e.MiddleName).ToLower(),
                         "%" + filterFullName + "%"));
             }
 
