@@ -83,7 +83,7 @@ namespace Samr.ERP.WebApi.Infrastructure
             var refreshToken = GenerateTokenByRandomNumber();
             var remoteIpAddress = _accessor.HttpContext.Connection.RemoteIpAddress?.ToString();
             await _userService.ClearUserRefreshToken(user.Id);
-            await _userService.AddRefreshToken(refreshToken, user.Id, remoteIpAddress); // add the new one
+            await _userService.AddRefreshToken(refreshToken, user.Id, remoteIpAddress,_tokenSettings.Value.RefreshExpiration / 60*24); // add the new one
             await _activeUserTokenService.AddOrRefreshUserToken(user.Id, token);
 
             return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(token, refreshToken));
@@ -114,6 +114,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                     return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(jwtToken, refreshToken));
 
                 }
+                return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("invalid refresh token"));
             }
             return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("invalid token"));
         }
