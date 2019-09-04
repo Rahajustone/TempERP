@@ -45,6 +45,13 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(departments);
         }
 
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListWithPositionItem()
+        {
+            var departments = await _departmentService.GetAllSelectListItemWithPositionAsync();
+            return Response(departments);
+        }
+
         [HttpGet("{id}")]
         public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Get(Guid id)
         {
