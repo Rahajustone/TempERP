@@ -115,6 +115,27 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(categorySelectList);
         }
 
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetCategoriesWithUsefulLinkAllSelectListItemAsync()
+        {
+            var categorySelectList = await _unitOfWork.UsefulLinkCategories.GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
+                .Include(p => p.UsefulLinks)
+                .Where(p => p.UsefulLinks.Any())
+                .Where(p => p.IsActive)
+                .Select(p =>
+                    new SelectListItemViewModel()
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        ItemsCount = p.UsefulLinks.Count
+                    })
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
+        }
+
         public async Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> CreateAsync(RequestUsefulLinkCategoryViewModel requestUsefulLinkCategoryViewModel)
         {
             var existsUsefulLinkCategories = await GetQuery().FirstOrDefaultAsync(p => p.Name.ToLower() == requestUsefulLinkCategoryViewModel.Name.ToLower());

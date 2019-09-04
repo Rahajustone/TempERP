@@ -49,6 +49,13 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(listedItem);
         }
 
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetCategoriesWithNewsAllSelectListItem()
+        {
+            var listedItem = await _newsCategoryService.GetCategoriesWithNewsAllSelectListItemAsync();
+            return Response(listedItem);
+        }
+
         [HttpPost]
         [TrimInputStrings]
         public async Task<BaseDataResponse<ResponseNewsCategoryViewModel>> Create([FromBody] RequestNewsCategoryViewModel responseNewsCategoryViewModel)

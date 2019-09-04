@@ -94,6 +94,27 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
         }
 
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetCategoriesWithNewsAllSelectListItemAsync()
+        {
+            var categorySelectList = await _unitOfWork.NewsCategories.GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
+                .Include(p => p.Newses)
+                .Where(p => p.Newses.Any())
+                .Where(p => p.IsActive)
+                .Select(p =>
+                    new SelectListItemViewModel()
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        ItemsCount = p.Newses.Count
+                    })
+                .ToListAsync();
+
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(categorySelectList);
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
+        }
+
         public async Task<BaseDataResponse<PagedList<ResponseNewsCategoryViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();

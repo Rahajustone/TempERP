@@ -102,7 +102,7 @@ namespace Samr.ERP.Core.Services
                     {
                         Id = p.Id,
                         Name = p.Name,
-                        ItemsCount = _unitOfWork.FileArchives.GetDbSet().Count(m => m.FileCategoryId == p.Id)
+                        ItemsCount = p.FileArchives.Count
                     })
                 .ToListAsync();
 

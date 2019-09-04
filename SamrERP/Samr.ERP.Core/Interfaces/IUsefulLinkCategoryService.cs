@@ -20,5 +20,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> CreateAsync(RequestUsefulLinkCategoryViewModel requestUsefulLinkCategoryViewModel);
         Task<BaseDataResponse<ResponseUsefulLinkCategoryViewModel>> EditAsync(RequestUsefulLinkCategoryViewModel requestUsefulLinkCategoryViewModel);
         Task<BaseDataResponse<PagedList<UsefulLinkCategoryLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
+        Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetCategoriesWithUsefulLinkAllSelectListItemAsync();
     }
 }

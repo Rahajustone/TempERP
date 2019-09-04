@@ -10,5 +10,6 @@ namespace Samr.ERP.Infrastructure.Entities
 {
     public class NewsCategory : NewsCategoryBaseObject
     {
+        public ICollection<News> Newses { get; set; }
     }
 }
