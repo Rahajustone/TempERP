@@ -59,11 +59,9 @@ namespace Samr.ERP.Core.Services
             {
                 var filterFullName = filterEmployeeViewModel.FullName.ToLower();
 
-                query = query.Where(e => EF.Functions.Like(e.FirstName.ToLower(), "%" + filterFullName + "%")
-                                         || EF.Functions.Like(e.LastName, "%" + filterFullName + "%")
-                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) &
-                                             EF.Functions.Like(e.MiddleName, "%" + filterFullName + "%")
-                                         ));
+                query = query.Where(e =>
+                    EF.Functions.Like(Extension.FullNameToString(e.LastName, e.FirstName, e.MiddleName).ToString(),
+                        "%" + filterFullName + "%"));
             }
 
             if (filterEmployeeViewModel.DepartmentId != null)
@@ -79,20 +77,25 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
         {
-            BaseDataResponse<GetEmployeeViewModel> dataResponse;
-
             var employee = await EmployeeById(id);
-
+            
             if (employee == null)
+                return BaseDataResponse<GetEmployeeViewModel>.NotFound(_mapper.Map<GetEmployeeViewModel>(employee));
+
+            var employeeLog = await _unitOfWork.EmployeeLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
+                .FirstOrDefaultAsync(p => p.EmployeeId == employee.Id);
+
+            var vm = _mapper.Map<GetEmployeeViewModel>(employee);
+
+            if (employeeLog != null)
             {
-                dataResponse = BaseDataResponse<GetEmployeeViewModel>.NotFound(null);
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<GetEmployeeViewModel>.Success(_mapper.Map<GetEmployeeViewModel>(employee));
+                vm.LastEditedAt = employeeLog.CreatedAt.ToStringCustomFormat();
             }
 
-            return dataResponse;
+            return BaseDataResponse<GetEmployeeViewModel>.Success(vm);
         }
 
         public async Task<GetEmployeeCardTemplateViewModel> GetEmployeeCardByIdAsync(Guid id)
@@ -107,10 +110,13 @@ namespace Samr.ERP.Core.Services
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.User)
                 .Include(p => p.CreatedUser)
+                    .ThenInclude( p => p.Employee)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
                 .Include(p => p.Gender)
                 .Include(p => p.EmployeeLockReason)
+                    .ThenInclude( p => p.CreatedUser)
+                        .ThenInclude( p => p.Employee)
                 .FirstOrDefaultAsync(p => p.Id == id);
             return employee;
         }
