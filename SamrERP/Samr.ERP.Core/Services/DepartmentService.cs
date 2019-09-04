@@ -120,6 +120,18 @@ namespace Samr.ERP.Core.Services
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(departments));
         }
 
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemWithPositionAsync()
+        {
+            var departmentsWithPosition = GetQueryWithUser()
+                .Include( p => p.Positions)
+                .Where( a => a.Positions.Any())
+                .Where(e => e.IsActive)
+                .ToListAsync();
+
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(
+                _mapper.Map<IEnumerable<SelectListItemViewModel>>(departmentsWithPosition));
+        }
+
         public async Task<BaseDataResponse<ResponseDepartmentViewModel>> CreateAsync(RequestDepartmentViewModel requestDepartmentViewModel)
         {
 
