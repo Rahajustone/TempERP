@@ -234,10 +234,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.UserLockReason.IfNotNull(p => p.Name)))
                 .ForMember(dst => dst.LockDate,
                     src => src.MapFrom(
-                        map => map.LockDate.HasValue ? map.LockDate.Value.ToShortDateString() : null))
+                        map => map.LockDate.Value.ToStringCustomFormat()))
                 .ForMember(dst => dst.LockUserFullName,
                     src => src.MapFrom(
-                        map => map.LockUser != null ? map.LockUser.UserName : string.Empty))
+                        map => Extension.FullNameToString(map.UserLockReason.CreatedUser.Employee.LastName,
+                            map.UserLockReason.CreatedUser.Employee.FirstName,
+                            map.UserLockReason.CreatedUser.Employee.MiddleName)))
                 .ReverseMap();
 
             CreateMap<LockUserViewModel, User>()
