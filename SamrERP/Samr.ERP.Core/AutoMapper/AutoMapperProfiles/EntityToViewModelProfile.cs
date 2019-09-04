@@ -493,7 +493,14 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.PhotoPath,
                     src => src.MapFrom(map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.PhotoPathMax,
-                    src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)));
+                    src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)))
+                .ForMember(dst => dst.CreateUserFullName, 
+                    src => src.MapFrom(
+                    map => Extension.FullNameToString(map.CreatedUser.Employee.LastName,
+                        map.CreatedUser.Employee.FirstName, map.CreatedUser.Employee.MiddleName)))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.CreatedAt.ToStringCustomFormat()));
 
             CreateMap<Employee, GetEmployeeCardTemplateViewModel>()
                 .IncludeBase<Employee, GetEmployeeViewModel>()
