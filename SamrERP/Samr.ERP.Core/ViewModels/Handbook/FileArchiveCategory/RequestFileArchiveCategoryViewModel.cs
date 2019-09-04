@@ -1,5 +1,4 @@
 ﻿using System;
-using Samr.ERP.Core.Stuff;
 
 namespace Samr.ERP.Core.ViewModels.Handbook.FileArchiveCategory
 {

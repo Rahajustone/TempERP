@@ -15,7 +15,7 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Services;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.WebApi.Filters;
@@ -221,13 +221,10 @@ namespace Samr.ERP.WebApi.Controllers
                 var html = await _htmlTemplateXService.RenderTemplateAsync("Employee/EmployeeCardTemplate",
                         employeeCardViewModel);
 
-
-                var fileName = $"employeeCard({DateTime.Now:dd_MM_yyyy_HH_mm_ss})";
+                var fileName = $"{employeeCardViewModel.FullName.ToDownloadFileName()}({DateTime.Now:dd_MM_yyyy_HH-mm})";
 
                 var pdfBytes = _pdfConverterService.ConvertToPdf(html);
                 return File(pdfBytes, "application/pdf", fileName);
-
-
             }
 
             return NotFound("employee not found");

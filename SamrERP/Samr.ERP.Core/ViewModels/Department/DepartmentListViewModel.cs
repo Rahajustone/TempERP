@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Samr.ERP.Core.Stuff;
 using Entity = Samr.ERP.Infrastructure.Entities;
 
 namespace Samr.ERP.Core.ViewModels.Department

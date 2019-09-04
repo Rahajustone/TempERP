@@ -11,7 +11,7 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Mapper = AutoMapper.Mapper;
 //using NLog;
 
-namespace Samr.ERP.Core.Stuff
+namespace Samr.ERP.Core.Staff
 {
     public static class Extension
     {
@@ -74,6 +74,16 @@ namespace Samr.ERP.Core.Stuff
             }
 
             return fullName;
+        }
+
+        public static string ToDownloadFileName(this string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return "noname";
+
+            fileName = fileName.Trim();
+            fileName = fileName.Replace(" ", "_");
+
+            return fileName;
         }
 
         public static async Task<PagedList<T>> ToPagedListAsync<T>(this IQueryable<T> source, PagingOptions pagingOptions)

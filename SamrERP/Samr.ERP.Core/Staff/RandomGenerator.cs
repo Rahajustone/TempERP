@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Samr.ERP.Core.Stuff
+namespace Samr.ERP.Core.Staff
 {
     public class RandomGenerator
     {

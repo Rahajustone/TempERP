@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Models;
 
-
-namespace Samr.ERP.Core.Stuff
+namespace Samr.ERP.Core.Staff
 {
     public static class QueryableExtensions
     {

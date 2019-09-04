@@ -1,6 +1,6 @@
 ﻿using System;
 using Samr.ERP.Core.Enums;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 
 namespace Samr.ERP.Core.Models.ErrorModels
 {

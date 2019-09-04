@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using AutoMapper;
 
-namespace Samr.ERP.Core.Stuff
+namespace Samr.ERP.Core.Staff
 {
     public class DateTimeFormatter : IValueConverter<DateTime, string>
     {

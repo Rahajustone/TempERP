@@ -5,11 +5,11 @@ using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Auth
 {
-    public class Extensions
+    public class AuthExtensions
     {
         private readonly UserProvider _userProvider;
 
-        public Extensions(UserProvider userProvider)
+        public AuthExtensions(UserProvider userProvider)
         {
             _userProvider = userProvider;
         }

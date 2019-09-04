@@ -7,7 +7,6 @@ using JulMar.Smpp.Elements;
 using JulMar.Smpp.Esme;
 using JulMar.Smpp.Pdu;
 using Samr.ERP.Core.Interfaces;
-using Samr.ERP.Core.Stuff;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Extensions;
