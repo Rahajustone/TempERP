@@ -716,16 +716,22 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<FileArchiveCategory, SelectListItemViewModel>();
             #endregion
 
-            CreateMap<FileArchive, EditFileArchiveViewModel>()
-                .ForMember(dst => dst.CreatedUserName,
-                    src => src.MapFrom(
-                        map => map.CreatedUser.UserName))
+            #region FileArchive
+
+            CreateMap<CreateFileArchiveViewModel, GetByIdFileArchiveViewModel>();
+            CreateMap<CreateFileArchiveViewModel, FileArchive>();
+            CreateMap<EditFileArchiveViewModel, FileArchive>();
+            
+            CreateMap<FileArchive, GetByIdFileArchiveViewModel>()
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
-                        map => map.CreatedAt.ToShortDateString()))
+                        map => map.CreatedAt.ToStringCustomFormat()))
                 .ForMember(dst => dst.FileCategoryName,
                     src => src.MapFrom(
-                        map => map.FileArchiveCategory.Name))
+                        map => map.FileArchiveCategory.Name));
+            
+            CreateMap<FileArchive, GetListFileArchiveViewModel>()
+                .IncludeBase<FileArchive, GetByIdFileArchiveViewModel>()
                 .ForMember(dst => dst.FileName,
                     src => src.MapFrom(
                         map => map.Title + "" + System.IO.Path.GetExtension(map.FilePath)))
@@ -737,12 +743,12 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                             FullName = Extension.FullNameToString(map.CreatedUser.Employee.LastName, map.CreatedUser.Employee.FirstName, map.CreatedUser.Employee.MiddleName),
                             PhotoPath = FileService.GetDownloadAction(map.CreatedUser.Employee.PhotoPath),
                             PositionName = map.CreatedUser.Employee.Position.Name
-                        }));
-            CreateMap<EditFileArchiveViewModel, FileArchive>()
-                .ForMember( dst => dst.FilePath, opt => opt.Ignore());
-            CreateMap<FileArchiveCategory, FileArchiveViewModel>()
-                .ReverseMap();
-            CreateMap<FileArchive, SelectListItemViewModel>().ReverseMap();
+                        })
+                    );
+
+            CreateMap<FileArchive, SelectListItemViewModel>();
+
+            #endregion
 
             CreateMap<Notification, GetSenderMessageViewModel>()
                 .ForMember(dest => dest.User,

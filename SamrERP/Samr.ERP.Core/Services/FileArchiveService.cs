@@ -100,31 +100,31 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<EditFileArchiveViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<GetByIdFileArchiveViewModel>> GetByIdAsync(Guid id)
         {
             var existsFileArchive = await GetQueryWithInclude().FirstOrDefaultAsync(u => u.Id == id);
             if (existsFileArchive == null)
             {
-                return BaseDataResponse<EditFileArchiveViewModel>.NotFound(null); 
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.NotFound(null);
             }
 
-            var vm = _mapper.Map<EditFileArchiveViewModel>(existsFileArchive);
+            var vm = _mapper.Map<GetByIdFileArchiveViewModel>(existsFileArchive);
             vm.FilePath = FileService.GetFileArchivePath(vm.FilePath);
 
-            return BaseDataResponse<EditFileArchiveViewModel>.Success(vm);
+            return BaseDataResponse<GetByIdFileArchiveViewModel>.Success(vm);
         }
 
-        public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<GetListFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
         {
             var query = GetQueryWithInclude().Include(c => c.FileArchiveCategory).AsQueryable();
-            
+
             query = FilterQuery(filterFileArchiveViewModel, query);
 
             if (!(_userProvider.ContextUser.IsInRole(Roles.FileArchiveCreate) &&
                 _userProvider.ContextUser.IsInRole(Roles.FileArchiveEdit)))
                 query = query.Where(a => a.IsActive);
 
-            var queryVm = query.ProjectTo<EditFileArchiveViewModel>();
+            var queryVm = query.ProjectTo<GetListFileArchiveViewModel>();
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.CreatedAt);
 
@@ -135,74 +135,56 @@ namespace Samr.ERP.Core.Services
                 allFileArchiveViewModel.FilePath = FileService.GetFileArchivePath(allFileArchiveViewModel.FilePath);
             }
 
-            return BaseDataResponse<PagedList<EditFileArchiveViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<GetListFileArchiveViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<EditFileArchiveViewModel>> CreateAsync(EditFileArchiveViewModel editFileArchiveViewModel)
+        public async Task<BaseDataResponse<GetByIdFileArchiveViewModel>> CreateAsync(CreateFileArchiveViewModel createFileArchive)
         {
-            BaseDataResponse<EditFileArchiveViewModel> response;
-
             var existsFileArchive = await _unitOfWork.FileArchives.GetDbSet()
-                .FirstOrDefaultAsync(p => p.Title.ToLower() == editFileArchiveViewModel.Title.ToLower());
-            if (existsFileArchive != null)
-            {
-                response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel, new ErrorModel(ErrorCode.NameMustBeUnique));
-            }
-            else
-            {
-                var fileArchive = _mapper.Map<FileArchive>(editFileArchiveViewModel);
+                .FirstOrDefaultAsync(p => p.Title.ToLower() == createFileArchive.Title.ToLower());
 
-                if (editFileArchiveViewModel.File != null)
-                {
-                    fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, editFileArchiveViewModel.File);
-                }
+            if(existsFileArchive != null)
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.Fail(
+                    _mapper.Map<GetByIdFileArchiveViewModel>(createFileArchive),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            
+            var fileArchive = _mapper.Map<FileArchive>(createFileArchive);
 
-                _unitOfWork.FileArchives.Add(fileArchive);
+            if (createFileArchive.File != null)
+                fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, createFileArchive.File);
 
-                await _unitOfWork.CommitAsync();
+            _unitOfWork.FileArchives.Add(fileArchive);
 
-                response = BaseDataResponse<EditFileArchiveViewModel>.Success(_mapper.Map<EditFileArchiveViewModel>(fileArchive));
-            }
+            await _unitOfWork.CommitAsync();
 
-            return response;
+            return await GetByIdAsync(fileArchive.Id);
         }
 
-        public async Task<BaseDataResponse<EditFileArchiveViewModel>> EditAsync(EditFileArchiveViewModel editFileArchiveViewModel)
+        public async Task<BaseDataResponse<GetByIdFileArchiveViewModel>> EditAsync(EditFileArchiveViewModel editFileArchiveViewModel)
         {
-            BaseDataResponse<EditFileArchiveViewModel> response;
 
             var existFileArchive = await GetQuery().FirstOrDefaultAsync(p => p.Id == editFileArchiveViewModel.Id);
             if (existFileArchive == null)
-            {
-                response = BaseDataResponse<EditFileArchiveViewModel>.NotFound(editFileArchiveViewModel);
-            }
-            else
-            {
-                var checkNameUnique = await GetQuery()
-                    .AnyAsync(d => d.Id != editFileArchiveViewModel.Id && d.Title.ToLower() == editFileArchiveViewModel.Title.ToLower());
-                if (checkNameUnique)
-                {
-                    response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel,
-                        new ErrorModel(ErrorCode.NameMustBeUnique));
-                }
-                else
-                {
-                    var fileArchive = _mapper.Map<EditFileArchiveViewModel, FileArchive>(editFileArchiveViewModel, existFileArchive);
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.NotFound(null);
+           
+            var checkNameUnique = await GetQuery()
+                .AnyAsync(d =>
+                    d.Id != editFileArchiveViewModel.Id &&
+                    d.Title.ToLower() == editFileArchiveViewModel.Title.ToLower());
+            if (checkNameUnique)
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.Fail(_mapper.Map<GetByIdFileArchiveViewModel>(editFileArchiveViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            
+            var fileArchive = _mapper.Map<EditFileArchiveViewModel, FileArchive>(editFileArchiveViewModel, existFileArchive);
 
-                    if (editFileArchiveViewModel.File != null)
-                    {
-                        fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, editFileArchiveViewModel.File);
-                    }
+            if (editFileArchiveViewModel.File != null)
+                fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, editFileArchiveViewModel.File);
 
-                    _unitOfWork.FileArchives.Update(fileArchive);
+            _unitOfWork.FileArchives.Update(fileArchive);
 
-                    await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
 
-                    response = BaseDataResponse<EditFileArchiveViewModel>.Success(_mapper.Map<EditFileArchiveViewModel>(fileArchive));
-                }
-            }
-
-            return response;
+            return await GetByIdAsync(fileArchive.Id);
         }
     }
 }
