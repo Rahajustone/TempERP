@@ -5,12 +5,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace Samr.ERP.Core.ViewModels.FileArchive
 {
-    public class CreateFileArchiveViewModel
+    public class CreateFileArchiveViewModel :  FileArchiveViewModel
     {
-        public string Title { get; set; }
-        public Guid FileCategoryId { get; set; }
-        public string Description { get; set; }
         public IFormFile File { get; set; }
-        public bool IsActive { get; set; }
     }
 }
