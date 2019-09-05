@@ -457,7 +457,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
             CreateMap<Employee, GetEmployeeViewModel>()
                 .ForMember(dst => dst.FullName,
                     src => src.MapFrom(
-                        map => Extension.ShortFullNameToString(map.LastName, map.FirstName, map.MiddleName)))
+                        map => Extension.FullNameToString(map.LastName, map.FirstName, map.MiddleName)))
                 .ForMember(dst => dst.MiddleName,
                 src => src.MapFrom(
                         map =>  map.MiddleName ))
@@ -499,7 +499,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)))
                 .ForMember(dst => dst.CreateUserFullName, 
                     src => src.MapFrom(
-                    map => Extension.FullNameToString(map.CreatedUser.Employee.LastName,
+                    map => Extension.ShortFullNameToString(map.CreatedUser.Employee.LastName,
                         map.CreatedUser.Employee.FirstName, map.CreatedUser.Employee.MiddleName)))
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
@@ -728,13 +728,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedAt.ToStringCustomFormat()))
                 .ForMember(dst => dst.FileCategoryName,
                     src => src.MapFrom(
-                        map => map.FileArchiveCategory.Name));
+                        map => map.FileArchiveCategory.Name))
+                .ForMember(dst => dst.FileName,
+                    src => src.MapFrom(
+                        map => map.Title + "" + System.IO.Path.GetExtension(map.FilePath)));
             
             CreateMap<FileArchive, GetListFileArchiveViewModel>()
                 .IncludeBase<FileArchive, GetByIdFileArchiveViewModel>()
-                .ForMember(dst => dst.FileName,
-                    src => src.MapFrom(
-                        map => map.Title + "" + System.IO.Path.GetExtension(map.FilePath)))
                 .ForMember(dest => dest.Author,
                     src => src.MapFrom(
                         map => new MiniProfileViewModel

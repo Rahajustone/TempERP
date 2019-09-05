@@ -9,6 +9,5 @@ namespace Samr.ERP.Core.ViewModels.FileArchive
     public class GetListFileArchiveViewModel : GetByIdFileArchiveViewModel
     {
         public MiniProfileViewModel Author { get; set; }
-        public string FileName { get; set; }
     }
 }
