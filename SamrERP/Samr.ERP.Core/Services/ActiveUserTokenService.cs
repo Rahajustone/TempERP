@@ -78,7 +78,7 @@ namespace Samr.ERP.Core.Services
             {
                 _unitOfWork.ActiveUserTokens.Delete(activeToken);
 
-                _unitOfWork.CommitAsync(); 
+                _unitOfWork.Commit(); 
 
                 if (_cache.TryGetValue(ActiveTokenCacheName,out HashSet<string> activeTokens))
                 {

@@ -98,7 +98,35 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 			    // throw;
 			//}
         }
-    
+        /// <summary>
+        /// Save pending changes to the database
+        /// </summary>
+        public int Commit()
+        {
+
+            //System.Diagnostics.Debug.WriteLine("Committed");
+            //try
+            // {
+            return DbContext.SaveChanges();
+            // }
+            //catch (Exception ex) // DbEntityValidationException ex)
+            //{
+            //	Debug.WriteLine(" ");
+            //foreach (var error in ex.EntityValidationErrors)
+            //{
+            //	Debug.WriteLine("====================");
+            //	Debug.WriteLine("Entity {0} in state {1} has validation errors:",
+            //		error.Entry.Entity.GetType().Name, error.Entry.State);
+            //	foreach (var ve in error.ValidationErrors)
+            //	{
+            //		Debug.WriteLine("\tProperty: {0}, Error: {1}",
+            //			ve.PropertyName, ve.ErrorMessage);
+            //	}
+            //	Debug.WriteLine(" ");
+            //}
+            // throw;
+            //}
+        }
 
         protected IRepositoryProvider RepositoryProvider { get; set; }
 

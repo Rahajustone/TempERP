@@ -9,7 +9,11 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
-        // Save pending changes to the data store.
+        /// <summary>
+        /// Save pending changes to the database
+        /// </summary>
+        int Commit();
+        // Save pending changes async to the data store.
         Task<int> CommitAsync();
         // Repositories
 
@@ -45,5 +49,7 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<SMPPSetting> SMPPSettings { get; }
         IRepository<SMSMessageHistory> SMSMessageHistories { get; }
         IRepository<T> GetStandardRepo<T>() where T : class;
+
+     
     }
 }
