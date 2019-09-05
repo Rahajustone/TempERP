@@ -728,13 +728,13 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                         map => map.CreatedAt.ToStringCustomFormat()))
                 .ForMember(dst => dst.FileCategoryName,
                     src => src.MapFrom(
-                        map => map.FileArchiveCategory.Name));
+                        map => map.FileArchiveCategory.Name))
+                .ForMember(dst => dst.FileName,
+                    src => src.MapFrom(
+                        map => map.Title + "" + System.IO.Path.GetExtension(map.FilePath)));
             
             CreateMap<FileArchive, GetListFileArchiveViewModel>()
                 .IncludeBase<FileArchive, GetByIdFileArchiveViewModel>()
-                .ForMember(dst => dst.FileName,
-                    src => src.MapFrom(
-                        map => map.Title + "" + System.IO.Path.GetExtension(map.FilePath)))
                 .ForMember(dest => dest.Author,
                     src => src.MapFrom(
                         map => new MiniProfileViewModel
