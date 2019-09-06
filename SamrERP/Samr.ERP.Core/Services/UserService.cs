@@ -233,10 +233,9 @@ namespace Samr.ERP.Core.Services
 
             LockUser(userExists,lockUserViewModel.UserLockReasonId);
 
-            _activeUserTokenService.DeactivateTokenByUserId(userExists.Id);
-
-
             await _unitOfWork.CommitAsync();
+
+            _activeUserTokenService.DeactivateTokenByUserId(userExists.Id);
 
             return BaseResponse.Success();
         }
