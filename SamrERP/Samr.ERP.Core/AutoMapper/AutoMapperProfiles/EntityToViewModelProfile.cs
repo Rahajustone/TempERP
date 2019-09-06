@@ -497,7 +497,7 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                     src => src.MapFrom(map => FileService.GetDownloadAction(FileService.GetResizedPath(map.PhotoPath))))
                 .ForMember(dst => dst.PhotoPathMax,
                     src => src.MapFrom(map => FileService.GetDownloadAction(map.PhotoPath)))
-                .ForMember(dst => dst.CreateUserFullName, 
+                .ForMember(dst => dst.CreatedUserFullName, 
                     src => src.MapFrom(
                     map => Extension.ShortFullNameToString(map.CreatedUser.Employee.LastName,
                         map.CreatedUser.Employee.FirstName, map.CreatedUser.Employee.MiddleName)))
