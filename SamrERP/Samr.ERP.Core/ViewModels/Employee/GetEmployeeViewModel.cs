@@ -25,7 +25,7 @@ namespace Samr.ERP.Core.ViewModels.Employee
         public string PhotoPathMax { get; set; }
 
         public string CreatedAt { get; set; }
-        public string CreateUserFullName { get; set; }
+        public string CreatedUserFullName { get; set; }
         public string LastEditedAt { get; set; }
     }
 }
