@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JulMar.Smpp.Utility
 {
@@ -213,16 +214,17 @@ namespace JulMar.Smpp.Utility
         /// </summary>
         /// <param name="address">Socket address</param>
         /// <param name="port">Port</param>
-        public void Connect(string address, int port)
+        public IAsyncResult ConnectAsync(string address, int port)
         {
             if (isClosed_)
-                throw new InvalidOperationException("Cannot call Connect on open socket.");
+                throw new InvalidOperationException("Cannot call ConnectAsync on open socket.");
 
             IPAddress addr = ConvertStringToIPAddress(address);
             port_ = port;
 
             // Establish a connection
             IAsyncResult ar = sock_.BeginConnect(new IPEndPoint(addr, port), new AsyncCallback(ConnectCallbackHandler), this);
+            return ar;
 /*
             try
             {
@@ -233,13 +235,13 @@ namespace JulMar.Smpp.Utility
                 try
                 {
                     if (OnFailure != null)
-                        OnFailure(this, new ErrorEventArgs(this, ErrorEventArgs.SocketOperation.Connect, ex));
+                        OnFailure(this, new ErrorEventArgs(this, ErrorEventArgs.SocketOperation.ConnectAsync, ex));
                 }
                 catch
                 {
                 }
             }
- */ 
+ */
         }
 
         /// <summary>
@@ -250,7 +252,7 @@ namespace JulMar.Smpp.Utility
         public void BeginConnect(string address, int port)
         {
             if (isClosed_)
-                throw new InvalidOperationException("Cannot call Connect on open socket.");
+                throw new InvalidOperationException("Cannot call ConnectAsync on open socket.");
 
             IPAddress addr = ConvertStringToIPAddress(address);
             port_ = port;
@@ -790,7 +792,7 @@ namespace JulMar.Smpp.Utility
     }
 
     /// <summary>
-    /// This event object represents the type passed to the Connect event
+    /// This event object represents the type passed to the ConnectAsync event
     /// </summary>
     public class ConnectEventArgs : SocketEventArgs
     {
@@ -936,7 +938,7 @@ namespace JulMar.Smpp.Utility
             /// </summary>
             Accept,
             /// <summary>
-            /// Connect() operation failed
+            /// ConnectAsync() operation failed
             /// </summary>
             Connect,
             /// <summary>
@@ -1038,7 +1040,7 @@ namespace JulMar.Smpp.Utility
 
 
         /// <summary>
-        /// Connect ability
+        /// ConnectAsync ability
         /// </summary>
         /// <param name="ipAddress">IP address to connect to.</param>
         /// <param name="port">Port to connect to</param>

@@ -81,7 +81,7 @@ namespace JulMar.Smpp
     }
 
     /// <summary>
-    /// This is passed to the Connect event
+    /// This is passed to the ConnectAsync event
     /// </summary>
     public class SmppConnectEventArgs : SmppEventArgs
     {
