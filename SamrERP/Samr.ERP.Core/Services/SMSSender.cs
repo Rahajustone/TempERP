@@ -66,7 +66,7 @@ namespace Samr.ERP.Core.Services
 
         private void SendMessage(string phoneNumber, string message)
         {
-            var smppSession = new EsmeSession(DefaultSMPPSetting.SystemId);
+            var smppSession = new EsmeSession(DefaultSMPPSetting.UserName);
             submit_sm submitPdu = new submit_sm
             {
                 SourceAddress = new address(TypeOfNumber.ALPHANUMERIC, NumericPlanIndicator.E164, "SMCS.TJ"),
@@ -83,11 +83,11 @@ namespace Samr.ERP.Core.Services
 
             smppSession.SmppVersion = SmppVersion.SMPP_V34;
 
-            smppSession.Connect(_defaultSMMPSetting.Host, _defaultSMMPSetting.PortNumber);
+            smppSession.Connect(_defaultSMMPSetting.Password, _defaultSMMPSetting.PortNumber);
 
             if (smppSession.IsConnected)
             {
-                bind_transceiver bindPdu = new bind_transceiver(_defaultSMMPSetting.SystemId,
+                bind_transceiver bindPdu = new bind_transceiver(_defaultSMMPSetting.UserName,
                     _defaultSMMPSetting.Password, "",
                     new interface_version(),
                     new address_range());

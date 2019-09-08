@@ -47,7 +47,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<SMPPSettingResponseViewModel>> CreateAsync(SMPPSettingViewModel smppSettingViewModel)
         {
-            var smppSettingExist = _unitOfWork.SMPPSettings.Any(p => p.Host == smppSettingViewModel.Host && p.SystemId == smppSettingViewModel.SystemId);
+            var smppSettingExist = _unitOfWork.SMPPSettings.Any(p => p.HostName == smppSettingViewModel.HostName && p.UserName == smppSettingViewModel.UserName);
             
             if (smppSettingExist) return BaseDataResponse<SMPPSettingResponseViewModel>.Fail( _mapper.Map<SMPPSettingResponseViewModel>(smppSettingViewModel), new ErrorModel(ErrorCode.SystemIdAndHostMustBeUnique));
 
@@ -71,8 +71,8 @@ namespace Samr.ERP.Core.Services
             }
 
             var smppSettingUnique = _unitOfWork.SMPPSettings.Any(p =>
-                p.Id != smppSettingViewModel.Id && p.Host == smppSettingViewModel.Host &&
-                p.SystemId == smppSettingViewModel.SystemId);
+                p.Id != smppSettingViewModel.Id && p.HostName == smppSettingViewModel.HostName &&
+                p.UserName == smppSettingViewModel.UserName);
 
             if (smppSettingUnique) return BaseDataResponse<SMPPSettingResponseViewModel>.Fail(_mapper.Map<SMPPSettingResponseViewModel>(smppSettingViewModel), new ErrorModel(ErrorCode.SystemIdAndHostMustBeUnique));
 
