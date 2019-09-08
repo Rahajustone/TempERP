@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using JulMar.Smpp.Pdu;
 using JulMar.Smpp.Utility;
 
@@ -102,15 +103,15 @@ namespace JulMar.Smpp.Esme
 		/// </summary>
 		/// <param name="address">IP address</param>
 		/// <param name="port">Port number</param>
-		public void Connect(string address, int port)
+		public IAsyncResult ConnectAsync(string address, int port)
 		{
 			SocketClient sc = new SocketClient();
 			base.SetSocket(sc);
-			sc.Connect(address, port);
+			return sc.ConnectAsync(address, port);
 		}
 
 		/// <summary>
-		/// Asynch form of Connect
+		/// Asynch form of ConnectAsync
 		/// </summary>
 		/// <param name="address">IP address</param>
 		/// <param name="port">Port number</param>

@@ -38,7 +38,7 @@ namespace Samr.ERP.Core.Services
         {
             await AddSMSMessageHistory(destUser, message, hideMessage);
             var phoneNumber = destUser.PhoneNumber.Length == 9 ? $"992{destUser.PhoneNumber}" : destUser.PhoneNumber;
-            SendMessage(phoneNumber,message);
+            await SendMessage(phoneNumber,message);
 
         }
         private async Task AddSMSMessageHistory(User destUser, string message,bool hideMessage = false)
@@ -64,7 +64,7 @@ namespace Samr.ERP.Core.Services
             await _unitOfWork.CommitAsync();
         }
 
-        private void SendMessage(string phoneNumber, string message)
+        private async Task SendMessage(string phoneNumber, string message)
         {
             var smppSession = new EsmeSession(DefaultSMPPSetting.UserName);
             submit_sm submitPdu = new submit_sm
@@ -83,7 +83,8 @@ namespace Samr.ERP.Core.Services
 
             smppSession.SmppVersion = SmppVersion.SMPP_V34;
 
-            smppSession.Connect(_defaultSMMPSetting.Password, _defaultSMMPSetting.PortNumber);
+            var asyncResult = smppSession.ConnectAsync(_defaultSMMPSetting.Host, _defaultSMMPSetting.PortNumber);
+            asyncResult.AsyncWaitHandle.WaitOne(7000);
 
             if (smppSession.IsConnected)
             {
