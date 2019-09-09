@@ -66,7 +66,7 @@ namespace Samr.ERP.Core.Services
 
         private async Task SendMessage(string phoneNumber, string message)
         {
-            var smppSession = new EsmeSession(DefaultSMPPSetting.SystemId);
+            var smppSession = new EsmeSession(DefaultSMPPSetting.UserName);
             submit_sm submitPdu = new submit_sm
             {
                 SourceAddress = new address(TypeOfNumber.ALPHANUMERIC, NumericPlanIndicator.E164, "SMCS.TJ"),
@@ -88,7 +88,7 @@ namespace Samr.ERP.Core.Services
 
             if (smppSession.IsConnected)
             {
-                bind_transceiver bindPdu = new bind_transceiver(_defaultSMMPSetting.SystemId,
+                bind_transceiver bindPdu = new bind_transceiver(_defaultSMMPSetting.UserName,
                     _defaultSMMPSetting.Password, "",
                     new interface_version(),
                     new address_range());

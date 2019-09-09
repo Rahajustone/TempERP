@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Samr.ERP.Infrastructure.Data;
@@ -9,9 +10,10 @@ using Samr.ERP.Infrastructure.Data;
 namespace Samr.ERP.Infrastructure.Migrations
 {
     [DbContext(typeof(SamrDbContext))]
-    partial class SamrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190908084125_FixSmppSettings")]
+    partial class FixSmppSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
