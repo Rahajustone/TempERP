@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Compression;
+using System.Linq;
 using System.Security.AccessControl;
 using AutoMapper;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
@@ -311,6 +312,28 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
                         map => map.CreatedAt.ToShortDateString()));
+
+            CreateMap<Employee, AuthorViewModel>();
+
+            CreateMap<DepartmentListViewModel, GetAllDepartmentViewModel>()
+                .ForMember(dst => dst.Id,
+                    src => src.MapFrom(
+                        map => map.Department.Id))
+                .ForMember(dst => dst.IsActive,
+                    src => src.MapFrom(
+                        map => map.Department.IsActive))
+                .ForMember(dst => dst.Name,
+                    src => src.MapFrom(
+                        map => map.Department.Name))
+                .ForMember(dst => dst.ModifiedAt,
+                    src => src.MapFrom(
+                        map => map.ModifiedAt.ToShortDateString()));
+                //.ForMember(dst => dst.LastModifiedAuthor,
+                //    src => src.MapFrom(
+                //        map => map.LastModifiedEmployee != null ?
+                //        map.LastModifiedEmployee :
+                //        map.Department.CreatedUser.Employee));
+
 
             CreateMap<Department, SelectListItemViewModel>();
             #endregion

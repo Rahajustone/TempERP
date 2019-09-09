@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Samr.ERP.Core.AutoMapper.AutoMapperProfiles;
 using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
@@ -39,7 +40,7 @@ namespace Samr.ERP.Core.Services
         {
             return _unitOfWork.Departments.GetDbSet()
                 .Include(p => p.CreatedUser)
-                .ThenInclude( p => p.Employee)
+                .ThenInclude(p => p.Employee)
                 .OrderByDescending(p => p.CreatedAt);
         }
 
@@ -62,12 +63,12 @@ namespace Samr.ERP.Core.Services
         {
             var existsDepartment = await GetQueryWithUser()
                 .FirstOrDefaultAsync(p => p.Id == id);
-            
+
             if (existsDepartment == null)
-                return  BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null);
+                return BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null);
 
             var existsDepartmentLog = await _unitOfWork.DepartmentLogs.GetDbSet()
-                .OrderByDescending( p => p.CreatedAt)
+                .OrderByDescending(p => p.CreatedAt)
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
                 .FirstOrDefaultAsync(a => a.DepartmentId == existsDepartment.Id);
@@ -78,21 +79,69 @@ namespace Samr.ERP.Core.Services
                 existsDepartment.CreatedAt = existsDepartmentLog.CreatedAt;
             }
 
-             return BaseDataResponse<ResponseDepartmentViewModel>.Success(_mapper.Map<ResponseDepartmentViewModel>(existsDepartment));
+            return BaseDataResponse<ResponseDepartmentViewModel>.Success(_mapper.Map<ResponseDepartmentViewModel>(existsDepartment));
         }
 
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             var query = GetQueryWithUser();
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            var query2 = _unitOfWork.Departments.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                //.Include(p=>p.DepartmentLogs)
+                .OrderByDescending(p => p.CreatedAt)
+                //.Where(p => p.DepartmentLogs.Any())
+                .Select(p => new
+                {
+                    Department = p,
+                    ModifiedAt = p.DepartmentLogs
+                        .OrderByDescending(m => m.CreatedAt).FirstOrDefault().CreatedAt,
+                    Employee = p.DepartmentLogs
+                        .OrderByDescending(m => m.CreatedAt).FirstOrDefault().CreatedUser.Employee
+                })
+                .Select(p => new EditDepartmentViewModel()
+                {
+                    Id = p.Department.Id,
+                    CreatedAt = p.Employee != null
+                        ? p.ModifiedAt.ToShortDateString()
+                        : p.Department.CreatedAt.ToShortDateString(),
+                    Name = p.Department.Name,
+                    IsActive = p.Department.IsActive,
+                    FirstName = p.Employee != null ? p.Employee.FirstName : p.Department.CreatedUser.Employee.FirstName,
+                    MiddleName =
+                        p.Employee != null ? p.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
+                    LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName
+                });
+                //.Select(p => new GetAllDepartmentViewModel()
+                //{
+                //    Id = p.p.Id,
+                //    ModifiedAt = p.depLog != null ?
+                //        p.depLog.CreatedAt.ToShortDateString() :
+                //        p.p.CreatedAt.ToShortDateString(),
+                //    Name = p.p.Name,
+                //    IsActive = p.p.IsActive,
+                //    Employee = p.depLog != null ? p.depLog.CreatedUser.Employee : p.p.CreatedUser.Employee
+                    
+                  
+                //})
+            //.ProjectTo<GetAllDepartmentViewModel>()
+            //.ToList();
+            stopwatch.Stop();
+            //.Where(p=>p.DepartmentLog != null)
+
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
 
             // TODO
-                //.Select( p => new DepartmentListViewModel
-                //{
-                //    Department =  p,
-                //    DepartmentLog =  _unitOfWork.DepartmentLogs.GetDbSet().Take(1).FirstOrDefault( j => j.DepartmentId == p.Id)
-                //})
-                //.AsQueryable()
-                //;
+            //.Select( p => new DepartmentListViewModel
+            //{
+            //    Department =  p,
+            //    DepartmentLog =  _unitOfWork.DepartmentLogs.GetDbSet().Take(1).FirstOrDefault( j => j.DepartmentId == p.Id)
+            //})
+            //.AsQueryable()
+            //;
 
             query = FilterQuery(filterHandbook, query);
 
@@ -114,7 +163,7 @@ namespace Samr.ERP.Core.Services
         {
             var departments = await GetQueryWithUser()
                 .Where(e => e.IsActive)
-                .OrderBy(p=>p.Name)
+                .OrderBy(p => p.Name)
                 .ToListAsync();
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(departments));
@@ -123,8 +172,8 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemWithPositionAsync()
         {
             var departmentsWithPosition = await GetQueryWithUser()
-                .Include( p => p.Positions)
-                .Where( a => a.Positions.Any())
+                .Include(p => p.Positions)
+                .Where(a => a.Positions.Any())
                 .Where(e => e.IsActive)
                 .ToListAsync();
 
@@ -184,7 +233,7 @@ namespace Samr.ERP.Core.Services
                 .Where(d => d.DepartmentId == id)
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
-                .OrderByDescending( p => p.CreatedAt);
+                .OrderByDescending(p => p.CreatedAt);
 
             var queryVm = query.ProjectTo<DepartmentLogViewModel>();
 
