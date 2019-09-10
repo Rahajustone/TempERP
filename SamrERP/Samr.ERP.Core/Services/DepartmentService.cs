@@ -44,7 +44,7 @@ namespace Samr.ERP.Core.Services
                 .OrderByDescending(p => p.CreatedAt);
         }
 
-        private IQueryable<Department> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Department> query)
+        private IQueryable<EditDepartmentViewModel> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<EditDepartmentViewModel> query)
         {
             if (filterHandbook.Name != null)
             {
@@ -84,11 +84,11 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
-            var query = GetQueryWithUser();
+            //var query = GetQueryWithUser();
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var query2 = _unitOfWork.Departments.GetDbSet()
+            var query = _unitOfWork.Departments.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
                 //.Include(p=>p.DepartmentLogs)
@@ -145,9 +145,9 @@ namespace Samr.ERP.Core.Services
 
             query = FilterQuery(filterHandbook, query);
 
-            var queryVm = query.ProjectTo<EditDepartmentViewModel>();
+            //var queryVm = query.ProjectTo<EditDepartmentViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+            var orderedQuery = query.OrderBy(sortRule, p => p.Name);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
