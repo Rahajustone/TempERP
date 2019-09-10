@@ -54,6 +54,8 @@ namespace Samr.ERP.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
+            services.AddResponseCaching();
+
 
             #region Dependecy Injection
 
@@ -224,6 +226,21 @@ namespace Samr.ERP.WebApi
             app.UseHttpsRedirection();
             app.UseAuthentication();
 
+            app.UseResponseCaching();
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.GetTypedHeaders().CacheControl =
+                    new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromSeconds(10000)
+                    };
+                context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =
+                    new string[] { "Accept-Encoding" };
+
+                await next();
+            });
 
             app.UseMiddleware<TokenManagerMiddleware>();
             app.UseMiddleware<UserMiddleware>();

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
 using SixLabors.Shapes;
+using Path = System.IO.Path;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -24,12 +25,15 @@ namespace Samr.ERP.WebApi.Controllers
             _fileService = fileService;
         }
 
-        [HttpGet]
+        [HttpGet("{path}")]
+        [ResponseCache(Duration = 547657)]
         public IActionResult GetPhoto(string path)
         {
+            path = Path.Combine("Employees\\Photo\\", path);
             if (System.IO.File.Exists(FileService.GetFullPath(path)))
             {
                 var image = System.IO.File.OpenRead(FileService.GetFullPath(path));
+
                 return File(image, "image/jpeg");
             }
 
