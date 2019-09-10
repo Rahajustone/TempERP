@@ -221,7 +221,7 @@ namespace Samr.ERP.WebApi.Controllers
                 var html = await _htmlTemplateXService.RenderTemplateAsync("Employee/EmployeeCardTemplate",
                         employeeCardViewModel);
 
-                var fileName = $"{employeeCardViewModel.FullName.ToDownloadFileName()}({DateTime.Now:dd_MM_yyyy_HH-mm})";
+                var fileName = $"{employeeCardViewModel.FullName.ToDownloadFileName()}({DateTime.Now:dd.MM.yyyy HH-mm})";
 
                 var pdfBytes = _pdfConverterService.ConvertToPdf(html);
                 return File(pdfBytes, "application/pdf", fileName);

@@ -173,8 +173,7 @@ namespace Samr.ERP.Core.Services
         {
             var departmentsWithPosition = await GetQueryWithUser()
                 .Include(p => p.Positions)
-                .Where(a => a.Positions.Any())
-                .Where(e => e.IsActive)
+                .Where( p => p.Positions.Any() && p.IsActive)
                 .ToListAsync();
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(
