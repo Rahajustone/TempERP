@@ -147,7 +147,9 @@ namespace Samr.ERP.Core.Services
 
             //var queryVm = query.ProjectTo<EditDepartmentViewModel>();
 
-            var orderedQuery = query.OrderBy(sortRule, p => p.Name);
+            //var orderedQuery = query.OrderBy(sortRule, p => p.Name);
+
+            var orderedQuery = query.OrderByDescending(p => p.CreatedAt);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
