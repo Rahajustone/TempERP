@@ -83,7 +83,7 @@ namespace Samr.ERP.Core.Services
 
             smppSession.SmppVersion = SmppVersion.SMPP_V34;
 
-            var asyncResult = smppSession.ConnectAsync(_defaultSMMPSetting.Host, _defaultSMMPSetting.PortNumber);
+            var asyncResult = smppSession.ConnectAsync(_defaultSMMPSetting.HostName, _defaultSMMPSetting.PortNumber);
             asyncResult.AsyncWaitHandle.WaitOne(7000);
 
             if (smppSession.IsConnected)
