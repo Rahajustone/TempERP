@@ -149,7 +149,7 @@ namespace Samr.ERP.Core.Services
 
             //var orderedQuery = query.OrderBy(sortRule, p => p.Name);
 
-            var orderedQuery = query.OrderByDescending(p => p.CreatedAt);
+            var orderedQuery = query.OrderByDescending(p => p.IsActive);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
