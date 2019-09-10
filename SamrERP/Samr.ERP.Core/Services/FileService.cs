@@ -118,7 +118,7 @@ namespace Samr.ERP.Core.Services
         {
             if (string.IsNullOrEmpty(path)) return String.Empty;
 
-            return ApiBaseUrl + "/api/files/getphoto/" + path;
+            return ApiBaseUrl + "/api/files/getphoto?path=" + path;
         }
 
         public static string GetFileArchivePath(string path)
@@ -145,8 +145,7 @@ namespace Samr.ERP.Core.Services
 
         public static string GetFullPath(string path)
         {
-            var result = Path.Combine(_filesPath, path);
-            return result;
+            return Path.Combine(_filesPath, path);
         }
 
         public static string GetFullArchivePath(string path)

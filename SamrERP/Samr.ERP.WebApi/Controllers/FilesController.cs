@@ -29,11 +29,9 @@ namespace Samr.ERP.WebApi.Controllers
         [ResponseCache(Duration = 547657)]
         public IActionResult GetPhoto(string path)
         {
-            path = Path.Combine("Employees\\Photo\\", path);
             if (System.IO.File.Exists(FileService.GetFullPath(path)))
             {
                 var image = System.IO.File.OpenRead(FileService.GetFullPath(path));
-
                 return File(image, "image/jpeg");
             }
 
