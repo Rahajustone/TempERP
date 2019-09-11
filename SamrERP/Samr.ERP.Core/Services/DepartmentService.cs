@@ -85,22 +85,23 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             //var query = GetQueryWithUser();
-            var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             var query = _unitOfWork.Departments.GetDbSet()
                 .Include(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee)
-                //.Include(p=>p.DepartmentLogs)
-                .OrderByDescending(p => p.CreatedAt)
-                //.Where(p => p.DepartmentLogs.Any())
-                .Select(p => new
+                .Include(p => p.DepartmentLogs)
+                .ThenInclude(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee);
+
+            //order enabled only for entity level
+            var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
+
+            var queryVM = orderedQuery.Select(p => new
                 {
                     Department = p,
-                    ModifiedAt = p.DepartmentLogs
-                        .OrderByDescending(m => m.CreatedAt).FirstOrDefault().CreatedAt,
-                    Employee = p.DepartmentLogs
-                        .OrderByDescending(m => m.CreatedAt).FirstOrDefault().CreatedUser.Employee
+                    Employee = p.DepartmentLogs.OrderByDescending(m=>m.CreatedAt).Select(m=>m.CreatedUser.Employee).FirstOrDefault(),
+                    ModifiedAt = p.DepartmentLogs.OrderByDescending(m => m.CreatedAt).Select(m => m.CreatedAt).FirstOrDefault(),
                 })
                 .Select(p => new EditDepartmentViewModel()
                 {
@@ -113,45 +114,14 @@ namespace Samr.ERP.Core.Services
                     FirstName = p.Employee != null ? p.Employee.FirstName : p.Department.CreatedUser.Employee.FirstName,
                     MiddleName =
                         p.Employee != null ? p.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
-                    LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName
+                    LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName,
                 });
-                //.Select(p => new GetAllDepartmentViewModel()
-                //{
-                //    Id = p.p.Id,
-                //    ModifiedAt = p.depLog != null ?
-                //        p.depLog.CreatedAt.ToShortDateString() :
-                //        p.p.CreatedAt.ToShortDateString(),
-                //    Name = p.p.Name,
-                //    IsActive = p.p.IsActive,
-                //    Employee = p.depLog != null ? p.depLog.CreatedUser.Employee : p.p.CreatedUser.Employee
-                    
-                  
-                //})
-            //.ProjectTo<GetAllDepartmentViewModel>()
-            //.ToList();
-            stopwatch.Stop();
-            //.Where(p=>p.DepartmentLog != null)
 
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            queryVM = FilterQuery(filterHandbook, queryVM);
 
-            // TODO
-            //.Select( p => new DepartmentListViewModel
-            //{
-            //    Department =  p,
-            //    DepartmentLog =  _unitOfWork.DepartmentLogs.GetDbSet().Take(1).FirstOrDefault( j => j.DepartmentId == p.Id)
-            //})
-            //.AsQueryable()
-            //;
+            //var orderedQuery = query.OrderByDescending(p => p.IsActive);
 
-            query = FilterQuery(filterHandbook, query);
-
-            //var queryVm = query.ProjectTo<EditDepartmentViewModel>();
-
-            //var orderedQuery = query.OrderBy(sortRule, p => p.Name);
-
-            var orderedQuery = query.OrderByDescending(p => p.IsActive);
-
-            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+            var pagedList = await queryVM.ToPagedListAsync(pagingOptions);
 
             return BaseDataResponse<PagedList<EditDepartmentViewModel>>.Success(pagedList);
         }
