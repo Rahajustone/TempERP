@@ -90,11 +90,13 @@ namespace Samr.ERP.Core.Services
 
             var query = _unitOfWork.Departments.GetDbSet()
                 .Include(p => p.CreatedUser)
-                .ThenInclude(p => p.Employee)
-                //.Include(p=>p.DepartmentLogs)
-                .OrderByDescending(p => p.CreatedAt)
-                //.Where(p => p.DepartmentLogs.Any())
-                .Select(p => new
+                .ThenInclude(p => p.Employee)     ;
+
+            var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
+
+
+
+            var queryVM = orderedQuery.Select(p => new
                 {
                     Department = p,
                     ModifiedAt = p.DepartmentLogs
@@ -115,43 +117,19 @@ namespace Samr.ERP.Core.Services
                         p.Employee != null ? p.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
                     LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName
                 });
-                //.Select(p => new GetAllDepartmentViewModel()
-                //{
-                //    Id = p.p.Id,
-                //    ModifiedAt = p.depLog != null ?
-                //        p.depLog.CreatedAt.ToShortDateString() :
-                //        p.p.CreatedAt.ToShortDateString(),
-                //    Name = p.p.Name,
-                //    IsActive = p.p.IsActive,
-                //    Employee = p.depLog != null ? p.depLog.CreatedUser.Employee : p.p.CreatedUser.Employee
-                    
-                  
-                //})
-            //.ProjectTo<GetAllDepartmentViewModel>()
-            //.ToList();
             stopwatch.Stop();
-            //.Where(p=>p.DepartmentLog != null)
 
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
 
-            // TODO
-            //.Select( p => new DepartmentListViewModel
-            //{
-            //    Department =  p,
-            //    DepartmentLog =  _unitOfWork.DepartmentLogs.GetDbSet().Take(1).FirstOrDefault( j => j.DepartmentId == p.Id)
-            //})
-            //.AsQueryable()
-            //;
-
-            query = FilterQuery(filterHandbook, query);
+            queryVM = FilterQuery(filterHandbook, queryVM);
 
             //var queryVm = query.ProjectTo<EditDepartmentViewModel>();
 
-            //var orderedQuery = query.OrderBy(sortRule, p => p.Name);
+            
 
-            var orderedQuery = query.OrderByDescending(p => p.IsActive);
+            //var orderedQuery = query.OrderByDescending(p => p.IsActive);
 
-            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+            var pagedList = await queryVM.ToPagedListAsync(pagingOptions);
 
             return BaseDataResponse<PagedList<EditDepartmentViewModel>>.Success(pagedList);
         }
