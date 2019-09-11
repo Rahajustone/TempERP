@@ -90,32 +90,32 @@ namespace Samr.ERP.Core.Services
 
             var query = _unitOfWork.Departments.GetDbSet()
                 .Include(p => p.CreatedUser)
-                .ThenInclude(p => p.Employee)     ;
+                .ThenInclude(p => p.Employee)
+                .Include(p => p.DepartmentLogs)
+                .ThenInclude(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee);
+
 
             var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
-
-
-
+         
             var queryVM = orderedQuery.Select(p => new
                 {
                     Department = p,
-                    ModifiedAt = p.DepartmentLogs
-                        .OrderByDescending(m => m.CreatedAt).FirstOrDefault().CreatedAt,
-                    Employee = p.DepartmentLogs
-                        .OrderByDescending(m => m.CreatedAt).FirstOrDefault().CreatedUser.Employee
+                    DepLog = _unitOfWork.DepartmentLogs.GetDbSet().OrderByDescending(m => m.CreatedAt).FirstOrDefault(m => m.DepartmentId == p.Id)
                 })
                 .Select(p => new EditDepartmentViewModel()
                 {
                     Id = p.Department.Id,
-                    CreatedAt = p.Employee != null
-                        ? p.ModifiedAt.ToShortDateString()
-                        : p.Department.CreatedAt.ToShortDateString(),
+                    CreatedAt = p.DepLog.CreatedUser.Employee != null
+                        ? p.DepLog.CreatedAt.ToString()
+                        : p.Department.CreatedAt.ToString(),
                     Name = p.Department.Name,
                     IsActive = p.Department.IsActive,
-                    FirstName = p.Employee != null ? p.Employee.FirstName : p.Department.CreatedUser.Employee.FirstName,
+                    FirstName = p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.FirstName : p.Department.CreatedUser.Employee.FirstName,
                     MiddleName =
-                        p.Employee != null ? p.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
-                    LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName
+                        p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
+                    LastName = p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.LastName : p.Department.CreatedUser.Employee.LastName,
+                    //EmployeeId = p.Employee.Id
                 });
             stopwatch.Stop();
 
