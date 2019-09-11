@@ -25,7 +25,7 @@ namespace Samr.ERP.WebApi.Controllers
             _fileService = fileService;
         }
 
-        [HttpGet("{path}")]
+        [HttpGet]
         [ResponseCache(Duration = 547657)]
         public IActionResult GetPhoto(string path)
         {
