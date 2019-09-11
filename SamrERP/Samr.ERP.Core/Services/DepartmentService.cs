@@ -96,24 +96,36 @@ namespace Samr.ERP.Core.Services
                 .ThenInclude(p => p.Employee);
 
             var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
-         
+
+            //var queryVM2 = orderedQuery.Where(p => p.Name == "panda11").Select(p => new
+            //{
+            //    Department = p,
+            //    DepLog = _unitOfWork.DepartmentLogs.GetDbSet().OrderByDescending(m => m.CreatedAt)
+            //        .FirstOrDefault(m => m.DepartmentId == p.Id)
+            //}).Select(p => new
+            //{
+            //    A = p.DepLog,
+            //    B = p.Department
+            //})
+            //.ToList();
             var queryVM = orderedQuery.Select(p => new
                 {
                     Department = p,
-                    DepLog = _unitOfWork.DepartmentLogs.GetDbSet().OrderByDescending(m => m.CreatedAt).FirstOrDefault(m => m.DepartmentId == p.Id)
+                    Employee = p.DepartmentLogs.OrderByDescending(m=>m.CreatedAt).Select(m=>m.CreatedUser.Employee).FirstOrDefault(),
+                    ModifiedAt = p.DepartmentLogs.OrderByDescending(m => m.CreatedAt).Select(m => m.CreatedAt).FirstOrDefault(),
                 })
                 .Select(p => new EditDepartmentViewModel()
                 {
                     Id = p.Department.Id,
-                    CreatedAt = p.DepLog.CreatedUser.Employee != null
-                        ? p.DepLog.CreatedAt.ToString()
-                        : p.Department.CreatedAt.ToString(),
+                    CreatedAt = p.Employee != null
+                        ? p.ModifiedAt.ToShortDateString()
+                        : p.Department.CreatedAt.ToShortDateString(),
                     Name = p.Department.Name,
                     IsActive = p.Department.IsActive,
-                    FirstName = p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.FirstName : p.Department.CreatedUser.Employee.FirstName,
+                    FirstName = p.Employee != null ? p.Employee.FirstName : p.Department.CreatedUser.Employee.FirstName,
                     MiddleName =
-                        p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
-                    LastName = p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.LastName : p.Department.CreatedUser.Employee.LastName,
+                        p.Employee != null ? p.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
+                    LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName,
                 });
             stopwatch.Stop();
 
