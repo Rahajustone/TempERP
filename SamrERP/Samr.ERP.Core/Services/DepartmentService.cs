@@ -85,7 +85,6 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
             //var query = GetQueryWithUser();
-            var stopwatch = new Stopwatch();
             stopwatch.Start();
 
             var query = _unitOfWork.Departments.GetDbSet()
@@ -95,19 +94,9 @@ namespace Samr.ERP.Core.Services
                 .ThenInclude(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee);
 
+            //order enabled only for entity level
             var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
 
-            //var queryVM2 = orderedQuery.Where(p => p.Name == "panda11").Select(p => new
-            //{
-            //    Department = p,
-            //    DepLog = _unitOfWork.DepartmentLogs.GetDbSet().OrderByDescending(m => m.CreatedAt)
-            //        .FirstOrDefault(m => m.DepartmentId == p.Id)
-            //}).Select(p => new
-            //{
-            //    A = p.DepLog,
-            //    B = p.Department
-            //})
-            //.ToList();
             var queryVM = orderedQuery.Select(p => new
                 {
                     Department = p,
@@ -127,15 +116,8 @@ namespace Samr.ERP.Core.Services
                         p.Employee != null ? p.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
                     LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName,
                 });
-            stopwatch.Stop();
-
-            Console.WriteLine(stopwatch.ElapsedMilliseconds);
 
             queryVM = FilterQuery(filterHandbook, queryVM);
-
-            //var queryVm = query.ProjectTo<EditDepartmentViewModel>();
-
-            
 
             //var orderedQuery = query.OrderByDescending(p => p.IsActive);
 
