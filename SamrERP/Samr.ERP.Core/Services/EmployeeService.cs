@@ -193,7 +193,8 @@ namespace Samr.ERP.Core.Services
             {
                 UserName = employee.Phone,
                 Email = employee.Email,
-                PhoneNumber = employee.Phone
+                PhoneNumber = employee.Phone,
+                EmployeeId = employee.Id
             };
 
             var generateNewPassword = RandomGenerator.GenerateNewPassword();
@@ -325,7 +326,6 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId)
         {
-
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.Id == employeeId);
