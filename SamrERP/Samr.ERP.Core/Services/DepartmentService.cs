@@ -95,7 +95,6 @@ namespace Samr.ERP.Core.Services
                 .ThenInclude(p => p.CreatedUser)
                 .ThenInclude(p => p.Employee);
 
-
             var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
          
             var queryVM = orderedQuery.Select(p => new
@@ -115,7 +114,6 @@ namespace Samr.ERP.Core.Services
                     MiddleName =
                         p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
                     LastName = p.DepLog.CreatedUser.Employee != null ? p.DepLog.CreatedUser.Employee.LastName : p.Department.CreatedUser.Employee.LastName,
-                    //EmployeeId = p.Employee.Id
                 });
             stopwatch.Stop();
 

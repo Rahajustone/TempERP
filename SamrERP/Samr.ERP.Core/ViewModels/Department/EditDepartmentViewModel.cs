@@ -13,6 +13,5 @@ namespace Samr.ERP.Core.ViewModels.Department
         public string CreatedUserName => Extension.FullNameToString(LastName, FirstName, MiddleName);
 
         public string CreatedAt { get; set; }
-        public Guid EmployeeId { get; set; }
     }
 }
