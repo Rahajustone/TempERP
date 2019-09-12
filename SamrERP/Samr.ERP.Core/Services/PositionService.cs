@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Common;
+using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -48,7 +50,7 @@ namespace Samr.ERP.Core.Services
                 .ThenInclude(p => p.Employee);
         }
 
-        private IQueryable<Position> FilterQuery(FilterPositionViewModel filterPosition, IQueryable<Position> query)
+        private IQueryable<ResponsePositionViewModel> FilterQuery(FilterPositionViewModel filterPosition, IQueryable<ResponsePositionViewModel> query)
         {
             if (filterPosition.Name != null)
             {
@@ -99,13 +101,20 @@ namespace Samr.ERP.Core.Services
         {
             var query = GetAllQuery();
 
-            query = FilterQuery(filterPosition, query);
+            var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
 
-            var queryVm = query.ProjectTo<ResponsePositionViewModel>();
+            var queryVM = orderedQuery.Select(p => new GetAllListPositionViewModel
+            {
+                Position = p,
+                Employee = p.PositionLogs.OrderByDescending(m => m.CreatedAt).Select(m => m.CreatedUser.Employee)
+                    .FirstOrDefault(),
+                ModifiedAt = p.PositionLogs.OrderByDescending(m => m.CreatedAt).Select(m => m.CreatedAt)
+                    .FirstOrDefault(),
+            }).ProjectTo<ResponsePositionViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.CreatedAt);
+            queryVM = FilterQuery(filterPosition, queryVM);
 
-            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+            var pagedList = await queryVM.ToPagedListAsync(pagingOptions);
 
             return BaseDataResponse<PagedList<ResponsePositionViewModel>>.Success(pagedList);
         }

@@ -411,7 +411,33 @@ namespace Samr.ERP.Core.AutoMapper.AutoMapperProfiles
                 .ForMember(dst => dst.CreatedAt,
                     src => src.MapFrom(
                         map => map.CreatedAt.ToStringCustomFormat()));
-             
+
+            CreateMap<GetAllListPositionViewModel, ResponsePositionViewModel>()
+                .ForMember(dst => dst.Id,
+                    src => src.MapFrom(
+                        map => map.Position.Id))
+                .ForMember(dst => dst.Name,
+                    src => src.MapFrom(
+                        map => map.Position.Name))
+                .ForMember(dst => dst.DepartmentName,
+                    src => src.MapFrom(
+                        map => map.Position.Department.Name))
+                .ForMember(dst => dst.IsActive,
+                    src => src.MapFrom(
+                        map => map.Position.IsActive))
+                .ForMember(dst => dst.CreatedAt,
+                    src => src.MapFrom(
+                        map => map.Employee != null ? map.ModifiedAt.ToShortDateString() : map.Position.CreatedAt.ToShortDateString()))
+                .ForMember(dst => dst.FirstName,
+                    src => src.MapFrom(
+                        map => map.Employee != null ? map.Employee.FirstName : map.Position.CreatedUser.Employee.FirstName))
+                .ForMember(dst => dst.LastName,
+                    src => src.MapFrom(
+                        map => map.Employee != null ? map.Employee.LastName : map.Position.CreatedUser.Employee.LastName))
+                .ForMember(dst => dst.MiddleName,
+                    src => src.MapFrom(
+                        map => map.Employee != null ? map.Employee.MiddleName : map.Position.CreatedUser.Employee.MiddleName));
+            
             CreateMap<Position, SelectListItemViewModel>();
             #endregion
 

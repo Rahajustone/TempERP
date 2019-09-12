@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
@@ -10,6 +11,6 @@ namespace Samr.ERP.Infrastructure.Entities
 {
     public class Position : PositionBaseObject
     {
-        
+        public ICollection<PositionLog> PositionLogs { get; set; }
     }
 }

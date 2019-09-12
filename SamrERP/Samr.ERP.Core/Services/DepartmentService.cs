@@ -84,7 +84,6 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
-            //var query = GetQueryWithUser();
             
 
             var query = _unitOfWork.Departments.GetDbSet()
