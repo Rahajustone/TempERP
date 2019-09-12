@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
@@ -9,13 +10,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using Samr.ERP.Core.Auth;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Services;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
+using Samr.ERP.WebApi.Filters;
 using Samr.ERP.WebApi.Services;
 
 namespace Samr.ERP.WebApi.Controllers
@@ -68,6 +71,7 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpPost]
         [Authorize(Roles = Roles.EmployeeCreate)]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EditEmployeeViewModel>> Create([FromForm] EditEmployeeViewModel editEmployeeViewModel)
         {
             if (ModelState.IsValid)
@@ -83,6 +87,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseDataResponse<EditEmployeeViewModel>> Edit(
             [FromForm] EditEmployeeViewModel editEmployeeViewModel)
@@ -106,6 +111,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseResponse> LockEmployee([FromBody] LockEmployeeViewModel lockEmployeeViewModel)
         {
@@ -139,6 +145,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         [Authorize(Roles = Roles.EmployeeEdit)]
         public async Task<BaseResponse> EditPassportData([FromForm]
             EditPassportDataEmployeeViewModel editPassportDataEmployeeViewModel)
@@ -149,7 +156,6 @@ namespace Samr.ERP.WebApi.Controllers
 
                 return Response(response);
             }
-
             return Response(BaseResponse.Fail());
         }
 
@@ -194,7 +200,7 @@ namespace Samr.ERP.WebApi.Controllers
                     worksheet.Column(col).AutoFit();
                 }
 
-                var fileName = $"Список_сотрудников({DateTime.Now.ToString("dd_MM_yyyy")})";
+                var fileName = $"Список_сотрудников({DateTime.Now:dd_MM_yyyy_HH_mm_ss})";
                 return File(package.GetAsByteArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
         }
@@ -215,18 +221,20 @@ namespace Samr.ERP.WebApi.Controllers
                 var html = await _htmlTemplateXService.RenderTemplateAsync("Employee/EmployeeCardTemplate",
                         employeeCardViewModel);
 
-
-                var fileName = $"employeeCard({DateTime.Now.ToString("dd_MM_yyyy")})";
+                var fileName = $"{employeeCardViewModel.FullName.ToDownloadFileName()}({DateTime.Now:dd.MM.yyyy HH-mm})";
 
                 var pdfBytes = _pdfConverterService.ConvertToPdf(html);
                 return File(pdfBytes, "application/pdf", fileName);
-
-
             }
 
             return NotFound("employee not found");
         }
 
-
+        [HttpGet("{id}")]
+        public async Task<BaseDataResponse<PagedList<EmployeeLogViewModel>>> GetAllLog(Guid id, [FromQuery]PagingOptions pagingOptions, [FromQuery] SortRule sortRule)
+        {
+            var employeeLogs = await _employeeService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(employeeLogs);
+        }
     }
 }

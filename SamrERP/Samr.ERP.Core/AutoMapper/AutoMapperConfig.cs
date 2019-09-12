@@ -12,6 +12,7 @@ namespace Samr.ERP.Core.AutoMapper
             void ExpressionConfig(IMapperConfigurationExpression cfg)
             {
                 cfg.AddProfile(new EntityToViewModelProfile());
+                cfg.CreateMap(typeof(Source<>), typeof(Destination<>));
             }
 
             var mapperConfiguration = new MapperConfiguration((Action<IMapperConfigurationExpression>) ExpressionConfig);

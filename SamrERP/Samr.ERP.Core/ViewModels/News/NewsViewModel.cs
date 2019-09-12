@@ -24,6 +24,6 @@ namespace Samr.ERP.Core.ViewModels.News
         [Required]
         public string PublishAt { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
     }
 }

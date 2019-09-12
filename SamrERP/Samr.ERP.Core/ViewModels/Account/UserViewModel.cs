@@ -10,7 +10,7 @@ namespace Samr.ERP.Core.ViewModels.Account
         public bool IsLocked { get; set; }
         public Guid? UserLockReasonId { get; set; }
         public string UserLockReasonName { get; set; }
-        public DateTime? LockDate { get; set; }
+        public string LockDate { get; set; }
         public string LockUserFullName { get; set; }
         
     }

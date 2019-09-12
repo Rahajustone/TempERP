@@ -9,10 +9,11 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Handbook.UserLockReason;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -29,7 +30,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<UserLockReasonViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponseUserLockReasonViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterHandbookViewModel filterHandbook, [FromQuery] SortRule sortRule)
         {
             var userLockReasons = await _userLockReasonService.GetAllAsync(pagingOptions, filterHandbook, sortRule);
             return Response(userLockReasons);
@@ -44,7 +45,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> Get(Guid id)
         {
             var userLockReasons = await _userLockReasonService.GetByIdAsync(id);
 
@@ -52,7 +53,8 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> Create(UserLockReasonViewModel userLockReasonViewModel)
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> Create(RequestUserLockReasonViewModel userLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -61,19 +63,27 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(result);
             }
 
-            return Response(BaseDataResponse<UserLockReasonViewModel>.NotFound(null));
+            return Response(BaseDataResponse<ResponseUserLockReasonViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<UserLockReasonViewModel>> Edit([FromBody] UserLockReasonViewModel positionViewModel)
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<ResponseUserLockReasonViewModel>> Edit([FromBody] RequestUserLockReasonViewModel userLockReasonViewModel)
         {
             if (ModelState.IsValid)
             {
-                var responseData = await _userLockReasonService.EditAsync(positionViewModel);
+                var responseData = await _userLockReasonService.EditAsync(userLockReasonViewModel);
                 return Response(responseData);
             }
 
-            return Response(BaseDataResponse<UserLockReasonViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponseUserLockReasonViewModel>.Fail(null));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<BaseDataResponse<PagedList<UserLockReasonLogViewModel>>> GetAllLog(Guid id, [FromQuery] PagingOptions pagingOptions, [FromQuery]SortRule sortRule)
+        {
+            var response = await _userLockReasonService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(response);
         }
     }
 }

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 
 namespace Samr.ERP.Core.ViewModels.FileArchive
 {
-    public class EditFileArchiveViewModel : FileArchiveViewModel
+    public class EditFileArchiveViewModel : CreateFileArchiveViewModel
     {
-        public IFormFile File { get; set; }
-        public string CreatedUserName { get; set; }
+        public Guid Id { get; set; }
     }
 }

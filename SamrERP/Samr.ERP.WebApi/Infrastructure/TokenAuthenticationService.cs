@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
@@ -69,20 +70,20 @@ namespace Samr.ERP.WebApi.Infrastructure
         {
             var authenticateResult = new AuthenticateResult();
             User user = await _userService.GetByPhoneNumber(loginModel.PhoneNumber);
-            if (user == null) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("login or pass not correct"));
+            if (user == null) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel(ErrorCode.InvalidLoginPass));
 
             var checkPasswordResult = await _signInManager.CheckPasswordSignInAsync(user, loginModel.Password, false);
-            if (!checkPasswordResult.Succeeded) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("login or pass not correct"));
+            if (!checkPasswordResult.Succeeded) return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel(ErrorCode.InvalidLoginPass));
 
             var canSighInResult = await _signInManager.CanSignInAsync(user);
-            if (!canSighInResult || user.LockDate != null) return BaseDataResponse<AuthenticateResult>.Fail(null,  new ErrorModel("you cant login call to support"));
+            if (!canSighInResult || user.LockDate != null) return BaseDataResponse<AuthenticateResult>.Fail(null,  new ErrorModel(ErrorCode.AccountOrEmployeeLocked));
 
             var token = GetJwtTokenForUser(user, loginModel.RememberMe);
 
             var refreshToken = GenerateTokenByRandomNumber();
             var remoteIpAddress = _accessor.HttpContext.Connection.RemoteIpAddress?.ToString();
             await _userService.ClearUserRefreshToken(user.Id);
-            await _userService.AddRefreshToken(refreshToken, user.Id, remoteIpAddress); // add the new one
+            await _userService.AddRefreshToken(refreshToken, user.Id, remoteIpAddress,_tokenSettings.Value.RefreshExpiration / 60*24); // add the new one
             await _activeUserTokenService.AddOrRefreshUserToken(user.Id, token);
 
             return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(token, refreshToken));
@@ -113,6 +114,7 @@ namespace Samr.ERP.WebApi.Infrastructure
                     return BaseDataResponse<AuthenticateResult>.Success(new AuthenticateResult(jwtToken, refreshToken));
 
                 }
+                return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("invalid refresh token"));
             }
             return BaseDataResponse<AuthenticateResult>.Fail(null, new ErrorModel("invalid token"));
         }
@@ -130,17 +132,20 @@ namespace Samr.ERP.WebApi.Infrastructure
 
         private string GetJwtTokenForUser(User user, bool remember = false)
         {
-            var employee = _employeeService.GetEmployeeInfo(user.Id);
+            var employee = _employeeService.GetEmployeeInfo(user.Id).Result;
 
             //TODO:Amir need to finish claims
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.PhoneNumber),
                 new Claim("id", user.Id.ToString()),
-                new Claim("name", employee.Result.FullName),
-                new Claim("position", employee.Result.PositionName),
-                new Claim("photo",employee.Result.Photo),
             };
+            if (employee != null)
+            {
+                claims.Add(new Claim("name", employee.FullName));
+                claims.Add(new Claim("position", employee.PositionName));
+                claims.Add(new Claim("photo", employee.Photo));
+            }
 
             var roles = _userManager.GetRolesAsync(user).Result;
 

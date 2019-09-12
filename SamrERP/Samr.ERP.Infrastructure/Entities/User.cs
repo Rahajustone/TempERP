@@ -10,6 +10,10 @@ namespace Samr.ERP.Infrastructure.Entities
 {
     public class User : IdentityUser<Guid>
     {
+        public Guid EmployeeId { get; set; }
+        [ForeignKey(nameof(EmployeeId))]
+        public Employee Employee { get; set; }
+
         public override String Email { get; set;  }
 
         public Guid? UserLockReasonId { get; set; }

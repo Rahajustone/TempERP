@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Differencing;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.ViewModels.EmailSetting;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -26,6 +28,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<EmailSettingViewModel>> Create(EmailSettingViewModel emailSettingViewModel)
         {
             if (ModelState.IsValid)
@@ -42,10 +45,31 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(_emailSettingService.GetAll());
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<BaseDataResponse<EmailSettingViewModel>> GetById(Guid id)
         {
             return Response(await _emailSettingService.GetByIdAsync(id));
+        }
+
+        [HttpPost]
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<EmailSettingViewModel>> Edit(EmailSettingViewModel emailSettingViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _emailSettingService.EditAsync(emailSettingViewModel);
+
+                return Response(response);
+            }
+
+            return Response(BaseDataResponse<EmailSettingViewModel>.Fail(emailSettingViewModel));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<BaseResponse> Delete(Guid id)
+        {
+            var response = await _emailSettingService.Delete(id);
+            return Response(response);
         }
     }
 }

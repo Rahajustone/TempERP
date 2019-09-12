@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Expressions;
+using Samr.ERP.Core.AutoMapper.AutoMapperProfiles;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
@@ -23,24 +27,24 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHandbookService _handbookService;
+        private readonly IHistoryService<DepartmentLog, Department> _historyService;
 
-        public DepartmentService(
-            IUnitOfWork unitOfWork, 
-            IMapper mapper, 
-            IHandbookService handbookService)
+        public DepartmentService(IUnitOfWork unitOfWork, IMapper mapper, IHistoryService<DepartmentLog, Department> historyService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _handbookService = handbookService;
+            _historyService = historyService;
         }
 
         private IQueryable<Department> GetQueryWithUser()
         {
-            return _unitOfWork.Departments.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.Departments.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .OrderByDescending(p => p.CreatedAt);
         }
 
-        private IQueryable<Department> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<Department> query)
+        private IQueryable<EditDepartmentViewModel> FilterQuery(FilterHandbookViewModel filterHandbook, IQueryable<EditDepartmentViewModel> query)
         {
             if (filterHandbook.Name != null)
             {
@@ -55,35 +59,68 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> GetByIdAsync(Guid id)
         {
-            var department = await GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
+            var existsDepartment = await GetQueryWithUser()
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            BaseDataResponse<EditDepartmentViewModel> dataResponse;
+            if (existsDepartment == null)
+                return BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null);
 
-            if (department == null)
+            var existsDepartmentLog = await _unitOfWork.DepartmentLogs.GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .FirstOrDefaultAsync(a => a.DepartmentId == existsDepartment.Id);
+
+            if (existsDepartmentLog != null)
             {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(null);
+                existsDepartment.CreatedUser = existsDepartmentLog.CreatedUser;
+                existsDepartment.CreatedAt = existsDepartmentLog.CreatedAt;
             }
-            else
-            {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-            }
-            
-            return dataResponse;
+
+            return BaseDataResponse<ResponseDepartmentViewModel>.Success(_mapper.Map<ResponseDepartmentViewModel>(existsDepartment));
         }
 
         public async Task<BaseDataResponse<PagedList<EditDepartmentViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterHandbookViewModel filterHandbook, SortRule sortRule)
         {
-            var query = GetQueryWithUser();
+            
 
-            query = FilterQuery(filterHandbook, query);
+            var query = _unitOfWork.Departments.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .Include(p => p.DepartmentLogs)
+                .ThenInclude(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee);
 
-            var queryVm = query.ProjectTo<EditDepartmentViewModel>();
+            //order enabled only for entity level
+            var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+            var queryVM = orderedQuery.Select(p => new
+                {
+                    Department = p,
+                    Employee = p.DepartmentLogs.OrderByDescending(m=>m.CreatedAt).Select(m=>m.CreatedUser.Employee).FirstOrDefault(),
+                    ModifiedAt = p.DepartmentLogs.OrderByDescending(m => m.CreatedAt).Select(m => m.CreatedAt).FirstOrDefault(),
+                })
+                .Select(p => new EditDepartmentViewModel()
+                {
+                    Id = p.Department.Id,
+                    CreatedAt = p.Employee != null
+                        ? p.ModifiedAt.ToShortDateString()
+                        : p.Department.CreatedAt.ToShortDateString(),
+                    Name = p.Department.Name,
+                    IsActive = p.Department.IsActive,
+                    FirstName = p.Employee != null ? p.Employee.FirstName : p.Department.CreatedUser.Employee.FirstName,
+                    MiddleName =
+                        p.Employee != null ? p.Employee.MiddleName : p.Department.CreatedUser.Employee.MiddleName,
+                    LastName = p.Employee != null ? p.Employee.LastName : p.Department.CreatedUser.Employee.LastName,
+                });
 
-            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+            queryVM = FilterQuery(filterHandbook, queryVM);
+
+            //var orderedQuery = query.OrderByDescending(p => p.IsActive);
+
+            var pagedList = await queryVM.ToPagedListAsync(pagingOptions);
 
             return BaseDataResponse<PagedList<EditDepartmentViewModel>>.Success(pagedList);
         }
@@ -97,82 +134,84 @@ namespace Samr.ERP.Core.Services
         {
             var departments = await GetQueryWithUser()
                 .Where(e => e.IsActive)
+                .OrderBy(p => p.Name)
                 .ToListAsync();
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(_mapper.Map<IEnumerable<SelectListItemViewModel>>(departments));
         }
 
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> CreateAsync(EditDepartmentViewModel editDepartmentViewModel)
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListItemWithPositionAsync()
         {
-            BaseDataResponse<EditDepartmentViewModel> dataResponse;
+            var departmentsWithPosition = await GetQueryWithUser()
+                .Include(p => p.Positions)
+                .Where( p => p.Positions.Any() && p.IsActive)
+                .ToListAsync();
 
-            var departmentExists = await CheckDepartmentNameUnique(editDepartmentViewModel.Name);
-            if (departmentExists)
-            {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("Already this model in database."));
-            }
-            else
-            {
-                var department = _mapper.Map<Department>(editDepartmentViewModel);
-                _unitOfWork.Departments.Add(department);
-
-                var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUserId);
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
-
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-                }
-                else
-                {
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("Not found handbook."));
-                }
-            }
-
-            return dataResponse;
+            return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(
+                _mapper.Map<IEnumerable<SelectListItemViewModel>>(departmentsWithPosition));
         }
 
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> UpdateAsync(EditDepartmentViewModel editDepartmentViewModel)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> CreateAsync(RequestDepartmentViewModel requestDepartmentViewModel)
         {
-            BaseDataResponse<EditDepartmentViewModel> dataResponse;
+
+            var departmentExists = await CheckDepartmentNameUnique(requestDepartmentViewModel.Name);
+            if (departmentExists)
+                return BaseDataResponse<ResponseDepartmentViewModel>.NotFound(
+                    _mapper.Map<ResponseDepartmentViewModel>(requestDepartmentViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+
+            var department = _mapper.Map<Department>(requestDepartmentViewModel);
+            _unitOfWork.Departments.Add(department);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(department.Id);
+        }
+
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> EditAsync(RequestDepartmentViewModel requestDepartmentViewModel)
+        {
 
             var departmentExists = await _unitOfWork.Departments.GetDbSet()
-                .FirstOrDefaultAsync(p => p.Id == editDepartmentViewModel.Id);
+                .FirstOrDefaultAsync(p => p.Id == requestDepartmentViewModel.Id);
+            if (departmentExists == null)
+                return BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null);
 
-            if (departmentExists != null)
-            {
-                var checkNameUnique = await _unitOfWork.Departments
+            var checkNameUnique = await _unitOfWork.Departments
                     .GetDbSet()
-                    .AnyAsync(d => d.Id != editDepartmentViewModel.Id && d.Name.ToLower() == editDepartmentViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("We have already this department"));
-                }
-                else
-                {
-                    var department = _mapper.Map<EditDepartmentViewModel, Department>(editDepartmentViewModel, departmentExists);
+                    .AnyAsync(d =>
+                        d.Id != requestDepartmentViewModel.Id &&
+                        d.Name.ToLower() == requestDepartmentViewModel.Name.ToLower());
+            if (checkNameUnique)
+                return BaseDataResponse<ResponseDepartmentViewModel>.Fail(
+                    _mapper.Map<ResponseDepartmentViewModel>(requestDepartmentViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
 
-                    _unitOfWork.Departments.Update(department);
+            var departmentLog = _mapper.Map<DepartmentLog>(departmentExists);
+            _unitOfWork.DepartmentLogs.Add(departmentLog);
 
-                    var handbookExists = await _handbookService.ChangeStatus("Department", department.CreatedUserId);
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
+            var department = _mapper.Map<RequestDepartmentViewModel, Department>(requestDepartmentViewModel, departmentExists);
+            _unitOfWork.Departments.Update(department);
 
-                        dataResponse = BaseDataResponse<EditDepartmentViewModel>.Success(_mapper.Map<EditDepartmentViewModel>(department));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<EditDepartmentViewModel>.Fail(editDepartmentViewModel, new ErrorModel("Not found handbook."));
-                    }
-                }
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<EditDepartmentViewModel>.NotFound(editDepartmentViewModel);
-            }
+            await _unitOfWork.CommitAsync();
 
-            return dataResponse;
+            return await GetByIdAsync(department.Id);
+        }
+
+        public async Task<BaseDataResponse<PagedList<DepartmentLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.DepartmentLogs.GetDbSet()
+                .Where(d => d.DepartmentId == id)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .OrderByDescending(p => p.CreatedAt);
+
+            var queryVm = query.ProjectTo<DepartmentLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<DepartmentLogViewModel>>.Success(pagedList);
         }
     }
 }

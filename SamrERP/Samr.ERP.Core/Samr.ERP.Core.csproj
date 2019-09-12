@@ -18,10 +18,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Samr.ERP.Infrastructure\Samr.ERP.Infrastructure.csproj" />
+    <ProjectReference Include="..\SMPP\SMPP.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\RequestModels\" />
+    <Folder Include="ViewModels\Notification\" />
   </ItemGroup>
 
 </Project>

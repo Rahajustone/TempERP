@@ -7,11 +7,8 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class UsefulLinkCategory : CreatableByUserBaseObject, IActivable, ICreatable
+    public class UsefulLinkCategory : UsefulLinkCategoryBaseObject
     {
-        [Required]
-        public string Name { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public ICollection<UsefulLink> UsefulLinks { get; set; }
     }
 }

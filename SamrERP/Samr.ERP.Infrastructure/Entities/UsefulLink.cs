@@ -13,11 +13,15 @@ namespace Samr.ERP.Infrastructure.Entities
     {
         [Required]
         public Guid UsefulLinkCategoryId { get; set; }
+        [ForeignKey(nameof(UsefulLinkCategoryId))]
         public UsefulLinkCategory UsefulLinkCategory { get; set; }
 
         [Required]
-        [StringLength(128)]
-        public string ShortDescription { get; set; }
+        public string Url { get; set; }
+
+        [Required]
+        [StringLength(256)]
+        public string Title { get; set; }
         
         [StringLength(512)]
         public string Description { get; set; }

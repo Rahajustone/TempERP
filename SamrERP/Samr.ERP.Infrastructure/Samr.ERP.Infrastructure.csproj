@@ -11,18 +11,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190727112503_testfc.cs" />
-    <Compile Remove="Migrations\20190729054759_Notifation.cs" />
-    <Compile Remove="Migrations\20190729054939_Notifation2.cs" />
-    <Compile Remove="Migrations\20190729055425_Notifation.cs" />
-    <Compile Remove="Migrations\20190729060047_Notifation22.cs" />
-    <Compile Remove="Migrations\20190730132400_SystemUserSeed.cs" />
-    <Compile Remove="Migrations\20190730132415_SystemUserSeed2.cs" />
-    <Compile Remove="Migrations\20190730135232_SystemUserSeed2.cs" />
+    <Compile Remove="Migrations\20190801083303_Initial.cs" />
+    <Compile Remove="Migrations\20190801103539_ss.cs" />
+    <Compile Remove="Migrations\20190801104229_SeedData.cs" />
+    <Compile Remove="Migrations\20190801093427_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801094436_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801101622_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190801102241_fk.cs" />
+    <Compile Remove="Migrations\20190801103349_fk.cs" />
+    <Compile Remove="Migrations\20190801110308_DepartmentLog.cs" />
+    <Compile Remove="Migrations\20190802044539_AddFieldToNewss.cs" />
+    <Compile Remove="Migrations\20190807053047_ForegignKyFix.cs" />
+    <Compile Remove="Migrations\20190807053133_ForegignKyFix.cs" />
+    <Compile Remove="Migrations\20190807135903_AddEmployeeRelationToUser.cs" />
+    <Compile Remove="Migrations\20190808135658_ChangeFiledsInNews.cs" />
+    <Compile Remove="Migrations\20190808140502_ChangeFiledsInNews.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.4" />

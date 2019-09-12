@@ -9,7 +9,11 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
-        // Save pending changes to the data store.
+        /// <summary>
+        /// Save pending changes to the database
+        /// </summary>
+        int Commit();
+        // Save pending changes async to the data store.
         Task<int> CommitAsync();
         // Repositories
 
@@ -17,23 +21,35 @@ namespace Samr.ERP.Infrastructure.Data.Contracts
         IRepository<Role> Roles { get; }
         IRepository<Gender> Genders { get; }
         IRepository<Employee> Employees { get; }
+        IRepository<EmployeeLog> EmployeeLogs { get; }
         IRepository<Department> Departments { get; }
+        IRepository<DepartmentLog> DepartmentLogs { get; }
         IRepository<EmployeeLockReason> EmployeeLockReasons { get; }
         IRepository<Nationality> Nationalities { get; }
+        IRepository<NationalityLog> NationalityLogs { get; }
         IRepository<Position> Positions { get; }
+        IRepository<PositionLog> PositionLogs { get; }
         IRepository<News> News { get; }
         IRepository<NewsCategory> NewsCategories { get; }
+        IRepository<NewsCategoryLog> NewsCategoryLogs { get; }
         IRepository<EmailSetting> EmailSettings { get; }
         IRepository<EmailMessageHistory> EmailMessageHistories { get; }
         IRepository<UserLockReason> UserLockReasons { get; }
+        IRepository<UserLockReasonLog> UserLockReasonLogs { get; }
         IRepository<UsefulLinkCategory> UsefulLinkCategories { get; }
         IRepository<UsefulLink> UsefulLinks { get; }
-        IRepository<Handbook> Handbooks { get; }
         IRepository<RefreshToken> RefreshTokens { get; }
-        IRepository<FileCategory> FileCategories { get; }
+        IRepository<FileArchiveCategory> FileArchiveCategories { get; }
+        IRepository<FileArchiveCategoryLog> FileArchiveCategoryLogs { get; }
         IRepository<FileArchive> FileArchives { get; }
-        IRepository<NotificationType> NotificationTypes { get; }
         IRepository<Notification> Notifications { get; }
         IRepository<ActiveUserToken> ActiveUserTokens { get; }
+        IRepository<EmployeeLockReasonLog> EmployeeLockReasonLog { get; }
+        IRepository<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; }
+        IRepository<SMPPSetting> SMPPSettings { get; }
+        IRepository<SMSMessageHistory> SMSMessageHistories { get; }
+        IRepository<T> GetStandardRepo<T>() where T : class;
+
+     
     }
 }

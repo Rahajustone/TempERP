@@ -7,15 +7,17 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.Infrastructure.Extensions;
 using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
@@ -25,6 +27,7 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly ISMSSender _smsSender;
         private readonly UserProvider _userProvider;
         private readonly IActiveUserTokenService _activeUserTokenService;
         private readonly IMapper _mapper;
@@ -33,6 +36,7 @@ namespace Samr.ERP.Core.Services
             IUnitOfWork unitOfWork,
             UserManager<User> userManager,
             IEmailSender emailSender,
+            ISMSSender smsSender,
             UserProvider userProvider,
             IActiveUserTokenService activeUserTokenService,
             IMapper mapper
@@ -41,6 +45,7 @@ namespace Samr.ERP.Core.Services
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _emailSender = emailSender;
+            _smsSender = smsSender;
             _userProvider = userProvider;
             _activeUserTokenService = activeUserTokenService;
             _mapper = mapper;
@@ -62,14 +67,19 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<UserViewModel>> GetByIdAsync(Guid id)
         {
-            var userResult = await _unitOfWork.Users.GetDbSet().Include(p => p.UserLockReason).FirstOrDefaultAsync(p => p.Id == id);
+            var userResult = await _unitOfWork.Users.GetDbSet()
+                .Include(p => p.UserLockReason)
+                    .ThenInclude( p => p.CreatedUser)
+                        .ThenInclude( p => p.Employee)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (userResult == null) return BaseDataResponse<UserViewModel>.NotFound(null);
             return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(userResult)); ;
         }
 
         public bool HasUserValidRefreshToken(Guid userId, string refreshToken, string ipAddress)
         {
-            return _unitOfWork.RefreshTokens.Any(p => p.UserId == userId && p.Active && p.RemoteIpAddress == ipAddress);
+            return _unitOfWork.RefreshTokens.Any(p => p.UserId == userId && p.Active && p.RemoteIpAddress == ipAddress && p.Token == refreshToken);
         }
 
         public async Task AddRefreshToken(string token, Guid userId, string remoteIpAddress, double daysToExpire = 5)
@@ -110,8 +120,10 @@ namespace Samr.ERP.Core.Services
             user.ChangePasswordConfirmationCode = confirmCode;
             user.ChangePasswordConfirmationCodeExpires = DateTime.Now.AddMinutes(2);
 
-            await _emailSender.SendEmailToEmployeeAsync(user, "Confirmation code",
-                $"Change password confirmation code {confirmCode}");
+            //await _emailSender.SendEmailToUserAsync(user, "Confirmation code",
+            //    $"Change password confirmation code {confirmCode}", true);
+            await _smsSender.SendSMSToUserAsync(user, 
+                $"Change password confirmation code {confirmCode}", true);
 
             await _unitOfWork.CommitAsync();
 
@@ -139,12 +151,15 @@ namespace Samr.ERP.Core.Services
             return users;
         }
 
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListUserItemAsync()
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> UsersSelectListItemsAsync()
         {
-            var users = await _unitOfWork.Employees.GetDbSet()
-                .Where(e => e.UserId.HasValue)
-                .Where(u => !(u.User.LockUserId.HasValue))
+            var users = await _unitOfWork.Users.GetDbSet()
+                .Where(p => p.Id != _userProvider.CurrentUser.Id)
+                .Where( p => p.Id != GuidExtensions.FULL_GUID)
+                .Where(u => !(u.LockUserId.HasValue))
+                .Include(e => e.Employee)
                 .ToListAsync();
+
             var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(users);
 
             return BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
@@ -153,14 +168,15 @@ namespace Samr.ERP.Core.Services
         public async Task<BaseDataResponse<string>> ResetPasswordAsync(ResetPasswordViewModel resetPasswordModel)
         {
             var user = await GetByPhoneNumber(resetPasswordModel.PhoneNumber);
-            if (user == null) return BaseDataResponse<string>.Fail("", new ErrorModel("user not found"));
+            if (user == null) return BaseDataResponse<string>.Fail("", new ErrorModel(ErrorCode.UserNotExists));
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var generatedPass = RandomGenerator.GenerateNewPassword();
             var resetPasswordResult = await _userManager.ResetPasswordAsync(user, token, generatedPass);
 
-            await _emailSender.SendEmailToEmployeeAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}");
+            //await _emailSender.SendEmailToUserAsync(user, "Reset password", $"Your account pass was reset, new pass {generatedPass}", true);
+            await _smsSender.SendSMSToUserAsync(user, $"Your account pass was reset, new pass {generatedPass}", true);
 
             if (!resetPasswordResult.Succeeded)
                 return BaseDataResponse<string>.Fail(null, resetPasswordResult.Errors.Select(p => new ErrorModel()
@@ -217,9 +233,9 @@ namespace Samr.ERP.Core.Services
 
             LockUser(userExists,lockUserViewModel.UserLockReasonId);
 
-
-
             await _unitOfWork.CommitAsync();
+
+            _activeUserTokenService.DeactivateTokenByUserId(userExists.Id);
 
             return BaseResponse.Success();
         }
@@ -229,7 +245,6 @@ namespace Samr.ERP.Core.Services
             user.UserLockReasonId = userLockReasonId;
             user.LockDate = DateTime.Now;
             user.LockUserId = _userProvider.CurrentUser.Id;
-            _activeUserTokenService.DeactivateTokenByUserId(user.Id);
         }
 
         public void UnlockUser(User user)
@@ -242,10 +257,14 @@ namespace Samr.ERP.Core.Services
         {
             var userExists = await _unitOfWork
                 .Users.GetDbSet()
+                .Include(p=>p.Employee)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (userExists?.UserLockReasonId == null)
                 return BaseResponse.Fail();
+
+            if (userExists.Employee.LockDate != null)
+                return BaseResponse.Fail(new ErrorModel(ErrorCode.EmployeeLockedAndUserLocked));
 
             UnlockUser(userExists);
             
@@ -333,7 +352,7 @@ namespace Samr.ERP.Core.Services
                 .GroupBy(r => r.Category)
                 .Select(p => new GroupedUserRolesViewModel()
                 {
-                    GroupName = p.Key,
+                    GroupName = p.First().CategoryName,
                     Roles = p.Select(r => new UserRolesViewModel()
                     {
                         Name = r.Name,

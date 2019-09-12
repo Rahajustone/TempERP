@@ -10,11 +10,12 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Services;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -44,8 +45,15 @@ namespace Samr.ERP.WebApi.Controllers
             return Response(departments);
         }
 
+        [HttpGet]
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListWithPositionItem()
+        {
+            var departments = await _departmentService.GetAllSelectListItemWithPositionAsync();
+            return Response(departments);
+        }
+
         [HttpGet("{id}")]
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> Get(Guid id)
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Get(Guid id)
         {
             var department = await _departmentService.GetByIdAsync(id);
 
@@ -53,7 +61,8 @@ namespace Samr.ERP.WebApi.Controllers
         }
         
         [HttpPost]
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> Create([FromBody]EditDepartmentViewModel departmentViewModel)
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Create([FromBody]RequestDepartmentViewModel departmentViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -61,20 +70,27 @@ namespace Samr.ERP.WebApi.Controllers
                 return Response(departmentResult);
             }
 
-            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(departmentViewModel, null));
+            return Response(BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null));
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditDepartmentViewModel>> Edit([FromBody] EditDepartmentViewModel model)
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<ResponseDepartmentViewModel>> Edit([FromBody] RequestDepartmentViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var departmentResult = await _departmentService.UpdateAsync(model);
+                var departmentResult = await _departmentService.EditAsync(model);
                 return Response(departmentResult);
             }
 
-            return Response(BaseDataResponse<EditDepartmentViewModel>.Fail(null, null));
+            return Response(BaseDataResponse<ResponseDepartmentViewModel>.NotFound(null));
         }
-     
+
+        [HttpGet("{id}")]
+        public async Task<BaseDataResponse<PagedList<DepartmentLogViewModel>>> GetAllLog(Guid id, [FromQuery]PagingOptions pagingOptions, [FromQuery] SortRule sortRule)
+        {
+            var departmentsLog = await _departmentService.GetAllLogAsync(id, pagingOptions, sortRule);
+            return Response(departmentsLog);
+        }
     }
 }

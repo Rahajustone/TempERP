@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 
@@ -26,14 +26,8 @@ namespace Samr.ERP.Core.Services
             _roleManager = roleManager;
         }
 
-        public async Task<BaseResponse> AddAsync(string name, string description, string category)
+        public async Task<BaseResponse> AddAsync(Role role)
         {
-            var role = new Role()
-            {
-                Name = name,
-                Description = description,
-                Category = category
-            };
 
             var roleAddResult = await _roleManager.CreateAsync(role);
             return !roleAddResult.Succeeded

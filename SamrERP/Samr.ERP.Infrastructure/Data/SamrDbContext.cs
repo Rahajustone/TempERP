@@ -20,36 +20,47 @@ namespace Samr.ERP.Infrastructure.Data
             
         }
 
-        public DbSet<Employee> Employees;
+        public DbSet<Employee> Employees { get;set; }
+        public DbSet<EmployeeLog> EmployeeLogs { get;set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<DepartmentLog> DepartmentLogs { get; set; }
         public DbSet<Position> Positions { get; set; }
+        public DbSet<PositionLog> PositionLogs { get; set; }
         public DbSet<EmployeeLockReason> EmployeeLockReasons { get; set; }
+        public DbSet<EmployeeLockReasonLog> EmployeeLockReasonLogs { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
+        public DbSet<NationalityLog> NationalityLogs { get; set; }
         public DbSet<News> News { get; set; }
         public DbSet<NewsCategory> NewsCategories { get; set; }
+        public DbSet<NewsCategoryLog> NewsCategoryLogs { get; set; }
         public DbSet<EmailSetting> EmailSettings { get; set; }
         public DbSet<EmailMessageHistory> EmailMessageHistories { get; set; }
         public DbSet<UserLockReason> UserLockReasons { get; set; }
+        public DbSet<UserLockReasonLog> UserLockReasonLogs { get; set; }
         public DbSet<UsefulLinkCategory> UsefulLinkCategories { get; set; }
+        public DbSet<UsefulLinkCategoryLog> UsefulLinkCategoryLogs { get; set; }
         public DbSet<UsefulLink> UsefulLinks { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        public DbSet<Handbook> Handbooks { get; set; }
-        public DbSet<FileCategory> FileCategories { get; set; }
+        public DbSet<FileArchiveCategory> FileArchiveCategories { get; set; }
+        public DbSet<FileArchiveCategoryLog> FileArchiveCategoryLogs { get; set; }
         public DbSet<FileArchive> FileArchives { get; set; }
-        public DbSet<NotificationType> NotificationTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<ActiveUserToken> ActiveUserTokens { get; set; }
-
-
-
-
+        public DbSet<SMPPSetting> SMPPSettings { get; set; }
+        public DbSet<SMSMessageHistory> SMSMessageHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Employee>().ToTable("Employees");
-            builder.Entity<Department>().ToTable("Departments");
+
+            builder.Entity<User>()
+                .HasOne(a => a.Employee).WithOne(b => b.User)
+                .HasForeignKey<Employee>(e => e.UserId);
+
+            //builder.Entity<Employee>().ToTable("Employees");
+            //builder.Entity<Department>().ToTable("Departments");
+            //builder.Entity<DepartmentLog>().ToTable("DepartmentLog");
 
             // cascade delete false
             var cascadeFKs = builder.Model.GetEntityTypes()
@@ -64,7 +75,7 @@ namespace Samr.ERP.Infrastructure.Data
 
             //EntitiesConfiguration.ConfigureEntities(builder);
 
-            SeedDataEntities.AddSeed(builder,this);
+            SeedDataEntities.AddSeed(builder, this);
         }
     }
 }

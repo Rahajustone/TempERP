@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -25,7 +26,9 @@ namespace Samr.ERP.Core.Services
         private readonly UserService _userService;
         private readonly UserProvider _userProvider;
         private readonly IEmailSender _emailSender;
+        private readonly ISMSSender _smsSender;
         private readonly IFileService _fileService;
+        private readonly IActiveUserTokenService _activeUserTokenService;
         private readonly IMapper _mapper;
 
         public EmployeeService(
@@ -33,7 +36,9 @@ namespace Samr.ERP.Core.Services
             UserService userService,
             UserProvider userProvider,
             IEmailSender emailSender,
+            ISMSSender smsSender,
             IFileService fileService,
+            IActiveUserTokenService activeUserTokenService,
             IMapper mapper
 
             )
@@ -42,7 +47,9 @@ namespace Samr.ERP.Core.Services
             _userService = userService;
             _userProvider = userProvider;
             _emailSender = emailSender;
+            _smsSender = smsSender;
             _fileService = fileService;
+            _activeUserTokenService = activeUserTokenService;
             _mapper = mapper;
         }
 
@@ -52,11 +59,9 @@ namespace Samr.ERP.Core.Services
             {
                 var filterFullName = filterEmployeeViewModel.FullName.ToLower();
 
-                query = query.Where(e => EF.Functions.Like(e.FirstName.ToLower(), "%" + filterFullName + "%")
-                                         || EF.Functions.Like(e.LastName, "%" + filterFullName + "%")
-                                         || (!string.IsNullOrWhiteSpace(e.MiddleName) &
-                                             EF.Functions.Like(e.MiddleName, "%" + filterFullName + "%")
-                                         ));
+                query = query.Where(e =>
+                    EF.Functions.Like(Extension.FullNameToString(e.LastName, e.FirstName, e.MiddleName).ToLower(),
+                        "%" + filterFullName + "%"));
             }
 
             if (filterEmployeeViewModel.DepartmentId != null)
@@ -72,20 +77,25 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<GetEmployeeViewModel>> GetByIdAsync(Guid id)
         {
-            BaseDataResponse<GetEmployeeViewModel> dataResponse;
-
             var employee = await EmployeeById(id);
-
+            
             if (employee == null)
+                return BaseDataResponse<GetEmployeeViewModel>.NotFound(_mapper.Map<GetEmployeeViewModel>(employee));
+
+            var employeeLog = await _unitOfWork.EmployeeLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
+                .FirstOrDefaultAsync(p => p.EmployeeId == employee.Id);
+
+            var vm = _mapper.Map<GetEmployeeViewModel>(employee);
+
+            if (employeeLog != null)
             {
-                dataResponse = BaseDataResponse<GetEmployeeViewModel>.NotFound(null);
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<GetEmployeeViewModel>.Success(_mapper.Map<GetEmployeeViewModel>(employee));
+                vm.LastEditedAt = employeeLog.CreatedAt.ToStringCustomFormat();
             }
 
-            return dataResponse;
+            return BaseDataResponse<GetEmployeeViewModel>.Success(vm);
         }
 
         public async Task<GetEmployeeCardTemplateViewModel> GetEmployeeCardByIdAsync(Guid id)
@@ -100,10 +110,13 @@ namespace Samr.ERP.Core.Services
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.User)
                 .Include(p => p.CreatedUser)
+                    .ThenInclude( p => p.Employee)
                 .Include(p => p.Position)
                 .Include(p => p.Position.Department)
                 .Include(p => p.Gender)
                 .Include(p => p.EmployeeLockReason)
+                    .ThenInclude( p => p.CreatedUser)
+                        .ThenInclude( p => p.Employee)
                 .FirstOrDefaultAsync(p => p.Id == id);
             return employee;
         }
@@ -125,7 +138,6 @@ namespace Samr.ERP.Core.Services
 
             var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
 
-
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
             foreach (var allEmployeeViewModel in pagedList.Items)
@@ -140,33 +152,34 @@ namespace Samr.ERP.Core.Services
 
         public async Task<BaseDataResponse<EditEmployeeViewModel>> CreateAsync(EditEmployeeViewModel editEmployeeViewModel)
         {
-            BaseDataResponse<EditEmployeeViewModel> dataResponse;
 
-            var employeeExists = _unitOfWork.Employees.Any(predicate: e =>
-                e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower() ||
+
+            var emailExist = _unitOfWork.Employees.Any(predicate: e =>
                 e.Email.ToLower() == editEmployeeViewModel.Email.ToLower()
             );
+            //TODO phone edit
+            if (emailExist)
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
+                    new ErrorModel(ErrorCode.EmailMustBeUnique));
 
-            if (employeeExists)
+            if (_unitOfWork.Employees.Any(p => p.Phone == editEmployeeViewModel.Phone))
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel,
+                    new ErrorModel(ErrorCode.PhoneMustBeUnique));
+
+            if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now)
+                return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+
+
+            var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+
+            if (editEmployeeViewModel.Photo != null)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Phone number already exists"));
-
+                employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
             }
-            else
-            {
-                var employee = _mapper.Map<Employee>(editEmployeeViewModel);
+            _unitOfWork.Employees.Add(employee);
+            await _unitOfWork.CommitAsync();
 
-                if (editEmployeeViewModel.Photo != null)
-                {
-                    employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
-                }
-                _unitOfWork.Employees.Add(employee);
-                await _unitOfWork.CommitAsync();
-
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
-            }
-
-            return dataResponse;
+            return BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
         }
 
         public async Task<BaseDataResponse<UserViewModel>> CreateUserForEmployee(Guid employeeId)
@@ -180,7 +193,8 @@ namespace Samr.ERP.Core.Services
             {
                 UserName = employee.Phone,
                 Email = employee.Email,
-                PhoneNumber = employee.Phone
+                PhoneNumber = employee.Phone,
+                EmployeeId = employee.Id
             };
 
             var generateNewPassword = RandomGenerator.GenerateNewPassword();
@@ -192,8 +206,8 @@ namespace Samr.ERP.Core.Services
             employee.UserId = user.Id;
 
             await _unitOfWork.CommitAsync();
-            await _emailSender.SendEmailToEmployeeAsync(user, "User created", $"Account was created, your pass {generateNewPassword}");
-
+            //await _emailSender.SendEmailToUserAsync(user, "User created", $"Account was created, your pass {generateNewPassword}", true);
+            await _smsSender.SendSMSToUserAsync(user, $"Account was created, your pass {generateNewPassword}", true);
             return BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user));
 
         }
@@ -206,10 +220,27 @@ namespace Samr.ERP.Core.Services
 
             if (employeExists == null)
             {
-                dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel("Not found employee"));
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.NotFound(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
             }
             else
             {
+
+                var checkEmailUnique = await _unitOfWork.Employees
+                    .GetDbSet()
+                    .AnyAsync(e => e.Id != editEmployeeViewModel.Id
+                                   && e.Email.ToLower() == editEmployeeViewModel.Email.ToLower());
+                if (checkEmailUnique)
+                {
+                    return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.EmailMustBeUnique));
+                }
+
+                if (await _unitOfWork.Employees.AnyAsync(p => p.Id != editEmployeeViewModel.Id && p.Phone == editEmployeeViewModel.Phone))
+                    return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel(ErrorCode.PhoneMustBeUnique));
+
+                if (editEmployeeViewModel.DateOfBirth.AddYears(16) > DateTime.Now)
+                    return BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("invalid birthday"));
+
+
                 var existsUser = await _unitOfWork
                     .Employees
                     .GetDbSet()
@@ -224,27 +255,17 @@ namespace Samr.ERP.Core.Services
                     _unitOfWork.Users.Update(existsUser);
                 }
 
-                var checkEmailUnique = await _unitOfWork.Employees
-                    .GetDbSet()
-                    .AnyAsync(e => e.Id != editEmployeeViewModel.Id
-                                   && e.Phone.ToLower() == editEmployeeViewModel.Phone.ToLower());
-                if (checkEmailUnique)
+                await AddToLog(employeExists);
+                var employee = _mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employeExists);
+                if (editEmployeeViewModel.Photo != null)
                 {
-                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Fail(editEmployeeViewModel, new ErrorModel("Duplicate phone number!"));
+                    employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
                 }
-                else
-                {
-                    var employee = _mapper.Map<EditEmployeeViewModel, Employee>(editEmployeeViewModel, employeExists);
-                    if (editEmployeeViewModel.Photo != null)
-                    {
-                        employee.PhotoPath = await _fileService.UploadPhoto(FileService.EmployeePhotoFolderPath, editEmployeeViewModel.Photo, true);
-                    }
-                    _unitOfWork.Employees.Update(employee);
+                _unitOfWork.Employees.Update(employee);
 
-                    await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                    dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
-                }
+                dataResponse = BaseDataResponse<EditEmployeeViewModel>.Success(_mapper.Map<EditEmployeeViewModel>(employee));
             }
 
             return dataResponse;
@@ -263,9 +284,10 @@ namespace Samr.ERP.Core.Services
             employee.Email = editUserDetailsView.Email;
             employee.FactualAddress = editUserDetailsView.FactualAddress;
 
-            await EditAsync(_mapper.Map<EditEmployeeViewModel>(employee));
-
-            return BaseResponse.Success();
+            var employeeEditResult = await EditAsync(_mapper.Map<EditEmployeeViewModel>(employee));
+            return employeeEditResult.Meta.Success
+                ? BaseResponse.Success()
+                : new BaseResponse(employeeEditResult.Meta.StatusCode, employeeEditResult.Meta.Errors);
         }
 
         public async Task<BaseResponse> LockEmployeeAsync(LockEmployeeViewModel lockEmployeeViewModel)
@@ -286,28 +308,39 @@ namespace Samr.ERP.Core.Services
             employee.EmployeeLockReasonId = employeeLockReason.Id;
             employee.LockDate = DateTime.Now;
 
-            _userService.LockUser(employee.User,GuidExtensions.FULL_GUID);
+            _unitOfWork.Employees.Update(employee);
+
+            if (employee.User != null)
+            {
+                _userService.LockUser(employee.User, GuidExtensions.FULL_GUID);
+            }
 
             await _unitOfWork.CommitAsync();
+            if (employee.User != null)
+            {
+                _activeUserTokenService.DeactivateTokenByUserId(employee.UserId.Value);
 
+            }
             return BaseResponse.Success();
         }
 
         public async Task<BaseResponse> UnLockEmployeeAsync(Guid employeeId)
         {
-
             var employee = await _unitOfWork.Employees.GetDbSet()
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(p => p.Id == employeeId);
 
             if (employee?.EmployeeLockReasonId == null) return BaseResponse.NotFound();
 
-            
+
             employee.LockUserId = null;
             employee.EmployeeLockReasonId = null;
             employee.LockDate = null;
 
-            _userService.UnlockUser(employee.User);
+            if (employee.User != null)
+            {
+                _userService.UnlockUser(employee.User);
+            }
             await _unitOfWork.CommitAsync();
 
             return BaseResponse.Success();
@@ -359,20 +392,36 @@ namespace Samr.ERP.Core.Services
         {
             BaseResponse response;
 
-            var existEmployee = await _unitOfWork.Employees.GetDbSet().FirstOrDefaultAsync(e => e.Id == editPassportDataEmployeeViewModel.EmployeeId);
+            var existEmployee = await _unitOfWork.Employees
+                .GetDbSet()
+                .FirstOrDefaultAsync(e => e.Id == editPassportDataEmployeeViewModel.EmployeeId);
 
             if (existEmployee != null)
             {
-                var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
-                if (editPassportDataEmployeeViewModel.PassportScan != null)
+                var passportNumberUnique = await _unitOfWork.Employees.GetDbSet()
+                    .AnyAsync(e => e.Id != editPassportDataEmployeeViewModel.EmployeeId
+                                   && e.PassportNumber.ToLower() == editPassportDataEmployeeViewModel.PassportNumber.ToLower());
+
+                if (passportNumberUnique)
                 {
-                    passportDataEmployee.PassportScanPath = await _fileService.UploadPhoto(FileService.EmployeePassportScanFolderPath, editPassportDataEmployeeViewModel.PassportScan, true);
+                    response = BaseResponse.Fail(new ErrorModel(ErrorCode.PassportNumberMustBeUnique));
                 }
-                _unitOfWork.Employees.Update(passportDataEmployee);
+                else
+                {
+                    await AddToLog(existEmployee);
+                    var passportDataEmployee = _mapper.Map<EditPassportDataEmployeeViewModel, Employee>(editPassportDataEmployeeViewModel, existEmployee);
 
-                await _unitOfWork.CommitAsync();
+                    if (editPassportDataEmployeeViewModel.PassportScan != null)
+                    {
+                        passportDataEmployee.PassportScanPath = await _fileService.UploadPhoto(FileService.EmployeePassportScanFolderPath, editPassportDataEmployeeViewModel.PassportScan, true);
+                    }
 
-                response = BaseResponse.Success();
+                    _unitOfWork.Employees.Update(passportDataEmployee);
+
+                    await _unitOfWork.CommitAsync();
+
+                    response = BaseResponse.Success();
+                }
             }
             else
             {
@@ -384,7 +433,7 @@ namespace Samr.ERP.Core.Services
 
         public async Task<EmployeeInfoTokenViewModel> GetEmployeeInfo(Guid id)
         {
-            var emp = await _unitOfWork.Employees.GetDbSet().Include( p => p.Position).FirstOrDefaultAsync(
+            var emp = await _unitOfWork.Employees.GetDbSet().Include(p => p.Position).FirstOrDefaultAsync(
                 e => e.UserId == id);
             var vm = _mapper.Map<EmployeeInfoTokenViewModel>(emp);
 
@@ -405,11 +454,51 @@ namespace Samr.ERP.Core.Services
 
             var queryVm = query.ProjectTo<ExportExcelViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName );
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FullName);
 
             var all = await orderedQuery.ToListAsync();
 
             return _mapper.Map<IList<ExportExcelViewModel>>(all);
+        }
+
+        private async Task AddToLog(Employee employee, bool commit = false)
+        {
+            if (employee != null)
+            {
+                var employeeLog = _mapper.Map<EmployeeLog>(employee);
+
+                _unitOfWork.EmployeeLogs.Add(employeeLog);
+                if (commit) await _unitOfWork.CommitAsync();
+            }
+        }
+
+        public async Task<BaseDataResponse<PagedList<EmployeeLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.EmployeeLogs.GetDbSet()
+                .Include(p => p.CreatedUser)
+                .Include(p => p.Position)
+                .Include(p => p.Position.Department)
+                .Include(p => p.LockUser)
+                .Include(p => p.User)
+                .Where(e => e.EmployeeId == id);
+            //.OrderByDescending(p => p.CreatedAt);
+
+            var queryVm = query.ProjectTo<EmployeeLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.FirstName);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            foreach (var allEmployeeViewModel in pagedList.Items)
+            {
+                if (allEmployeeViewModel.PhotoPath != null)
+                {
+                    allEmployeeViewModel.PhotoPath =
+                        FileService.GetDownloadAction(FileService.GetResizedPath(allEmployeeViewModel.PhotoPath));
+                }
+            }
+
+            return BaseDataResponse<PagedList<EmployeeLogViewModel>>.Success(pagedList);
         }
     }
 }

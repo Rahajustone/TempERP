@@ -21,7 +21,7 @@ namespace Samr.ERP.Core.Services
 {
     public class FileService : IFileService
     {
-        private const string ApiBaseUrl = "https://51.145.98.38";
+        private const string ApiBaseUrl = "http://51.145.98.38:4445";
         private readonly IUnitOfWork _unitOfWork;
         private static string _filesPath;
         private static readonly int _resizeSize = 150;
@@ -41,6 +41,8 @@ namespace Samr.ERP.Core.Services
 
         public static readonly string EmployeePhotoFolderPath = "Employees\\Photo";
         public static readonly string EmployeePassportScanFolderPath = "Employees\\PassportScan";
+        public static readonly string NewsPhotoFolderPath = "News\\Photo";
+
 
         public static readonly string FileArchiveFolderPath = "FileArchiveFolder";
 
@@ -89,7 +91,6 @@ namespace Samr.ERP.Core.Services
             }
 
             return $"{Path.Combine(folderPath, fileName + fileExtension)}";
-
         }
 
         public async Task<string> SaveFile(string folderPath, IFormFile file)
@@ -137,7 +138,7 @@ namespace Samr.ERP.Core.Services
                 return String.Empty;
             }
 
-            var fileName = fileArchive.ShortDescription;
+            var fileName = fileArchive.Title;
 
             return fileName;
         }

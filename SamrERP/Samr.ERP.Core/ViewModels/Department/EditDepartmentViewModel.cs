@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Samr.ERP.Core.Staff;
 
 namespace Samr.ERP.Core.ViewModels.Department
 {
     public class EditDepartmentViewModel : DepartmentViewModel
     {
-        public bool IsActive { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string MiddleName { get; set; }
+        public string CreatedUserName => Extension.FullNameToString(LastName, FirstName, MiddleName);
 
-        public string CreatedUserName { get; set; }
-
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
     }
 }

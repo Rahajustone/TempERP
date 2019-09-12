@@ -6,13 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Samr.ERP.Core.Auth;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.FileArchive;
 using Samr.ERP.Core.ViewModels.Handbook;
@@ -20,6 +23,7 @@ using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Extensions;
+using Samr.ERP.Infrastructure.Providers;
 
 namespace Samr.ERP.Core.Services
 {
@@ -28,19 +32,25 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileService _fileService;
+        private readonly UserProvider _userProvider;
 
         public FileArchiveService(IUnitOfWork unitOfWork,
             IMapper mapper,
-            IFileService fileService)
+            IFileService fileService,
+            UserProvider userProvider
+            )
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _fileService = fileService;
+            _userProvider = userProvider;
         }
 
         private IQueryable<FileArchive> GetQuery()
         {
-            return _unitOfWork.FileArchives.GetDbSet();
+            return _unitOfWork.FileArchives.GetDbSet()
+                .OrderByDescending( p => p.CreatedAt)
+                .Include(f => f.FileArchiveCategory);
         }
 
         private IQueryable<FileArchive> GetQueryWithUser()
@@ -48,12 +58,33 @@ namespace Samr.ERP.Core.Services
             return GetQuery().Include(u => u.CreatedUser);
         }
 
+        private IQueryable<FileArchive> GetQueryWithInclude()
+        {
+            return GetQuery()
+                .OrderByDescending( p => p.CreatedAt)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee)
+                .ThenInclude(p => p.Position);
+        }
+
         private IQueryable<FileArchive> FilterQuery(FilterFileArchiveViewModel filterFileArchiveViewModel, IQueryable<FileArchive> query)
         {
-            if (filterFileArchiveViewModel.ShortDescription != null)
+            if (filterFileArchiveViewModel.FromDate != null)
             {
-                var filterShortDesc = filterFileArchiveViewModel.ShortDescription.ToLower();
-                query = query.Where(f => EF.Functions.Like(f.ShortDescription.ToLower(), "%" + filterShortDesc + "%"));
+                var fromDate = Convert.ToDateTime(filterFileArchiveViewModel.FromDate);
+                query = query.Where(p => p.CreatedAt.Date >= fromDate);
+            }
+
+            if (filterFileArchiveViewModel.ToDate != null)
+            {
+                var toDate = Convert.ToDateTime(filterFileArchiveViewModel.ToDate);
+                query = query.Where(p => p.CreatedAt.Date <= toDate);
+            }
+
+            if (filterFileArchiveViewModel.Title != null)
+            {
+                var titleFilter = filterFileArchiveViewModel.Title.ToLower();
+                query = query.Where(f => EF.Functions.Like(f.Title.ToLower(), "%" + titleFilter + "%"));
             }
 
             if (filterFileArchiveViewModel.OnlyActive)
@@ -61,37 +92,41 @@ namespace Samr.ERP.Core.Services
                 query = query.Where(n => n.IsActive);
             }
 
-            if (!filterFileArchiveViewModel.FileCategoryId.IsEmpty())
+            if (!filterFileArchiveViewModel.CategoryId.IsEmpty())
             {
-                query = query.Where(f => f.FileCategoryId == filterFileArchiveViewModel.FileCategoryId);
+                query = query.Where(f => f.FileCategoryId == filterFileArchiveViewModel.CategoryId);
             }
 
             return query;
         }
 
-        public async Task<BaseDataResponse<EditFileArchiveViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<GetByIdFileArchiveViewModel>> GetByIdAsync(Guid id)
         {
-            var existsFileArchive = await GetQuery().FirstOrDefaultAsync(u => u.Id == id);
+            var existsFileArchive = await GetQueryWithInclude().FirstOrDefaultAsync(u => u.Id == id);
             if (existsFileArchive == null)
             {
-                return BaseDataResponse<EditFileArchiveViewModel>.NotFound(null); 
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.NotFound(null);
             }
 
-            var vm = _mapper.Map<EditFileArchiveViewModel>(existsFileArchive);
+            var vm = _mapper.Map<GetByIdFileArchiveViewModel>(existsFileArchive);
             vm.FilePath = FileService.GetFileArchivePath(vm.FilePath);
 
-            return BaseDataResponse<EditFileArchiveViewModel>.Success(vm);
+            return BaseDataResponse<GetByIdFileArchiveViewModel>.Success(vm);
         }
 
-        public async Task<BaseDataResponse<PagedList<EditFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<GetListFileArchiveViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterFileArchiveViewModel filterFileArchiveViewModel, SortRule sortRule)
         {
-            var query = GetQueryWithUser().Include(c => c.FileCategory).AsQueryable();
+            var query = GetQueryWithInclude().Include(c => c.FileArchiveCategory).AsQueryable();
 
             query = FilterQuery(filterFileArchiveViewModel, query);
 
-            var queryVm = query.ProjectTo<EditFileArchiveViewModel>();
+            if (!(_userProvider.ContextUser.IsInRole(Roles.FileArchiveCreate) &&
+                _userProvider.ContextUser.IsInRole(Roles.FileArchiveEdit)))
+                query = query.Where(a => a.IsActive);
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.ShortDescription);
+            var queryVm = query.ProjectTo<GetListFileArchiveViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.CreatedAt);
 
             var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
 
@@ -100,74 +135,56 @@ namespace Samr.ERP.Core.Services
                 allFileArchiveViewModel.FilePath = FileService.GetFileArchivePath(allFileArchiveViewModel.FilePath);
             }
 
-            return BaseDataResponse<PagedList<EditFileArchiveViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<GetListFileArchiveViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<EditFileArchiveViewModel>> CreateAsync(EditFileArchiveViewModel editFileArchiveViewModel)
+        public async Task<BaseDataResponse<GetByIdFileArchiveViewModel>> CreateAsync(CreateFileArchiveViewModel createFileArchive)
         {
-            BaseDataResponse<EditFileArchiveViewModel> response;
-
             var existsFileArchive = await _unitOfWork.FileArchives.GetDbSet()
-                .FirstOrDefaultAsync(p => p.ShortDescription.ToLower() == editFileArchiveViewModel.ShortDescription.ToLower());
-            if (existsFileArchive != null)
-            {
-                response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel, new ErrorModel("Entity  was found with the same name!"));
-            }
-            else
-            {
-                var fileArchive = _mapper.Map<FileArchive>(editFileArchiveViewModel);
+                .FirstOrDefaultAsync(p => p.Title.ToLower() == createFileArchive.Title.ToLower());
 
-                if (editFileArchiveViewModel.File != null)
-                {
-                    fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, editFileArchiveViewModel.File);
-                }
+            if(existsFileArchive != null)
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.Fail(
+                    _mapper.Map<GetByIdFileArchiveViewModel>(createFileArchive),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            
+            var fileArchive = _mapper.Map<FileArchive>(createFileArchive);
 
-                _unitOfWork.FileArchives.Add(fileArchive);
+            if (createFileArchive.File != null)
+                fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, createFileArchive.File);
 
-                await _unitOfWork.CommitAsync();
+            _unitOfWork.FileArchives.Add(fileArchive);
 
-                response = BaseDataResponse<EditFileArchiveViewModel>.Success(_mapper.Map<EditFileArchiveViewModel>(fileArchive));
-            }
+            await _unitOfWork.CommitAsync();
 
-            return response;
+            return await GetByIdAsync(fileArchive.Id);
         }
 
-        public async Task<BaseDataResponse<EditFileArchiveViewModel>> EditAsync(EditFileArchiveViewModel editFileArchiveViewModel)
+        public async Task<BaseDataResponse<GetByIdFileArchiveViewModel>> EditAsync(EditFileArchiveViewModel editFileArchiveViewModel)
         {
-            BaseDataResponse<EditFileArchiveViewModel> response;
 
             var existFileArchive = await GetQuery().FirstOrDefaultAsync(p => p.Id == editFileArchiveViewModel.Id);
             if (existFileArchive == null)
-            {
-                response = BaseDataResponse<EditFileArchiveViewModel>.NotFound(editFileArchiveViewModel);
-            }
-            else
-            {
-                var checkNameUnique = await GetQuery()
-                    .AnyAsync(d => d.Id != editFileArchiveViewModel.Id && d.ShortDescription.ToLower() == editFileArchiveViewModel.ShortDescription.ToLower());
-                if (checkNameUnique)
-                {
-                    response = BaseDataResponse<EditFileArchiveViewModel>.Fail(editFileArchiveViewModel,
-                        new ErrorModel("We have already this entity."));
-                }
-                else
-                {
-                    var fileArchive = _mapper.Map<EditFileArchiveViewModel, FileArchive>(editFileArchiveViewModel, existFileArchive);
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.NotFound(null);
+           
+            var checkNameUnique = await GetQuery()
+                .AnyAsync(d =>
+                    d.Id != editFileArchiveViewModel.Id &&
+                    d.Title.ToLower() == editFileArchiveViewModel.Title.ToLower());
+            if (checkNameUnique)
+                return BaseDataResponse<GetByIdFileArchiveViewModel>.Fail(_mapper.Map<GetByIdFileArchiveViewModel>(editFileArchiveViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            
+            var fileArchive = _mapper.Map<EditFileArchiveViewModel, FileArchive>(editFileArchiveViewModel, existFileArchive);
 
-                    if (editFileArchiveViewModel.File != null)
-                    {
-                        fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, editFileArchiveViewModel.File);
-                    }
+            if (editFileArchiveViewModel.File != null)
+                fileArchive.FilePath = await _fileService.SaveFile(FileService.FileArchiveFolderPath, editFileArchiveViewModel.File);
 
-                    _unitOfWork.FileArchives.Update(fileArchive);
+            _unitOfWork.FileArchives.Update(fileArchive);
 
-                    await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
 
-                    response = BaseDataResponse<EditFileArchiveViewModel>.Success(_mapper.Map<EditFileArchiveViewModel>(fileArchive));
-                }
-            }
-
-            return response;
+            return await GetByIdAsync(fileArchive.Id);
         }
     }
 }

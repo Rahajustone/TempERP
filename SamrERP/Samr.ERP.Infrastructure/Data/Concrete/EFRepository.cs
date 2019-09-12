@@ -24,10 +24,8 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 
         public EFRepository(DbContext dbContext, UserProvider userProvider)
         {
-            if (dbContext == null)
-                throw new ArgumentNullException(nameof(dbContext));
             _userProvider = userProvider;
-            DbContext = dbContext;
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             DbSet = DbContext.Set<T>();
         }
 
@@ -109,20 +107,20 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 DbSet.Attach(entity);
             }
             dbEntityEntry.State = EntityState.Modified;
+
             if (entity is ICreatableByUser creatableByUser)
                 DbContext.Entry(creatableByUser).Property(x => x.CreatedUserId).IsModified = false;
+
+            if (entity is ICreatable creatable)
+                DbContext.Entry(creatable).Property(x => x.CreatedAt).IsModified = false;
+            
+
             if (entity is IChangeable changeable)
             {
                 changeable.Updated = DateTime.Now;//GetDateTime();
                 DbContext.Entry(changeable).Property(x => x.Created).IsModified = false;
             }
-
         }
-
-        //public DateTime GetDateTime()
-        //{
-        //    return DbContext.Database.SqlQuery<DateTime>("select GETDATE()").Single();
-        //}
 
         public virtual void Delete(T entity)
         {
@@ -145,7 +143,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 }
             }
         }
-        
+
         public virtual void Reload(T entity)
         {
             DbContext.Entry<T>(entity).Reload();
@@ -166,7 +164,7 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
                 Update(entity);
             }
         }
-        
+
         public async Task<bool> ExistsAsync(Guid id)
         {
             return await DbSet.AnyAsync(p => ((IBaseObject)p).Id == id);
@@ -191,7 +189,6 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         {
             return DbSet;
         }
-
 
         public void Refresh(IEnumerable<T> list)
         {

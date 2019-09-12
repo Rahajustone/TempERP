@@ -13,10 +13,32 @@ namespace Samr.ERP.Infrastructure.SeedData
         public static void AddSeed(ModelBuilder builder, Data.SamrDbContext samrDbContext)
         {
             AddGenders(builder);
-            AddHandbook(builder);
-            //AddRoles(builder);
+            AddRoles(builder);
             AddUsers(builder);
             AddUserLockReasons(builder);
+            AddEmailSettings(builder);
+        }
+
+        private static void AddEmailSettings(ModelBuilder builder)
+        {
+            builder.Entity<EmailSetting>()
+                .HasData(
+                    new EmailSetting()
+                    {
+                        Id = Guid.Parse("9A3FCDDB-4680-4206-B712-4E07DF82E354"),
+                        MailServer = "smtp.yandex.ru",
+                        MailServerName = "Yandex Mail",
+                        MailPort = 465,
+                        SenderName = "Mig Dev",
+                        Sender = "migdev@mig.tj",
+                        Password = "formignow",
+                        IsDefault = true,
+                        IsActive = true,
+                        CreatedUserId = GuidExtensions.FULL_GUID,
+                        CreatedAt = new DateTime(2019,07,01),
+                        EnabledSSL = true,
+                        
+                    });
         }
 
         private static void AddUsers(ModelBuilder builder)
@@ -26,9 +48,11 @@ namespace Samr.ERP.Infrastructure.SeedData
                 Id = GuidExtensions.FULL_GUID,
                 UserName = "000000000",
                 Email = "migdev@mig.tj",
+                PhoneNumber = "000000000",
                 NormalizedUserName = "000000000",
-                PasswordHash = "AQAAAAEAACcQAAAAEOvH5DQ4ttSuk1j8EVrg4uyxzHJGcnZbuhkdRvuppk2ttPByA/FjKpVcrA001HW68w==",
-                ConcurrencyStamp = "9132A248-C5F8-4B01-91FB-9AF3777FCA48"
+                PasswordHash = "AQAAAAEAACcQAAAAEOvH5DQ4ttSuk1j8EVrg4uyxzHJGcnZbuhkdRvuppk2ttPByA/FjKpVcrA001HW68w==",//123qwe
+                ConcurrencyStamp = "9132A248-C5F8-4B01-91FB-9AF3777FCA48",
+                SecurityStamp = "83147D9F-26BC-486F-AE7E-5DD581362FAA"
             };
             
             builder.Entity<User>()
@@ -42,7 +66,8 @@ namespace Samr.ERP.Infrastructure.SeedData
                     new UserLockReason()
                     {
                         Id = GuidExtensions.FULL_GUID,
-                        CreatedUserId = GuidExtensions.FULL_GUID
+                        CreatedUserId = GuidExtensions.FULL_GUID,
+                        CreatedAt = new DateTime(2019, 07, 01),
                     }
 
                 );
@@ -52,27 +77,16 @@ namespace Samr.ERP.Infrastructure.SeedData
         {
             builder.Entity<Role>()
                 .HasData(
-                    new Role { Id = new Guid("2702BCDD-104B-475D-14B5-08D70C357974"), Name = "Employee.All", Description = "Просмотр списка", Category = "Employee", NormalizedName = "EMPLOYEE.ALL", ConcurrencyStamp = "23F4A768-BCF3-4BA4-8D20-CC3E4A9C333A" },
-                    new Role { Id = new Guid("29ECF6CE-B82F-4FC5-AE01-08D70CF9F908"), Name = "Employee.Create", Description = "Создание", Category = "Employee", NormalizedName = "EMPLOYEE.CREATE", ConcurrencyStamp = "B8EFD7E4-72E8-4110-96CC-A531AD35D9B4" },
-                    new Role { Id = new Guid("A8EB0E97-EAAA-4976-AE02-08D70CF9F908"), Name = "Employee.Edit", Description = "Редактирование", Category = "Employee", NormalizedName = "EMPLOYEE.EDIT", ConcurrencyStamp = "98003B79-EE18-4D7F-B8A5-357E74E8F77A" },
-                    new Role { Id = new Guid("C5DBEAAB-86A3-4400-B50A-08D70E6B40DC"), Name = "Employee.Details", Description = "Подробная информация", Category = "Employee", NormalizedName = "EMPLOYEE.DETAILS", ConcurrencyStamp = "36271C6B-8972-4A69-90D0-D9921B6F90D3" }
-                );
-        }
-
-        private static void AddHandbook(ModelBuilder builder)
-        {
-            builder.Entity<Handbook>()
-                .HasData(
-                    new Handbook { Id = new Guid("dac6d4fa-0502-43da-9368-9198e479f89d"), Name = "Nationality", DisplayName = "Национальность", ActionName = "Nationality/All" },
-                    new Handbook { Id = new Guid("6a5587f0-f20e-47c5-9be9-de5aa3134c97"), Name = "Department", DisplayName = "Отдел", ActionName = "Department/All" },
-                    new Handbook { Id = new Guid("0a07b4b6-76b5-4758-ae87-d4ff24bb1d12"), Name = "NewsCategories", DisplayName = "Категория полезных ссылок", ActionName = "NewsCategories/All" },
-                    new Handbook { Id = new Guid("7a54980c-296e-4dee-b7cf-68a495c80ee0"), Name = "EmployeeLockReason", DisplayName = "Причина блокировки сотрудника", ActionName = "EmployeeLockReason/All" },
-                    new Handbook { Id = new Guid("5a1b9eac-d4a4-4d92-aa77-53c0fe1bead0"), Name = "Position", DisplayName = "Позиция", ActionName = "Position/All" },
-                    new Handbook { Id = new Guid("90fdba24-d34f-4347-896e-3bc652328c1f"), Name = "UserLockReason", DisplayName = "Причина блокировки пользователя", ActionName = "UserLockReason/All" },
-                    new Handbook { Id = new Guid("3e11f7c3-ee41-4bea-aaf1-1fda2d4cb001"), Name = "UsefulLinkCategory", DisplayName = "Полезная ссылка", ActionName = "UsefulLinkCategory/All" },
-                    new Handbook { Id = new Guid("92ddaaaf-fd9f-4f99-8443-2bed011e9d78"), Name = "FileCategory", DisplayName = "Категория файла", ActionName = "FileCategory/All" }
-
-
+                    new Role { Id = new Guid("2702BCDD-104B-475D-14B5-08D70C357974"), Name = "Employee.All", Description = "Просмотр списка", Category = "Employee", CategoryName = "Сотрудники", NormalizedName = "EMPLOYEE.ALL" ,ConcurrencyStamp = "23F4A768-BCF3-4BA4-8D20-CC3E4A9C333A" },
+                    new Role { Id = new Guid("29ECF6CE-B82F-4FC5-AE01-08D70CF9F908"), Name = "Employee.Create", Description = "Создание", Category = "Employee", CategoryName = "Сотрудники", NormalizedName = "EMPLOYEE.CREATE", ConcurrencyStamp = "B8EFD7E4-72E8-4110-96CC-A531AD35D9B4" },
+                    new Role { Id = new Guid("A8EB0E97-EAAA-4976-AE02-08D70CF9F908"), Name = "Employee.Edit", Description = "Редактирование", Category = "Employee", CategoryName = "Сотрудники", NormalizedName = "EMPLOYEE.EDIT", ConcurrencyStamp = "98003B79-EE18-4D7F-B8A5-357E74E8F77A" },
+                    new Role { Id = new Guid("C5DBEAAB-86A3-4400-B50A-08D70E6B40DC"), Name = "Employee.Details", Description = "Подробная информация", Category = "Employee", CategoryName = "Сотрудники", NormalizedName = "EMPLOYEE.DETAILS", ConcurrencyStamp = "36271C6B-8972-4A69-90D0-D9921B6F90D3" },
+                    new Role { Id = new Guid("d8bc97fc-7a24-41d7-9612-b9e9ace30af9"), Name = "FileArchive.Create", Description = "Создание", Category = "FileArchive", CategoryName = "Файл Архиве", NormalizedName = "FILEARCHIVE.CREATE", ConcurrencyStamp = "8fa485ea-1ed7-40ba-8e01-4f7f9079f667" },
+                    new Role { Id = new Guid("be43f589-77ba-475d-bba8-af504aae540e"), Name = "FileArchive.Edit", Description = "Редактирование", Category = "FileArchive", CategoryName = "Файл Архиве", NormalizedName = "FILEARCHIVE.EDIT", ConcurrencyStamp = "429f6fed-a00a-4cbb-a105-70f5c6b040aa" },
+                    new Role { Id = new Guid("dcd9b7ea-d8be-41e6-8da1-468e0e9b9f95"), Name = "UsefulLink.Create", Description = "Создание", Category = "UsefulLink", CategoryName = "Полезные ссылки", NormalizedName = "USEFULLINK.CREATE", ConcurrencyStamp = "bcda3231-c9c9-4afb-a730-879d4099a712" },
+                    new Role { Id = new Guid("ce6ab40d-23a0-4b9a-8ad2-65f4d38a9a76"), Name = "UsefulLink.Edit", Description = "Редактирование", Category = "UsefulLink", CategoryName = "Полезные ссылки", NormalizedName = "USEFULLINK.EDIT", ConcurrencyStamp = "6d356f9a-2318-4434-afd4-c4bea23aa7d0" },
+                    new Role { Id = new Guid("2607ef6c-1f5b-49c7-8839-c2dec3471dc5"), Name = "News.Create", Description = "Создание", Category = "News", CategoryName = "новостей", NormalizedName = "NEWS.CREATE", ConcurrencyStamp = "4dee761f-8d23-4d92-bb37-32539bc7f353" },
+                    new Role { Id = new Guid("7d5ecac9-b964-438d-8911-383569d4d804"), Name = "News.Edit", Description = "Редактирование", Category = "News", CategoryName = "новостей", NormalizedName = "NEWS.EDIT", ConcurrencyStamp = "2c00e616-9534-4c49-8255-bfed5e0db7b2" }
                 );
         }
 

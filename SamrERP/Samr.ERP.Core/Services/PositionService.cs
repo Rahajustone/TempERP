@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Samr.ERP.Core.Enums;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
+using Samr.ERP.Core.ViewModels.Common;
+using Samr.ERP.Core.ViewModels.Department;
 using Samr.ERP.Core.ViewModels.Handbook;
 using Samr.ERP.Core.ViewModels.Position;
 using Samr.ERP.Infrastructure.Data.Contracts;
@@ -22,26 +26,35 @@ namespace Samr.ERP.Core.Services
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IHandbookService _handbookService;
 
         public PositionService(IMapper mapper,
-            IUnitOfWork unitOfWork,
-            IHandbookService handbookService)
+            IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
-            _handbookService = handbookService;
         }
         private IQueryable<Position> GetQueryWithUser()
         {
-            return _unitOfWork.Positions.GetDbSet().Include(p => p.CreatedUser);
+            return _unitOfWork.Positions.GetDbSet()
+                .OrderByDescending(p => p.CreatedAt)
+                .Include(p => p.CreatedUser)
+                .ThenInclude( p => p.Employee);
         }
 
-        private IQueryable<Position> FilterQuery(FilterPositionViewModel filterPosition, IQueryable<Position> query)
+        private IQueryable<Position> GetAllQuery(bool onlyActives = false)
+        {
+            return _unitOfWork.Positions.All()
+                .Where(p => !onlyActives || p.IsActive)
+                .Include(p => p.Department)
+                .Include(p => p.CreatedUser)
+                .ThenInclude(p => p.Employee);
+        }
+
+        private IQueryable<ResponsePositionViewModel> FilterQuery(FilterPositionViewModel filterPosition, IQueryable<ResponsePositionViewModel> query)
         {
             if (filterPosition.Name != null)
             {
-                query = query.Where(n => EF.Functions.Like(n.Name, "%" + filterPosition.Name + "%"));
+                query = query.Where(n => EF.Functions.Like(n.Name.ToLower(), "%" + filterPosition.Name.ToLower() + "%"));
             }
 
             if (filterPosition.OnlyActive)
@@ -57,127 +70,127 @@ namespace Samr.ERP.Core.Services
             return query;
         }
 
-        public async Task<BaseDataResponse<EditPositionViewModel>> GetByIdAsync(Guid id)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> GetByIdAsync(Guid id)
         {
-            var position = await GetQueryWithUser().FirstOrDefaultAsync(p => p.Id == id);
-
-            BaseDataResponse<EditPositionViewModel> dataResponse;
+            var position =  await GetQueryWithUser()
+                .Include( p => p.Department)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (position == null)
             {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.NotFound(null);
+                return BaseDataResponse<ResponsePositionViewModel>.NotFound(null);
             }
-            else
+
+            var positionLog = await _unitOfWork.PositionLogs.GetDbSet()
+                .Include( p => p.CreatedUser)
+                .ThenInclude( p => p.Employee)
+                .OrderByDescending( p => p.CreatedAt)
+                .FirstOrDefaultAsync(p => p.PositionId == position.Id);
+
+            if (positionLog != null )
             {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
+                position.CreatedUser = positionLog.CreatedUser;
+                position.CreatedAt = positionLog.CreatedAt;
             }
 
-            return dataResponse;
+            return BaseDataResponse<ResponsePositionViewModel>.Success(
+                _mapper.Map<ResponsePositionViewModel>(position));
         }
 
-        private IQueryable<Position> GetAllQuery(bool onlyActives = false)
-        {
-            return _unitOfWork.Positions.All()
-                .Where(p=> !onlyActives || p.IsActive )
-                .Include(p => p.CreatedUser)
-                .Include(p => p.Department);
-        }
-
-        public async Task<BaseDataResponse<PagedList<EditPositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterPositionViewModel filterPosition, SortRule sortRule)
+        public async Task<BaseDataResponse<PagedList<ResponsePositionViewModel>>> GetAllAsync(PagingOptions pagingOptions, FilterPositionViewModel filterPosition, SortRule sortRule)
         {
             var query = GetAllQuery();
 
-            query = FilterQuery(filterPosition, query);
+            var orderedQuery = query.OrderBy(sortRule, p => p.IsActive);
 
-            var queryVm = query.ProjectTo<EditPositionViewModel>();
+            var queryVM = orderedQuery.Select(p => new GetAllListPositionViewModel
+            {
+                Position = p,
+                Employee = p.PositionLogs.OrderByDescending(m => m.CreatedAt).Select(m => m.CreatedUser.Employee)
+                    .FirstOrDefault(),
+                ModifiedAt = p.PositionLogs.OrderByDescending(m => m.CreatedAt).Select(m => m.CreatedAt)
+                    .FirstOrDefault(),
+            }).ProjectTo<ResponsePositionViewModel>();
 
-            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+            queryVM = FilterQuery(filterPosition, queryVM);
 
-            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+            var pagedList = await queryVM.ToPagedListAsync(pagingOptions);
 
-            return BaseDataResponse<PagedList<EditPositionViewModel>>.Success(pagedList);
+            return BaseDataResponse<PagedList<ResponsePositionViewModel>>.Success(pagedList);
         }
 
-        public async Task<BaseDataResponse<IEnumerable<PositionViewModel>>> GetAllByDepartmentId(Guid id)
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllByDepartmentId(Guid id)
         {
             var positions = await GetAllQuery(true).Where(p=>p.DepartmentId == id).ToListAsync();
-            var vm = _mapper.Map<IEnumerable<PositionViewModel>>(positions);
+            var vm = _mapper.Map<IEnumerable<SelectListItemViewModel>>(positions);
 
-            var response = BaseDataResponse<IEnumerable<PositionViewModel>>.Success(vm);
+            var response = BaseDataResponse<IEnumerable<SelectListItemViewModel>>.Success(vm);
 
             return response;
         }
 
-        public async Task<BaseDataResponse<EditPositionViewModel>> CreateAsync(EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> CreateAsync(RequestPositionViewModel positionViewModel)
         {
-            BaseDataResponse<EditPositionViewModel> dataResponse;
 
             var positionExists =
                 _unitOfWork.Positions.Any(p => p.Name.ToLower() == positionViewModel.Name.ToLower());
             if (positionExists)
             {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Already this model in database."));
-            }
-            else
-            {
-                var position = _mapper.Map<Position>(positionViewModel);
-                _unitOfWork.Positions.Add(position);
-
-                var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUserId );
-                if (handbookExists)
-                {
-                    await _unitOfWork.CommitAsync();
-
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
-                }
-                else
-                {
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Not found handbook."));
-                }
+                    return BaseDataResponse<ResponsePositionViewModel>.Fail(
+                        _mapper.Map<ResponsePositionViewModel>(positionViewModel),
+                        new ErrorModel(ErrorCode.NameMustBeUnique));
             }
 
-            return dataResponse;
+            var position = _mapper.Map<Position>(positionViewModel);
+            _unitOfWork.Positions.Add(position);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(position.Id);
         }
 
-        public async Task<BaseDataResponse<EditPositionViewModel>> EditAsync(EditPositionViewModel positionViewModel)
+        public async Task<BaseDataResponse<ResponsePositionViewModel>> EditAsync(RequestPositionViewModel positionViewModel)
         {
-            BaseDataResponse<EditPositionViewModel> dataResponse;
-
             var positionExists = await _unitOfWork.Positions.GetDbSet().FirstOrDefaultAsync( p => p.Id == positionViewModel.Id);
-            if (positionExists != null)
+            if (positionExists == null)
             {
-                var checkNameUnique = await _unitOfWork.Positions.GetDbSet()
-                    .AnyAsync(p => p.Id != positionViewModel.Id 
-                                   && p.Name.ToLower() == positionViewModel.Name.ToLower());
-                if (checkNameUnique)
-                {
-                    dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Duplicate position name"));
-                }
-                else
-                {
-                    var position = _mapper.Map<EditPositionViewModel, Position>(positionViewModel, positionExists);
-
-                    _unitOfWork.Positions.Update(position);
-
-                    var handbookExists = await _handbookService.ChangeStatus("Position", position.CreatedUserId );
-                    if (handbookExists)
-                    {
-                        await _unitOfWork.CommitAsync();
-
-                        dataResponse = BaseDataResponse<EditPositionViewModel>.Success(_mapper.Map<EditPositionViewModel>(position));
-                    }
-                    else
-                    {
-                        dataResponse = BaseDataResponse<EditPositionViewModel>.Fail(positionViewModel, new ErrorModel("Not found handbook."));
-                    }
-                }
-            }
-            else
-            {
-                dataResponse = BaseDataResponse<EditPositionViewModel>.NotFound(positionViewModel);
+                return BaseDataResponse<ResponsePositionViewModel>.NotFound(
+                    _mapper.Map<ResponsePositionViewModel>(positionViewModel));
             }
 
-            return dataResponse;
+            var checkNameUnique = await _unitOfWork.Positions.GetDbSet()
+                .AnyAsync(p => p.Id != positionViewModel.Id 
+                               && p.Name.ToLower() == positionViewModel.Name.ToLower());
+            if (checkNameUnique)
+            {
+                return BaseDataResponse<ResponsePositionViewModel>.Fail(
+                    _mapper.Map<ResponsePositionViewModel>(positionViewModel),
+                    new ErrorModel(ErrorCode.NameMustBeUnique));
+            }
+
+            var positionLog = _mapper.Map<PositionLog>(positionExists);
+            _unitOfWork.PositionLogs.Add(positionLog);
+
+            var position = _mapper.Map(positionViewModel, positionExists);
+
+            _unitOfWork.Positions.Update(position);
+
+            await _unitOfWork.CommitAsync();
+
+            return await GetByIdAsync(position.Id);
+        }
+
+        public async Task<BaseDataResponse<PagedList<PositionLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule)
+        {
+            var query = _unitOfWork.PositionLogs.GetDbSet().Include(p => p.CreatedUser).Where(d => d.PositionId == id).OrderByDescending(p => p.CreatedAt);
+
+            var queryVm = query.ProjectTo<PositionLogViewModel>();
+
+            var orderedQuery = queryVm.OrderBy(sortRule, p => p.Name);
+
+            var pagedList = await orderedQuery.ToPagedListAsync(pagingOptions);
+
+            return BaseDataResponse<PagedList<PositionLogViewModel>>.Success(pagedList);
         }
     }
 }

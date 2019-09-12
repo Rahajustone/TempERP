@@ -9,8 +9,9 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ErrorModels;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.News;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -26,11 +27,10 @@ namespace Samr.ERP.WebApi.Controllers
             _newsService = newsService;
         }
 
-
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> All([FromQuery]PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<EditNewsViewModel>>> All([FromQuery]PagingOptions pagingOptions, [FromQuery]FilterNewsViewModel filterNewsViewModel)
         {
-            var news = await _newsService.GetAllAsync(pagingOptions);
+            var news = await _newsService.GetAllAsync(pagingOptions, filterNewsViewModel);
             return Response(news);
         }
 
@@ -43,7 +43,8 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditNewsViewModel>> Post([FromBody] EditNewsViewModel newsViewModel)
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<EditNewsViewModel>> Create([FromForm] EditNewsViewModel newsViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -56,11 +57,12 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<EditNewsViewModel>> Edit([FromBody] EditNewsViewModel positionViewModel)
+        [TrimInputStrings]
+        public async Task<BaseDataResponse<EditNewsViewModel>> Edit([FromForm] EditNewsViewModel positionViewModel)
         {
             if (ModelState.IsValid)
             {
-                var responseData = await _newsService.UpdateAsync(positionViewModel);
+                var responseData = await _newsService.EditAsync(positionViewModel);
                 return Response(responseData);
             }
 

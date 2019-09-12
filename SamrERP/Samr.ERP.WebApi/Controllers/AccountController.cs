@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Common;
 using Samr.ERP.Core.ViewModels.Employee;
@@ -47,31 +47,6 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseDataResponse<UserViewModel>> Register([FromBody] RegisterUserViewModel registerModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new User()
-                {
-                    PhoneNumber = registerModel.Phone,
-                    Email = registerModel.Email,
-                    UserName = registerModel.Phone
-                };
-
-                var createdUserResponse = await _userService.CreateAsync(user, registerModel.Password);
-                if (createdUserResponse.Succeeded)
-                {
-                    return Response(BaseDataResponse<UserViewModel>.Success(_mapper.Map<UserViewModel>(user)));
-
-                }
-                return Response(BaseDataResponse<UserViewModel>.Fail(_mapper.Map<UserViewModel>(user),
-                    createdUserResponse.Errors.ToErrorModels()));
-            }
-            return Response(BaseDataResponse<UserViewModel>.Fail(null, null));
-
-        }
-
-        [HttpPost]
         [AllowAnonymous]
         public async Task<BaseDataResponse<AuthenticateResult>> Login([FromBody] LoginViewModel model)
         {
@@ -92,7 +67,6 @@ namespace Samr.ERP.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var authenticateResponse = await _authenticateService.RefreshTokenAsync(model);
 
                 return Response(authenticateResponse);
@@ -208,18 +182,6 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<BaseResponse> CreateRole([FromBody] CreateRoleDto createRoleDto)
-        {
-            if (ModelState.IsValid)
-            {
-                var resposne = await _roleService.AddAsync(createRoleDto.Name, createRoleDto.Description, createRoleDto.Category);
-
-                return Response(resposne);
-            }
-            return Response(BaseResponse.Fail(null));
-        }
-
-        [HttpPost]
         [Authorize]
         public async Task<BaseResponse> SetUserRoles([FromBody] SetUserRolesViewModel model)
         {
@@ -241,9 +203,9 @@ namespace Samr.ERP.WebApi.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> GetAllSelectListUserItem()
+        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> UsersSelectListItems()
         {
-            var response = await _userService.GetAllSelectListUserItemAsync();
+            var response = await _userService.UsersSelectListItemsAsync();
 
             return Response(response);
         }

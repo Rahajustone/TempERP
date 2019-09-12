@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Samr.ERP.Core.Auth;
 using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Services;
 using Samr.ERP.Infrastructure.Data;
@@ -26,6 +28,7 @@ using Samr.ERP.Infrastructure.Data.Contracts;
 using Samr.ERP.Infrastructure.Data.Helpers;
 using Samr.ERP.Infrastructure.Entities;
 using Samr.ERP.Infrastructure.Providers;
+using Samr.ERP.Infrastructure.SeedData;
 using Samr.ERP.WebApi.Configurations;
 using Samr.ERP.WebApi.Configurations.AutoMapper;
 using Samr.ERP.WebApi.Configurations.Models;
@@ -50,11 +53,13 @@ namespace Samr.ERP.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             #region Dependecy Injection
 
             services.AddDbContext<SamrDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")),ServiceLifetime.Scoped);
+                options.UseNpgsql(
+                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services.AddSingleton<PdfConverterService>();
@@ -64,6 +69,7 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IRepositoryProvider, RepositoryProvider>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<ISMSSender, SMSSender>();
             services.AddScoped<IActiveUserTokenService, ActiveUserTokenService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
@@ -76,19 +82,22 @@ namespace Samr.ERP.WebApi
             services.AddScoped<IPositionService, PositionService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<INewsService, NewsService>();
-            services.AddScoped<INewsCategoriesService, NewsCategoriesService>();
-            services.AddScoped<IEmailSettingService, EmailSettingSettingService>();
+            services.AddScoped<INewsCategoryService, NewsCategoryService>();
+            services.AddScoped<IEmailSettingService, EmailSettingService>();
             services.AddScoped<IUserLockReasonService, UserLockReasonService>();
             services.AddScoped<IGenderService, GenderService>();
             services.AddScoped<IUsefulLinkCategoryService, UsefulLinkCategoryService>();
             services.AddScoped<IUsefulLinkService, UsefulLinkService>();
-            services.AddScoped<IHandbookService, HandbookService>();
-            services.AddScoped<IFileCategoryService, FileCategoryService>();
+            services.AddScoped<IFileArchiveCategoryService, FileArchiveCategoryService>();
             services.AddScoped<IFileArchiveService, FileArchiveService>();
-            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IEmailMessageHistoryService, EmailMessageHistoryService>();
+            services.AddScoped<ISMPPSettingService, SMPPSettingService>();
             services.AddSingleton<HubEvent.HubEvent>();
-
+            services.AddScoped(typeof(IHistoryService<,>),
+                typeof(HistoryService<,>));
             #endregion
+
 
             #region Identity & JWT
 
@@ -100,11 +109,13 @@ namespace Samr.ERP.WebApi
                         options.Password.RequireNonAlphanumeric = false;
                         options.Password.RequireUppercase = false;
                         options.Password.RequiredLength = 4;
-                        
+
                     })
                     .AddRoles<Role>()
+                    .AddErrorDescriber<CustomIdentityErrorDescriber>()
                     //.AddRoleManager<Role>()
                     .AddEntityFrameworkStores<SamrDbContext>();
+
 
             services.Configure<AppSettings>(Configuration.GetSection("TokenSettings"));
 
@@ -119,6 +130,28 @@ namespace Samr.ERP.WebApi
                 x.SaveToken = true;
                 x.TokenValidationParameters = TokenAuthenticationService.GetTokenValidationParameters(token);
 
+
+                // We have to hook the OnNewMessage event in order to
+                // allow the JWT authentication handler to read the access
+                // token from the query string when a WebSocket or 
+                // Server-Sent Events request comes in.
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/Hubs", StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             #endregion
@@ -133,19 +166,21 @@ namespace Samr.ERP.WebApi
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyOrigin()
-                    .WithOrigins("http://localhost:4200", 
-                    "http://sumr.evomedia.pro","https://sumr.evomedia.pro",
-                    "http://samr.evomedia.pro","http://samr.evomedia.pro")
+                    .WithOrigins("http://localhost:4200",
+                    "http://samr.evomedia.pro", "https://samr.evomedia.pro",
+                    "http://samrdev.evomedia.pro", "https://samrdev.evomedia.pro")
                     .WithExposedHeaders("Content-Disposition");
             }));
-            services.AddSignalR();
+            services.AddSignalR(o =>
+                o.EnableDetailedErrors = true
+                );
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.Configure<ApiBehaviorOptions>(options =>
                 options.SuppressModelStateInvalidFilter = true
             );
-         
+
             services.AddAutoMapperSetup();
 
             services.AddSwaggerDocumentation();
@@ -153,7 +188,11 @@ namespace Samr.ERP.WebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager)
         {
             SetUpCulture();
             LoadPdfNativeLib();
@@ -184,15 +223,18 @@ namespace Samr.ERP.WebApi
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseAuthentication();
-          
-            app.UseMiddleware<UserMiddleware>();
+            
             app.UseMiddleware<TokenManagerMiddleware>();
+            app.UseMiddleware<UserMiddleware>();
 
             app.UseSwaggerDocumentation();
+
             app.UseSignalR(routes =>
             {
-                routes.MapHub<NotificationHub>("/ReceiveMessage");
+                routes.MapHub<NotificationHub>("/Hubs/ListenMessages");
+
             });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -200,10 +242,10 @@ namespace Samr.ERP.WebApi
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-           
 
-            //NotificationService.NotifyMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
 
+            //MessageService.NotifyNewMessage += (object sender, EventArgs args) => Debug.WriteLine("Yes it is");
+            //DbInitializer.AddRolesToSystemUser(userManager,roleManager);
         }
 
         private void SetUpCulture()

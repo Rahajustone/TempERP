@@ -25,21 +25,35 @@ namespace Samr.ERP.WebApi.Middleware
             IAuthorizationService authorizationService)
         {
             var authorizationHeader = context.Request.Headers["authorization"];
+            var accesstokenParam = context.Request.Query["access_token"];
 
-            var token = authorizationHeader == StringValues.Empty
-                ? string.Empty
-                : authorizationHeader.Single().Split(" ").Last();
+
+            var tokenFromHeader = GetTokenValue(authorizationHeader);
+            var tokenFromParam = GetTokenValue(accesstokenParam);
+
+            if (!string.IsNullOrEmpty(tokenFromParam) && string.IsNullOrEmpty(tokenFromHeader))
+                context.Request.Headers.Add("Authorization", $"Bearer {tokenFromParam}");
+
+            var token = !string.IsNullOrEmpty(tokenFromHeader) ? tokenFromHeader : tokenFromParam;
             
             //AuthorizationResult authorizationResult =
             //    await authorizationService.AuthorizeAsync(context.User, null,"");
 
-            if (String.IsNullOrEmpty(token) || await activeUserTokenService.TokenActive(token))
+            if (string.IsNullOrEmpty(token) || await activeUserTokenService.TokenActive(token))
             {
                 await _next(context);
 
                 return;
             }
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        }
+
+        private static string GetTokenValue(StringValues authorizationHeader)
+        {
+            var token = authorizationHeader == StringValues.Empty
+                ? string.Empty
+                : authorizationHeader.Single().Split(" ").Last();
+            return token;
         }
     }
 }

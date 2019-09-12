@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Account;
 using Samr.ERP.Core.ViewModels.Employee;
 using Samr.ERP.Infrastructure.Entities;
@@ -30,5 +30,6 @@ namespace Samr.ERP.Core.Interfaces
         Task<IList<ExportExcelViewModel>> ExportToExcelAsync(FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
         Task<GetEmployeeCardTemplateViewModel> GetEmployeeCardByIdAsync(Guid id);
         Task<BaseDataResponse<PagedList<AllLockEmployeeViewModel>>> GetAllLockedEmployeeAsync(PagingOptions pagingOptions, FilterEmployeeViewModel filterEmployeeViewModel, SortRule sortRule);
+        Task<BaseDataResponse<PagedList<EmployeeLogViewModel>>> GetAllLogAsync(Guid id, PagingOptions pagingOptions, SortRule sortRule);
     }
 }

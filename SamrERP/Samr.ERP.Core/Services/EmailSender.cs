@@ -18,7 +18,10 @@ namespace Samr.ERP.Core.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSettingService _emailSettingService;
         private readonly UserProvider _userProvider;
-        private readonly EmailSetting _emailSetting;
+        private EmailSetting _defaultEmailSetting;
+
+        private EmailSetting DefaultEmailSetting => _defaultEmailSetting ?? (_defaultEmailSetting = _emailSettingService.GetDefaultEmailSetting());
+
         public EmailSender(
             IUnitOfWork unitOfWork,
             IEmailSettingService emailSettingService,
@@ -29,32 +32,32 @@ namespace Samr.ERP.Core.Services
             _emailSettingService = emailSettingService;
             _userProvider = userProvider;
 
-            _emailSetting = _emailSettingService.GetDefaultEmailSetting();
         }
 
 
-        public async Task SendEmailToEmployeeAsync(User user, string subject, string message)
+        public async Task SendEmailToUserAsync(User user, string subject, string message, bool hideMessage = false)
         {
-            await AddEmailMessageHistory(user, subject, message);
+            await AddEmailMessageHistory(user, subject, message, hideMessage);
             await SendEmailAsync(user.Email, subject, message);
         }
 
-        private async Task AddEmailMessageHistory(User destUser, string subject, string message)
+        private async Task AddEmailMessageHistory(User destUser, string subject, string message, bool hideMessage)
         {
 
             var emailMessageHistory = new EmailMessageHistory()
             {
-                RecieverUserId = destUser.Id,
-                EmailSettingId = _emailSetting.Id,
+                ReceiverUserId = destUser.Id,
+                EmailSettingId = DefaultEmailSetting.Id,
                 Subject = subject,
-                Message = message,
-                RecieverEMail = destUser.Email
+                Message = hideMessage ? "*****" : message,
+                ReceiverEmail = destUser.Email
             };
+
             if (_userProvider.CurrentUser == null)
             {
-                var firstUser =await _unitOfWork.Users.All().FirstAsync();
+                var firstUser = await _unitOfWork.Users.All().FirstAsync();
                 emailMessageHistory.CreatedUserId = firstUser.Id;
-                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false); 
+                _unitOfWork.EmailMessageHistories.Add(emailMessageHistory, false);
             }
             else
             {
@@ -62,33 +65,32 @@ namespace Samr.ERP.Core.Services
 
             }
 
-    _unitOfWork.EmailMessageHistories.Add(emailMessageHistory,false);
-
             await _unitOfWork.CommitAsync();
-}
+        }
 
-public async Task SendEmailAsync(string email, string subject, string message)
-{
-    var emailMessage = new MimeMessage();
+        public async Task SendEmailAsync(string email, string subject, string message)
+        {
+            var emailMessage = new MimeMessage();
 
-    emailMessage.From.Add(new MailboxAddress(_emailSetting.SenderName, _emailSetting.Sender));
-    emailMessage.To.Add(new MailboxAddress(email));
+            emailMessage.From.Add(new MailboxAddress(DefaultEmailSetting.SenderName, DefaultEmailSetting.Sender));
+            emailMessage.To.Add(new MailboxAddress(email));
 
-    emailMessage.Subject = subject;
-    emailMessage.Body = new TextPart(TextFormat.Text)
-    {
-        Text = message
-    };
+            emailMessage.Subject = subject;
 
-    using (var client = new SmtpClient())
-    {
-        await client.ConnectAsync(_emailSetting.MailServer, _emailSetting.MailPort, _emailSetting.EnabledSSL);
-        await client.AuthenticateAsync(_emailSetting.Sender, _emailSetting.Password);
-        await client.SendAsync(emailMessage);
+            emailMessage.Body = new TextPart(TextFormat.Text)
+            {
+                Text = message
+            };
 
-        await client.DisconnectAsync(true);
-    }
-}
+            using (var client = new SmtpClient())
+            {
+                await client.ConnectAsync(DefaultEmailSetting.MailServer, DefaultEmailSetting.MailPort, DefaultEmailSetting.EnabledSSL);
+                await client.AuthenticateAsync(DefaultEmailSetting.Sender, DefaultEmailSetting.Password);
+                await client.SendAsync(emailMessage);
+
+                await client.DisconnectAsync(true);
+            }
+        }
 
     }
 }

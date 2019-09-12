@@ -16,7 +16,7 @@ namespace Samr.ERP.Infrastructure.Entities
         public NewsCategory NewsCategory { get; set; }
 
         [Required]
-        [StringLength(64)]
+        [StringLength(256)]
         public string Title { get; set; }
 
         [Required]
@@ -25,9 +25,9 @@ namespace Samr.ERP.Infrastructure.Entities
 
         [Required]
         public string Description { get; set; }
+        public DateTime PublishAt { get; set; }
 
-        [Required]
-        public  string PublishAt { get; set; }
+        public string Image { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }

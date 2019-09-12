@@ -42,25 +42,33 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
         public IRepository<Role> Roles { get { return GetStandardRepo<Role>(); } }
         public IRepository<Gender> Genders => GetStandardRepo<Gender>();
         public IRepository<Employee> Employees => GetStandardRepo<Employee>();
+        public IRepository<EmployeeLog> EmployeeLogs => GetStandardRepo<EmployeeLog>();
         public IRepository<Department> Departments => GetStandardRepo<Department>();
+        public IRepository<DepartmentLog> DepartmentLogs => GetStandardRepo<DepartmentLog>();
         public IRepository<EmployeeLockReason> EmployeeLockReasons => GetStandardRepo<EmployeeLockReason>();
+        public IRepository<EmployeeLockReasonLog> EmployeeLockReasonLog => GetStandardRepo<EmployeeLockReasonLog>();
         public IRepository<Nationality> Nationalities => GetStandardRepo<Nationality>();
+        public IRepository<NationalityLog> NationalityLogs => GetStandardRepo<NationalityLog>();
         public IRepository<Position> Positions => GetStandardRepo<Position>();
+        public IRepository<PositionLog> PositionLogs => GetStandardRepo<PositionLog>();
         public IRepository<News> News => GetStandardRepo<News>();
         public IRepository<NewsCategory> NewsCategories => GetStandardRepo<NewsCategory>();
+        public IRepository<NewsCategoryLog> NewsCategoryLogs => GetStandardRepo<NewsCategoryLog>();
         public IRepository<EmailSetting> EmailSettings => GetStandardRepo<EmailSetting>();
         public IRepository<EmailMessageHistory> EmailMessageHistories => GetStandardRepo<EmailMessageHistory>();
         public IRepository<UserLockReason> UserLockReasons => GetStandardRepo<UserLockReason>();
+        public IRepository<UserLockReasonLog> UserLockReasonLogs => GetStandardRepo<UserLockReasonLog>();
         public IRepository<UsefulLinkCategory> UsefulLinkCategories => GetStandardRepo<UsefulLinkCategory>();
+        public IRepository<UsefulLinkCategoryLog> UsefulLinkCategoryLogs => GetStandardRepo<UsefulLinkCategoryLog>();
         public IRepository<UsefulLink> UsefulLinks => GetStandardRepo<UsefulLink>();
-        public IRepository<Handbook> Handbooks => GetStandardRepo<Handbook>();
         public IRepository<RefreshToken> RefreshTokens => GetStandardRepo<RefreshToken>();
-        public IRepository<FileCategory> FileCategories => GetStandardRepo<FileCategory>();
+        public IRepository<FileArchiveCategory> FileArchiveCategories => GetStandardRepo<FileArchiveCategory>();
+        public IRepository<FileArchiveCategoryLog> FileArchiveCategoryLogs => GetStandardRepo<FileArchiveCategoryLog>();
         public IRepository<FileArchive> FileArchives => GetStandardRepo<FileArchive>();
-        public  IRepository<NotificationType> NotificationTypes => GetStandardRepo<NotificationType>();
         public  IRepository<Notification> Notifications => GetStandardRepo<Notification>();
         public  IRepository<ActiveUserToken> ActiveUserTokens => GetStandardRepo<ActiveUserToken>();
-
+        public  IRepository<SMPPSetting> SMPPSettings => GetStandardRepo<SMPPSetting>();
+        public IRepository<SMSMessageHistory> SMSMessageHistories => GetStandardRepo<SMSMessageHistory>();
         /// <summary>
         /// Save pending changes to the database
         /// </summary>
@@ -90,11 +98,39 @@ namespace Samr.ERP.Infrastructure.Data.Concrete
 			    // throw;
 			//}
         }
-    
+        /// <summary>
+        /// Save pending changes to the database
+        /// </summary>
+        public int Commit()
+        {
+
+            //System.Diagnostics.Debug.WriteLine("Committed");
+            //try
+            // {
+            return DbContext.SaveChanges();
+            // }
+            //catch (Exception ex) // DbEntityValidationException ex)
+            //{
+            //	Debug.WriteLine(" ");
+            //foreach (var error in ex.EntityValidationErrors)
+            //{
+            //	Debug.WriteLine("====================");
+            //	Debug.WriteLine("Entity {0} in state {1} has validation errors:",
+            //		error.Entry.Entity.GetType().Name, error.Entry.State);
+            //	foreach (var ve in error.ValidationErrors)
+            //	{
+            //		Debug.WriteLine("\tProperty: {0}, Error: {1}",
+            //			ve.PropertyName, ve.ErrorMessage);
+            //	}
+            //	Debug.WriteLine(" ");
+            //}
+            // throw;
+            //}
+        }
 
         protected IRepositoryProvider RepositoryProvider { get; set; }
 
-        private IRepository<T> GetStandardRepo<T>() where T : class
+        public IRepository<T> GetStandardRepo<T>() where T : class
         {
             return RepositoryProvider.GetRepositoryForEntityType<T>();
         }

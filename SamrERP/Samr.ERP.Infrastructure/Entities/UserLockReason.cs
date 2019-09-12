@@ -7,11 +7,7 @@ using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class UserLockReason : CreatableByUserBaseObject, ICreatable, IActivable
+    public class UserLockReason : UserLockReasonBaseObject
     {
-        [StringLength(32)]
-        public string Name { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public bool IsActive { get; set; }
     }
 }

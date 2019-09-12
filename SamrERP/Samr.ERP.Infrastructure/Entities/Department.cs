@@ -1,21 +1,17 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Samr.ERP.Infrastructure.Entities.BaseObjects;
+using System.Collections.Generic;
+
 using Samr.ERP.Infrastructure.Interfaces;
 
 namespace Samr.ERP.Infrastructure.Entities
 {
-    public class Department : CreatableByUserBaseObject, IActivable, ICreatable
+    public class Department : DepartmentBaseObject
     {
-        [Required]
-        [StringLength(64)]
-        public string Name { get; set; }
-
-        public Guid? RootId { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
+        public ICollection<Position> Positions { get; set; }
+        public ICollection<DepartmentLog> DepartmentLogs { get; set; }
     }
 }

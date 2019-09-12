@@ -24,5 +24,6 @@ namespace Samr.ERP.Core.ViewModels.EmailSetting
         public bool IsDefault { get; set; }
         public DateTime? CreatedAt { get; set; }
         public bool IsActive { get; set; }
+        public bool SSL { get; set; }
     }
 }

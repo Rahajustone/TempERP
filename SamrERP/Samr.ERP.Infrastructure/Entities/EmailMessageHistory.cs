@@ -10,21 +10,18 @@ namespace Samr.ERP.Infrastructure.Entities
 {
     public class EmailMessageHistory:CreatableByUserBaseObject,ICreatable
     {
-        
-        public Guid RecieverUserId { get; set; }
-        [ForeignKey(nameof(RecieverUserId))]
-        public User RecieverUser { get; set; }
+        public Guid ReceiverUserId { get; set; }
+        [ForeignKey(nameof(ReceiverUserId))]
+        public User ReceiverUser { get; set; }
 
-        public string RecieverEMail { get; set; }
 
         public Guid EmailSettingId { get; set; }
         [ForeignKey(nameof(EmailSettingId))]
         public EmailSetting EmailSetting { get; set; }
 
+        public string ReceiverEmail { get; set; }
         public string Subject { get; set; }
-
         public string Message { get; set; }
-
         public DateTime CreatedAt { get; set; }
     }
 }

@@ -10,10 +10,12 @@ using Samr.ERP.Core.Interfaces;
 using Samr.ERP.Core.Models;
 using Samr.ERP.Core.Models.ResponseModels;
 using Samr.ERP.Core.Services;
-using Samr.ERP.Core.Stuff;
+using Samr.ERP.Core.Staff;
 using Samr.ERP.Core.ViewModels.Common;
+using Samr.ERP.Core.ViewModels.Handbook.UsefulLinkCategory;
 using Samr.ERP.Core.ViewModels.UsefulLink;
 using Samr.ERP.Infrastructure.Entities;
+using Samr.ERP.WebApi.Filters;
 
 namespace Samr.ERP.WebApi.Controllers
 {
@@ -30,16 +32,9 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> All([FromQuery] PagingOptions pagingOptions)
+        public async Task<BaseDataResponse<PagedList<UsefulLinkViewModel>>> All([FromQuery] PagingOptions pagingOptions, [FromQuery]FilterUsefulLinkViewModel filterUsefulLinkViewModel)
         {
-            var response = await _usefulLinkService.GetAllAsync(pagingOptions);
-            return Response(response);
-        }
-
-        [HttpGet]
-        public async Task<BaseDataResponse<IEnumerable<SelectListItemViewModel>>> SelectListItem()
-        {
-            var response = await _usefulLinkService.GetAllSelectListItemAsync();
+            var response = await _usefulLinkService.GetAllAsync(pagingOptions, filterUsefulLinkViewModel);
             return Response(response);
         }
 
@@ -52,6 +47,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<UsefulLinkViewModel>> Create([FromBody] UsefulLinkViewModel usefulLinkViewModel)
         {
             if (ModelState.IsValid)
@@ -64,6 +60,7 @@ namespace Samr.ERP.WebApi.Controllers
         }
 
         [HttpPost]
+        [TrimInputStrings]
         public async Task<BaseDataResponse<UsefulLinkViewModel>> Edit([FromBody] UsefulLinkViewModel usefulLinkViewModel)
         {
             if (ModelState.IsValid)

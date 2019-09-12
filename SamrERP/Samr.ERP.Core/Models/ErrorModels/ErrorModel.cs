@@ -1,11 +1,12 @@
 ﻿using System;
 using Samr.ERP.Core.Enums;
+using Samr.ERP.Core.Staff;
 
 namespace Samr.ERP.Core.Models.ErrorModels
 {
     public class ErrorModel
     {
-        public ErrorType Code { get; set; }
+        public ErrorCode Code { get; set; }
         public String Description { get; set; }
 
         public ErrorModel()
@@ -17,5 +18,16 @@ namespace Samr.ERP.Core.Models.ErrorModels
         {
             Description = description;
         }
+        public ErrorModel(string code, string description)
+        {
+            Code = Enum.Parse<ErrorCode>(code);
+            Description = description;
+        }
+        public ErrorModel(ErrorCode code)
+        {
+            Code = code;
+            Description = code.ToStringX();
+        }
+        
     }
 }
